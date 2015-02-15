@@ -19,6 +19,12 @@ task :build do
 
   # build and copy to public path
   `jekyll b -t -d ./_site`
+  `cd ../`
+  `git checkout master`
+  `cd ./jekyll`
   `cp -r ./_site/* ../`
+  `cd ../`
+  `git checkout jekyll`
+  `cd ./jekyll`
   `rm -rf ./_site`
 end
