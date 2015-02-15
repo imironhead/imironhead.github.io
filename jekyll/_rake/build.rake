@@ -20,4 +20,5 @@ task :build do
   # build and copy to public path
   `jekyll b -t -d ./_site`
   `cp -r ./_site/* ../`
+  `rm -rf ./_site`
 end
