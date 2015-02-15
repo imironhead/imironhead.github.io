@@ -13,8 +13,8 @@ task :build do
   `git checkout master`
 
   # remove published files
-  `rm ./feed.xml`
-  `rm ./index.html`
+  `rm -f ./feed.xml`
+  `rm -f ./index.html`
 
   # remove published folders
   `rm -rf ./2014`
@@ -25,6 +25,9 @@ task :build do
   `rm -rf ./cv`
   `rm -rf ./projects`
   `rm -rf ./readings`
+
+  `pwd`
+  `ls`
 
   # copy updated site to master folder
   `cp -r ./jekyll/_site/* ./`
