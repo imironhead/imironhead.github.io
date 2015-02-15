@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+<div class="notes">
+
+  <h1 class="page-heading">{{ page.title }}</h1>
+
+  {% for topic in page.topics %}
+    <h2>{{ topic.title }}</h2>
+
+    <ul>
+      {% for note in topic.notes %}
+        <a href="{{ note.url }}">
+          <li>
+            {{ note.title }}
+          </li>
+        </a>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+
+</div>
