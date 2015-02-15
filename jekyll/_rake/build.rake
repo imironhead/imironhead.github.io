@@ -27,5 +27,5 @@ task :build do
   `rm -rf ./readings`
 
   # copy updated site to master folder
-  `cp -r ./jekyll/_site/* ../`
+  `cp -r ./jekyll/_site/* ./`
 end
