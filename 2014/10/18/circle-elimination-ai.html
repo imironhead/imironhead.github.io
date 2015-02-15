@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Circle Elimination Game with AI in Ruby</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/2014/10/18/circle-elimination-ai.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Circle Elimination Game with AI in Ruby</h1>
+    <p class="post-meta">Oct 18, 2014</p>
+  </header>
+
+  <article class="post-content">
+    <ul>
+  <li>Learning UCT, not finish yet.</li>
+  <li>
+    <p>Reference: <a href="http://mcts.ai/code/python.html">mcts.ai</a></p>
+  </li>
+  <li>-p, –power N                    power of AI</li>
+  <li>-s, –size N                     play game on board of size N</li>
+  <li>-e, –eliminate N                maximum stones can be eliminated one time</li>
+  <li>-f, –first                      player first</li>
+  <li>-l, –last                       player who eliminates the last stone lose the game</li>
+  <li>-h, –help                       show this message</li>
+</ul>
+
+<p>In each turn, the input may be:
+* “row1, col1, row2, col2” (eg: 0,0,2,2) which would eliminate all stones between
+(row1, col1) and (row2, col2) (both inclusive).
+* “row, col” which eliminate only 1 stone.</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment"># reference: http://mcts.ai/code/python.html</span>
+
+require <span class="string"><span class="delimiter">'</span><span class="content">optparse</span><span class="delimiter">'</span></span>
+
+
+<span class="comment"># stone position</span>
+<span class="keyword">class</span> <span class="class">Position</span>
+  attr_accessor <span class="symbol">:row</span>
+  attr_accessor <span class="symbol">:col</span>
+
+  <span class="keyword">def</span> <span class="function">initialize</span>(pos_row, pos_col)
+    <span class="instance-variable">@row</span> = pos_row
+    <span class="instance-variable">@col</span> = pos_col
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">right!</span>(distance = <span class="integer">1</span>)
+    <span class="instance-variable">@col</span> += distance
+    <span class="predefined-constant">self</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">down!</span>(distance = <span class="integer">1</span>)
+    <span class="instance-variable">@row</span> += distance
+    <span class="predefined-constant">self</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">diagonal!</span>(distance = <span class="integer">1</span>)
+    <span class="instance-variable">@col</span> += distance
+    <span class="instance-variable">@row</span> += distance
+    <span class="predefined-constant">self</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">==</span>(that)
+    that.col == col <span class="keyword">and</span> that.row == row
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">inspect</span>
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">pos (</span><span class="inline"><span class="inline-delimiter">#{</span>row<span class="inline-delimiter">}</span></span><span class="content">, </span><span class="inline"><span class="inline-delimiter">#{</span>col<span class="inline-delimiter">}</span></span><span class="content">)</span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment"># A move represents all positions between head and tail.</span>
+<span class="keyword">class</span> <span class="class">Move</span>
+  attr_accessor <span class="symbol">:head</span>
+  attr_accessor <span class="symbol">:tail</span>
+
+  <span class="keyword">def</span> <span class="function">initialize</span>(pos1, pos2 = <span class="predefined-constant">nil</span>)
+    <span class="keyword">if</span> pos2.nil?
+      pos2 = pos1
+    <span class="keyword">elsif</span> pos2.col &lt; pos1.col <span class="keyword">or</span> pos2.row &lt; pos1.row
+      pos1, pos2 = pos2, pos1
+    <span class="keyword">end</span>
+
+    <span class="instance-variable">@head</span> = <span class="constant">Position</span>.new(pos1.row, pos1.col)
+    <span class="instance-variable">@tail</span> = <span class="constant">Position</span>.new(pos2.row, pos2.col)
+  <span class="keyword">end</span>
+
+  <span class="comment"># return all positions between head and tail (head and tail are included)</span>
+  <span class="keyword">def</span> <span class="function">positions</span>
+    <span class="keyword">if</span> head.row == tail.row
+      (head.col..tail.col).each.map { | c | <span class="constant">Position</span>.new(head.row, c) }
+    <span class="keyword">elsif</span> head.col == tail.col
+      (head.row..tail.row).each.map { | r | <span class="constant">Position</span>.new(r, head.col) }
+    <span class="keyword">else</span>
+      (head.row..tail.row).each_with_index.map <span class="keyword">do</span> | r, i |
+        <span class="constant">Position</span>.new(r, head.col + i)
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">==</span>(that)
+    that.head == head <span class="keyword">and</span> that.tail == tail
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class">Board</span>
+  <span class="constant">LIVE_STONE_SIGN</span> = <span class="string"><span class="delimiter">&quot;</span><span class="content">○</span><span class="delimiter">&quot;</span></span>
+  <span class="constant">DEAD_STONE_SIGN</span> = <span class="string"><span class="delimiter">&quot;</span><span class="content">●</span><span class="delimiter">&quot;</span></span>
+
+  <span class="constant">LIVE_STONE</span> = <span class="predefined-constant">true</span>
+  <span class="constant">DEAD_STONE</span> = <span class="predefined-constant">false</span>
+
+  attr_reader <span class="symbol">:max_elimination</span>
+  attr_reader <span class="symbol">:stones</span>
+
+  <span class="comment"># board_size: height of the triangle with circles.</span>
+  <span class="comment"># max_elimination: max number of connected circles can be eliminated in each turn.</span>
+  <span class="keyword">def</span> <span class="function">initialize</span>(board_size = <span class="integer">6</span>, max_elimination = <span class="integer">3</span>)
+    <span class="instance-variable">@max_elimination</span> = [<span class="integer">1</span>, max_elimination].max
+
+    <span class="instance-variable">@stones</span> = <span class="constant">Array</span>.new([<span class="integer">2</span>, board_size].max) <span class="keyword">do</span> | line |
+      <span class="constant">Array</span>.new(line + <span class="integer">1</span>, <span class="constant">LIVE_STONE</span>)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># the representation of a board with height 10:</span>
+  <span class="comment"># --------------</span>
+  <span class="comment">#   0 ○</span>
+  <span class="comment">#   1 ○○</span>
+  <span class="comment">#   2 ○○○</span>
+  <span class="comment">#   3 ○○○○</span>
+  <span class="comment">#   4 ○○○○○</span>
+  <span class="comment">#   5 ○○○○○○</span>
+  <span class="comment">#   6 ○○○○○○○</span>
+  <span class="comment">#   7 ○○○○○○○○</span>
+  <span class="comment">#   8 ○○○○○○○○○</span>
+  <span class="comment">#   9 ○○○○○○○○○○</span>
+  <span class="comment">#     0123456789</span>
+  <span class="comment"># --------------</span>
+  <span class="keyword">def</span> <span class="function">inspect</span>
+    gutter_size = size.to_s.length + <span class="integer">2</span>
+
+    spliter = <span class="string"><span class="delimiter">&quot;</span><span class="content">-</span><span class="delimiter">&quot;</span></span> * (gutter_size + size)
+
+    result = spliter.clone
+
+    stones.each_with_index <span class="keyword">do</span> | line, i |
+      result &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span> i.to_s.rjust gutter_size - <span class="integer">1</span> <span class="inline-delimiter">}</span></span><span class="content"> </span><span class="delimiter">&quot;</span></span>
+
+      line.each <span class="keyword">do</span> | s |
+        result &lt;&lt; (s == <span class="constant">LIVE_STONE</span> ? <span class="constant">LIVE_STONE_SIGN</span> : <span class="constant">DEAD_STONE_SIGN</span>)
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    result &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+    result &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span> * gutter_size
+
+    size.times { | i | result &lt;&lt; (i % <span class="integer">10</span>).to_s }
+
+    result &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="inline"><span class="inline-delimiter">#{</span>spliter<span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># clone the board and return it</span>
+  <span class="keyword">def</span> <span class="function">copy</span>
+    board = <span class="constant">Board</span>.new(size, max_elimination)
+
+    dead_stones.each { | pos | board.dead_stone!(pos) }
+
+    board
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">size</span>
+    stones.length
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">stone</span>(pos)
+    stones[pos.row][pos.col]
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">filtered_stones</span>(filter)
+    result = []
+
+    stones.each_with_index <span class="keyword">do</span> | line, row |
+      line.each_with_index <span class="keyword">do</span> | s, col |
+        <span class="keyword">if</span> filter.call(row, col, s)
+          result &lt;&lt; <span class="constant">Position</span>.new(row, col)
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    result
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">valid_stone?</span>(pos)
+    pos.row &lt; size <span class="keyword">and</span> pos.col &lt;= pos.row
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">live_stone?</span>(pos)
+    valid_stone?(pos) <span class="keyword">and</span> stone(pos) == <span class="constant">LIVE_STONE</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">dead_stone?</span>(pos)
+    valid_stone?(pos) <span class="keyword">and</span> stone(pos) == <span class="constant">DEAD_STONE</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">dead_stone!</span>(pos)
+    <span class="instance-variable">@stones</span>[pos.row][pos.col] = <span class="constant">DEAD_STONE</span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># =&gt; return positions of all live stones</span>
+  <span class="keyword">def</span> <span class="function">live_stones</span>
+    filtered_stones(lambda { | row, col, live | live == <span class="constant">LIVE_STONE</span> })
+  <span class="keyword">end</span>
+
+  <span class="comment"># =&gt; return positions of all dead stones</span>
+  <span class="keyword">def</span> <span class="function">dead_stones</span>
+    filtered_stones(lambda { | row, col, live | live == <span class="constant">DEAD_STONE</span> })
+  <span class="keyword">end</span>
+
+  <span class="comment"># max length that all stones between (row, col) and (row, col + length - 1)</span>
+  <span class="comment"># are alive.</span>
+  <span class="keyword">def</span> <span class="function">max_row_length_from</span>(pos)
+    (<span class="integer">0</span>...max_elimination).each <span class="keyword">do</span> | l |
+      <span class="keyword">return</span> l <span class="keyword">unless</span> live_stone?(<span class="constant">Position</span>.new(pos.row, pos.col + l))
+    <span class="keyword">end</span>
+
+    max_elimination
+  <span class="keyword">end</span>
+
+  <span class="comment"># max length that all stones between (row, col) and (row + length - 1, col)</span>
+  <span class="comment"># are alive.</span>
+  <span class="keyword">def</span> <span class="function">max_col_length_from</span>(pos)
+    (<span class="integer">0</span>...max_elimination).each <span class="keyword">do</span> | l |
+      <span class="keyword">return</span> l <span class="keyword">unless</span> live_stone?(<span class="constant">Position</span>.new(pos.row + l, pos.col))
+    <span class="keyword">end</span>
+
+    max_elimination
+  <span class="keyword">end</span>
+
+  <span class="comment"># max length that all stones between (row, col) and</span>
+  <span class="comment"># (row + length - 1, col + length - 1) are alive.</span>
+  <span class="keyword">def</span> <span class="function">max_dia_length_from</span>(pos)
+    (<span class="integer">0</span>...max_elimination).each <span class="keyword">do</span> | l |
+      <span class="keyword">return</span> l <span class="keyword">unless</span> live_stone?(<span class="constant">Position</span>.new(pos.row + l, pos.col + l))
+    <span class="keyword">end</span>
+
+    max_elimination
+  <span class="keyword">end</span>
+
+  <span class="comment"># eliminate stones between (row, col) and (row, col + l)</span>
+  <span class="comment"># l is a random length less than max_row_length_from(row, col)</span>
+  <span class="keyword">def</span> <span class="function">random_row_move_from</span>(pos)
+    length = rand(max_row_length_from(pos))
+
+    <span class="constant">Move</span>.new(pos, <span class="constant">Position</span>.new(pos.row, pos.col + length))
+  <span class="keyword">end</span>
+
+  <span class="comment"># eliminate stones between (row, col) and (row + l, col)</span>
+  <span class="comment"># l is a random length less than max_col_length_from(row, col)</span>
+  <span class="keyword">def</span> <span class="function">random_col_move_from</span>(pos)
+    length = rand(max_col_length_from(pos))
+
+    <span class="constant">Move</span>.new(pos, <span class="constant">Position</span>.new(pos.row + length, pos.col))
+  <span class="keyword">end</span>
+
+  <span class="comment"># eliminate stones between (row, col) and (row + l, col + l)</span>
+  <span class="comment"># l is a random length less than max_dia_length_from(row, col)</span>
+  <span class="keyword">def</span> <span class="function">random_dia_move_from</span>(pos)
+    length = rand(max_dia_length_from(pos))
+
+    <span class="constant">Move</span>.new(pos, <span class="constant">Position</span>.new(pos.row + length, pos.col + length))
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">random_live_stone</span>
+    live_stones.sample
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">random_eliminate</span>
+    head = random_live_stone
+
+    <span class="keyword">return</span> <span class="predefined-constant">nil</span> <span class="keyword">if</span> head.nil?
+
+    move = <span class="keyword">case</span> rand(<span class="integer">3</span>)
+    <span class="keyword">when</span> <span class="integer">0</span>
+      random_row_move_from(head)
+    <span class="keyword">when</span> <span class="integer">1</span>
+      random_col_move_from(head)
+    <span class="keyword">else</span>
+      random_dia_move_from(head)
+    <span class="keyword">end</span>
+
+    eliminate move
+
+    move
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">eliminate</span>(move)
+    move.positions.each <span class="keyword">do</span> | pos |
+      dead_stone! pos
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="comment"># all possible moves from current states</span>
+  <span class="keyword">def</span> <span class="function">moves</span>
+    all = []
+
+    live_stones.each <span class="keyword">do</span> | head |
+      len = max_row_length_from(head)
+
+      (<span class="integer">0</span>...len).each <span class="keyword">do</span> | l |
+        all &lt;&lt; <span class="constant">Move</span>.new(head, <span class="constant">Position</span>.new(head.row, head.col + l))
+      <span class="keyword">end</span>
+
+      len = max_col_length_from(head)
+
+      (<span class="integer">0</span>...len).each <span class="keyword">do</span> | l |
+        all &lt;&lt; <span class="constant">Move</span>.new(head, <span class="constant">Position</span>.new(head.row + l, head.col))
+      <span class="keyword">end</span>
+
+      len = max_dia_length_from(head)
+
+      (<span class="integer">0</span>...len).each <span class="keyword">do</span> | l |
+        all &lt;&lt; <span class="constant">Move</span>.new(head, <span class="constant">Position</span>.new(head.row + l, head.col + l))
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    all
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class">Node</span>
+  <span class="constant">PLAYER_BOT</span> = <span class="integer">0</span>
+  <span class="constant">PLAYER_USR</span> = <span class="integer">1</span>
+
+  attr_reader <span class="symbol">:move</span>
+  attr_reader <span class="symbol">:possible_moves</span>
+  attr_reader <span class="symbol">:children</span>
+  attr_reader <span class="symbol">:parent</span>
+  attr_reader <span class="symbol">:player</span>
+
+  attr_accessor <span class="symbol">:count_of_wins</span>
+  attr_accessor <span class="symbol">:count_of_visits</span>
+
+  <span class="keyword">def</span> <span class="function">initialize</span>(current_move, parent, current_player, board)
+    <span class="instance-variable">@move</span> = current_move
+    <span class="instance-variable">@parent</span> = parent
+    <span class="instance-variable">@children</span> = []
+    <span class="instance-variable">@count_of_wins</span> = <span class="integer">0</span>
+    <span class="instance-variable">@count_of_visits</span> = <span class="integer">0</span>
+    <span class="instance-variable">@player</span> = current_player
+    <span class="instance-variable">@possible_moves</span> = board.moves
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">select</span>
+    <span class="instance-variable">@children</span>.max <span class="keyword">do</span> | a, b |
+      x = <span class="integer">2</span> * <span class="constant">Math</span>.log(count_of_visits) / a.count_of_visits
+      y = <span class="integer">2</span> * <span class="constant">Math</span>.log(count_of_visits) / b.count_of_visits
+
+      x = a.count_of_wins / a.count_of_visits + <span class="constant">Math</span>.sqrt(x)
+      y = b.count_of_wins / b.count_of_visits + <span class="constant">Math</span>.sqrt(y)
+
+      x &lt;=&gt; y
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">add_child</span>(move, board)
+    <span class="instance-variable">@possible_moves</span>.delete(move)
+
+    <span class="instance-variable">@children</span> &lt;&lt; <span class="constant">Node</span>.new(move, <span class="predefined-constant">self</span>, match, board)
+
+    <span class="instance-variable">@children</span>[<span class="integer">-1</span>]
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">update</span>(winner)
+    <span class="instance-variable">@count_of_visits</span> += <span class="integer">1</span>
+    <span class="instance-variable">@count_of_wins</span> += <span class="keyword">if</span> winner == player <span class="keyword">then</span> <span class="integer">1</span> <span class="keyword">else</span> <span class="integer">-1</span> <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">match</span>
+    <span class="integer">1</span> - player
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">class</span> <span class="class">Game</span>
+  <span class="constant">MODE_LAST_WIN</span> = <span class="integer">0</span>
+  <span class="constant">MODE_LAST_LOSE</span> = <span class="integer">1</span>
+
+  <span class="constant">STATE_NOT_ENDED</span> = <span class="integer">0</span>
+  <span class="constant">STATE_USR_WIN</span> = <span class="integer">1</span>
+  <span class="constant">STATE_BOT_WIN</span> = <span class="integer">2</span>
+
+  <span class="keyword">def</span> <span class="predefined-constant">self</span>.<span class="function">parse_args</span>
+    arguments = {}
+
+    arguments[<span class="symbol">:size</span>] = <span class="integer">6</span>
+    arguments[<span class="symbol">:max_elimination</span>] = <span class="integer">3</span>
+    arguments[<span class="symbol">:last_win</span>] = <span class="predefined-constant">true</span>
+    arguments[<span class="symbol">:usr_first</span>] = <span class="predefined-constant">false</span>
+    arguments[<span class="symbol">:power</span>] = <span class="integer">1</span>
+
+    option_parser = <span class="constant">OptionParser</span>.new <span class="keyword">do</span> | options |
+      options.banner = <span class="string"><span class="delimiter">&quot;</span><span class="content">Usage: circles.rb [options]</span><span class="delimiter">&quot;</span></span>
+
+      options.separator <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>
+      options.separator <span class="string"><span class="delimiter">&quot;</span><span class="content">Specific options:</span><span class="delimiter">&quot;</span></span>
+
+      options.on(<span class="string"><span class="delimiter">&quot;</span><span class="content">-p N</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">--power N</span><span class="delimiter">&quot;</span></span>, <span class="constant">Integer</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">power of AI</span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span> | s |
+        arguments[<span class="symbol">:power</span>] = s
+      <span class="keyword">end</span>
+
+      options.on(<span class="string"><span class="delimiter">&quot;</span><span class="content">-s N</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">--size N</span><span class="delimiter">&quot;</span></span>, <span class="constant">Integer</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">play game on board of size N</span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span> | s |
+        arguments[<span class="symbol">:size</span>] = s
+      <span class="keyword">end</span>
+
+      options.on(<span class="string"><span class="delimiter">&quot;</span><span class="content">-e N</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">--eliminate N</span><span class="delimiter">&quot;</span></span>, <span class="constant">Integer</span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">maximum stones can be eliminated one time</span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span> | e |
+        arguments[<span class="symbol">:max_elimination</span>] = e
+      <span class="keyword">end</span>
+
+      options.on(<span class="string"><span class="delimiter">&quot;</span><span class="content">-f</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">--first</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">player first</span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span> |v|
+        arguments[<span class="symbol">:usr_first</span>] = <span class="predefined-constant">true</span>
+      <span class="keyword">end</span>
+
+      options.on(<span class="string"><span class="delimiter">&quot;</span><span class="content">-l</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">--last</span><span class="delimiter">&quot;</span></span>,
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">player who eliminates the last stone lost the game</span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span> |v|
+        arguments[<span class="symbol">:last_win</span>] = <span class="predefined-constant">false</span>
+      <span class="keyword">end</span>
+
+      options.on_tail(<span class="string"><span class="delimiter">&quot;</span><span class="content">-h</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">--help</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">show this message</span><span class="delimiter">&quot;</span></span>) <span class="keyword">do</span>
+        puts options
+        exit
+      <span class="keyword">end</span>
+
+      <span class="comment"># options.on_tail(&quot;-t&quot;, &quot;--test&quot;, &quot;run test&quot;) do</span>
+      <span class="comment">#   Test.test</span>
+      <span class="comment">#   exit</span>
+      <span class="comment"># end</span>
+    <span class="keyword">end</span>
+
+    option_parser.parse!(<span class="predefined-constant">ARGV</span>)
+
+    arguments
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">initialize</span>(arguments = <span class="predefined-constant">nil</span>)
+    <span class="keyword">if</span> arguments.nil?
+      arguments = {
+        <span class="key">size</span>: <span class="integer">6</span>,
+        <span class="key">max_elimination</span>: <span class="integer">3</span>,
+        <span class="key">last_win</span>: <span class="predefined-constant">true</span>,
+        <span class="key">usr_first</span>: <span class="predefined-constant">false</span>,
+        <span class="key">power</span>: <span class="integer">1</span>
+      }
+    <span class="keyword">end</span>
+
+    <span class="instance-variable">@board</span> = <span class="constant">Board</span>.new(arguments[<span class="symbol">:size</span>], arguments[<span class="symbol">:max_elimination</span>])
+    <span class="instance-variable">@mode</span> = arguments[<span class="symbol">:last_win</span>] ? <span class="constant">MODE_LAST_WIN</span> : <span class="constant">MODE_LAST_LOSE</span>
+    <span class="instance-variable">@bot_first</span> = !arguments[<span class="symbol">:usr_first</span>]
+    <span class="instance-variable">@state</span> = <span class="constant">STATE_NOT_ENDED</span>
+    <span class="instance-variable">@number_of_trials</span> = arguments[<span class="symbol">:power</span>] * <span class="integer">200</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">ended?</span>
+    <span class="instance-variable">@state</span> != <span class="constant">STATE_NOT_ENDED</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">bot_eliminate</span>
+    <span class="keyword">return</span> <span class="predefined-constant">false</span> <span class="keyword">if</span> ended?
+
+    root = <span class="constant">Node</span>.new(<span class="predefined-constant">nil</span>, <span class="predefined-constant">nil</span>, <span class="constant">Node</span>::<span class="constant">PLAYER_USR</span>, <span class="instance-variable">@board</span>)
+
+    <span class="instance-variable">@number_of_trials</span>.times <span class="keyword">do</span>
+      node = root
+
+      dup_board = <span class="instance-variable">@board</span>.copy
+
+      <span class="comment"># select</span>
+      <span class="keyword">while</span> node.possible_moves.empty? <span class="keyword">and</span> node.children.length &gt; <span class="integer">0</span> <span class="keyword">do</span>
+        node = node.select
+
+        dup_board.eliminate node.move
+      <span class="keyword">end</span>
+
+      <span class="comment"># Expand</span>
+      <span class="keyword">unless</span> node.possible_moves.empty?
+        move = node.possible_moves.sample
+
+        dup_board.eliminate move
+
+        node = node.add_child(move, dup_board)
+      <span class="keyword">end</span>
+
+      <span class="comment"># Rollout</span>
+      count = <span class="integer">0</span>
+
+      <span class="keyword">until</span> dup_board.random_eliminate.nil? <span class="keyword">do</span>
+        count += <span class="integer">1</span>
+      <span class="keyword">end</span>
+
+      winner = <span class="keyword">if</span> <span class="instance-variable">@mode</span> = <span class="constant">MODE_LAST_WIN</span>
+        count.odd? ? <span class="integer">1</span> - node.player : node.player
+      <span class="keyword">else</span>
+        count.odd? ? node.player : <span class="integer">1</span> - node.player
+      <span class="keyword">end</span>
+
+      <span class="comment"># Backpropagate</span>
+      <span class="keyword">until</span> node.nil? <span class="keyword">do</span>
+        node.update winner
+        node = node.parent
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    node = root.children.max { | a, b | a.count_of_visits &lt;=&gt; b.count_of_visits }
+
+    <span class="instance-variable">@board</span>.eliminate node.move
+
+    <span class="keyword">if</span> <span class="instance-variable">@board</span>.live_stones.empty?
+      <span class="instance-variable">@state</span> = (<span class="instance-variable">@mode</span> == <span class="constant">MODE_LAST_WIN</span>) ? <span class="constant">STATE_BOT_WIN</span> : <span class="constant">STATE_USR_WIN</span>
+    <span class="keyword">end</span>
+
+    <span class="predefined-constant">true</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">usr_eliminate</span>(row1, col1, row2, col2)
+    <span class="keyword">return</span> <span class="predefined-constant">false</span> <span class="keyword">if</span> ended?
+
+    move = <span class="constant">Move</span>.new(<span class="constant">Position</span>.new(row1, col1), <span class="constant">Position</span>.new(row2, col2))
+
+    <span class="keyword">return</span> <span class="predefined-constant">false</span> <span class="keyword">unless</span> <span class="instance-variable">@board</span>.eliminate(move)
+
+    <span class="keyword">if</span> <span class="instance-variable">@board</span>.live_stones.empty?
+      <span class="instance-variable">@state</span> = (<span class="instance-variable">@mode</span> == <span class="constant">MODE_LAST_WIN</span>) ? <span class="constant">STATE_USR_WIN</span> : <span class="constant">STATE_BOT_WIN</span>
+    <span class="keyword">end</span>
+
+    <span class="predefined-constant">true</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="function">play</span>
+    turn = <span class="integer">0</span>
+
+    <span class="keyword">unless</span> <span class="instance-variable">@bot_first</span>
+      turn = <span class="integer">1</span>
+
+      p <span class="instance-variable">@board</span>
+    <span class="keyword">end</span>
+
+    loop <span class="keyword">do</span>
+      <span class="keyword">if</span> turn.even?
+        bot_eliminate
+      <span class="keyword">else</span>
+        target = <span class="predefined-constant">STDIN</span>.gets.chomp
+
+        positions = target.split(<span class="string"><span class="delimiter">&quot;</span><span class="content">,</span><span class="delimiter">&quot;</span></span>).map { | s | s.to_i }
+
+        <span class="keyword">if</span> positions.length &gt;= <span class="integer">4</span>
+          usr_eliminate(positions[<span class="integer">0</span>], positions[<span class="integer">1</span>], positions[<span class="integer">2</span>], positions[<span class="integer">3</span>])
+        <span class="keyword">else</span>
+          usr_eliminate(positions[<span class="integer">0</span>], positions[<span class="integer">1</span>], positions[<span class="integer">0</span>], positions[<span class="integer">1</span>])
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+
+      p <span class="instance-variable">@board</span>
+
+      <span class="keyword">break</span> <span class="keyword">if</span> ended?
+
+      turn += <span class="integer">1</span>
+    <span class="keyword">end</span>
+
+    p <span class="string"><span class="delimiter">&quot;</span><span class="content">You </span><span class="inline"><span class="inline-delimiter">#{</span><span class="instance-variable">@state</span> == <span class="constant">STATE_BOT_WIN</span> ? <span class="string"><span class="delimiter">&quot;</span><span class="content">LOSE</span><span class="delimiter">&quot;</span></span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">WIN</span><span class="delimiter">&quot;</span></span><span class="inline-delimiter">}</span></span><span class="delimiter">&quot;</span></span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">Game</span>.new(<span class="constant">Game</span>.parse_args).play <span class="keyword">if</span> <span class="predefined-constant">__FILE__</span> == <span class="global-variable">$0</span>
+
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

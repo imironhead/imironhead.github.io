@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>swift 筆記 - 基礎</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/programming/swift/2014-09-11-swift.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">swift 筆記 - 基礎</h1>
+    <p class="post-meta"></p>
+  </header>
+
+  <article class="post-content">
+    <p>這是瀏覽 “The Swift Programming Language” 的筆記，我平常主要用 c/c++，python，ruby 寫程式，這份筆記記的是我眼中的 swift。</p>
+
+<h2 id="section">變數與常數</h2>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let x = 10    // let =&gt; x 是常數
+var y = 100   // var =&gt; y 是變數
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-1">變數型別</h2>
+
+<p>如果編譯器可以從變數的初始值判斷型別，可以不明確的寫出型別。
+~~~ swift
+let x: String           // x 的型別是 String
+var y: Double           // y 的型別是 Double</p>
+
+<p>var a, b, c : Double    // a, b, c 的型別都是 Double</p>
+
+<p>var x = “ironhead”      // x 的型別是 String
+~~~</p>
+
+<h2 id="unicode">變數名稱可以是 unicode</h2>
+
+<p>我覺得用處不大，除非鍵盤可以輕易打出這些字。</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let π = 3.14159
+let 你好 = &quot;你好世界&quot;
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-2">印出字串</h2>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>print(&quot;hello&quot;)              // 印出 hello 不換行
+println(&quot;hello&quot;)            // 印出 hello 並換行
+
+var name = &quot;ironhead&quot;
+
+println(&quot;hello \(name)&quot;)    // 印出 hello ironhead 並換行
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-3">註解</h2>
+
+<p>跟 c/c++ 一樣，但是可以這麼做  /* hello /* world */ !!! */</p>
+
+<h2 id="section-4">除非要在一行內寫出多個式子，否則可以不加分號</h2>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let name = &quot;cat&quot;; print(name)
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-5">整數</h2>
+
+<ul>
+  <li>在 32-bit 平台上，Int 跟 Int32 一樣，UInt 跟 UInt32 一樣</li>
+  <li>在 64-bit 平台上，Int 跟 Int64 一樣，UInt 跟 UInt64 一樣</li>
+</ul>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let minValue = UInt8.min  // minValue 的型別是 UInt8 而且值是 0
+let maxValue = UInt8.max  // maxValue 的型別是 UInt8 而且值是 255
+
+let a = 100000      // 10 進位整數
+let b = 0b1001      //  2 進位整數
+let c = 0o2121      //  8 進位整數
+let d = 0xffee      // 16 進位整數
+let e = 1_000_000   // 1000000 ，加底線增加可讀性
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-6">浮點數</h2>
+
+<p>未指定型別時，預設為 Double</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let aDouble = 12.1875
+let bDouble = 1.21875e1
+let cDouble = 0xC.3p0         // 16 進位, p快示以 2為底的指數
+let dDouble = 000123.456
+let eDouble = 1_000.000_001   // 用底線增加可讀性
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-7">型別轉換</h2>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let a: UInt8 = -1             // 編譯錯誤
+let b: Int8 = Int8.max + 1    // 編譯錯誤
+
+let c = Int(1.23)             // 將 Double 轉換成 Int
+</pre></div>
+</div>
+</div>
+
+<h2 id="section-8">型別別名</h2>
+
+<p>相當於 c++ 的 typedef
+~~~ swift
+typealias Length = UInt16</p>
+
+<p>var length = Length.max
+~~~</p>
+
+<h2 id="tuples">多元組（Tuples）</h2>
+
+<ul>
+  <li>可用在當函式需要超過一個回傳值時</li>
+  <li>簡易的暫用結構（struct）</li>
+</ul>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let http404Error = (404, &quot;Not Found&quot;)                         // 型別是 (Int, String)
+
+let (statusCode, statusMessage) = http404Error
+
+println(&quot;The status code is \(statusCode)&quot;)
+println(&quot;The status message is \(statusMessage)&quot;)
+
+let (justTheStatusCode, _) = http404Error                     // 不需要的值可以用 _ 代替
+println(&quot;The status code is \(justTheStatusCode)&quot;)
+
+println(&quot;The status code is \(http404Error.0)&quot;)               // 可以用 index，從 0開始
+println(&quot;The status message is \(http404Error.1)&quot;)            // 可以用 index，從 0開始
+
+let http200Status = (statusCode: 200, description: &quot;OK&quot;)      // 可以替欄位取名字
+
+println(&quot;The status code is \(http200Status.statusCode)&quot;)     // 然後用欄位取值
+println(&quot;The status message is \(http200Status.description)&quot;)
+</pre></div>
+</div>
+</div>
+
+<h2 id="optionals">Optionals（中文是啥？）</h2>
+<p>這是新的概念，在c/c++或python裡沒有。
+簡單地說就是一個變數有兩個狀態，其中一個狀態表示正常的值，另一個狀態表示不存在這個值。
+比如在c/c++裡記錄字數時可能會用整數來儲存，而且 0行是合理的，
+然後用小於 0行來表示這個變數還沒被初始化。「小於零」就是一個特別的狀態。</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>var line: Int?    // 型別之後加上問號，就成為一個新的 optional型別
+
+line = nil        // 所有的optional變數，都用 nil表示「不存在」
+                  // 現在line變數不存在任何值
+
+line = 1024
+</pre></div>
+</div>
+</div>
+
+<p>在這樣的情況下可讀性較高，字串轉換成整數時有可能因為不合格的格式轉換失敗，
+有些語言的處理方式是傳回特別的值，但是這種情況下所有的整數都應該是合理的。
+另一種方法是丟出異常（我特別不喜歡異常）。這時傳回的型別可以是 optional，
+可能有值，如果失敗則是 nil（另一個原因是swift裡如果不是optional就不能是nil）。
+~~~ swift
+let possibleNumber = “123”
+let convertedNumber = possibleNumber.toInt()  // convertedNumber 是 Int?
+~~~</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>var a: Int?   // optional 預設初始為 nil
+
+if a == nil {
+  // 如果 a是 nil的話就....
+  // 如果替 nil的 optional 變數加上驚嘆號，產生執行時期錯誤
+  println(&quot;\(a!)&quot;)
+} else {
+  // 不能直接使用 optional 變數
+  // 加上驚嘆號告訴編譯器「我確定 a有值，不是 nil」
+  println(&quot;\(a!)&quot;)
+}
+</pre></div>
+</div>
+</div>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>var a: Int?
+
+......
+
+if let b = a {
+  // 如果 a 不是 nil
+  //  b是 Int，不是 Int? 了，不需要加 !
+  println(&quot;\(b)&quot;)
+} else {
+  // 如果 a 是 nil
+}
+
+</pre></div>
+</div>
+</div>
+
+<p>加 !的 optional變數跟加 ?的 optional變數一樣，但是可以當一般變數使用，取用時不需要再加上 !。
+通常用在一開始是 nil（不是 optional就不能是 nil），但是一經付值後就不會再變回 nil的變數。
+~~~ swift
+let possibleString: String? = “An optional string.”
+let forcedString: String = possibleString!</p>
+
+<p>let assumedString: String! = “An implicitly unwrapped optional string.”
+let implicitString: String = assumedString
+~~~</p>
+
+<p><strong>swift 的 nil 跟 Objective-C 的 nil 不一樣</strong></p>
+
+<ul>
+  <li>swift：表示「不存在」，不限定物件</li>
+  <li>obj-c：表示指到「一個不存在的物件」的指標</li>
+</ul>
+
+<h2 id="assertions">警告（assertions）</h2>
+
+<p><a href="https://developer.apple.com/swift/blog/?id=4">在release版本上無作用</a>
+~~~ swift
+let age = -3
+assert(age &gt;= 0, “A person’s age cannot be less than zero”)
+~~~</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

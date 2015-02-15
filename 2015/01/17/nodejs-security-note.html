@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Node.js Security Note</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/2015/01/17/nodejs-security-note.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Node.js Security Note</h1>
+    <p class="post-meta">Jan 17, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <h1 id="dependency">Dependency</h1>
+
+<p>The version of express is 4.10.6. When this note was made, I still found many code samples for express 3. So I guess this note would also to be deprecated soon.</p>
+
+<h1 id="reference">Reference</h1>
+
+<ul>
+  <li><a href="http://cdn.oreillystatic.com/en/assets/1/event/106/Top%20Overlooked%20Security%20Threats%20To%20Node_js%20Web%20Applications%20Presentation%201.pdf">Top Overlooked Security Threats To Node.js Web Applications</a></li>
+</ul>
+
+<h1 id="csrf">CSRF</h1>
+
+<ul>
+  <li><a href="https://github.com/expressjs/csurf">csurf: Node.js CSRF protection middleware</a></li>
+</ul>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">// dependency</span>
+{
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">dependencies</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">csurf</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^1.6.5</span><span class="delimiter">&quot;</span></span>
+  }
+}
+
+<span class="comment">// routes</span>
+app.use(csrf());
+app.use(<span class="keyword">function</span>(req, res, next) {
+  <span class="keyword">var</span> token = req.csrfToken();
+
+  <span class="comment">// for jade</span>
+  res.locals.csrfToken = token;
+  <span class="comment">// for Angularjs</span>
+  res.cookie(<span class="string"><span class="delimiter">'</span><span class="content">XSRF-TOKEN</span><span class="delimiter">'</span></span>, token);
+
+  next();
+});
+app.use(<span class="keyword">function</span>(err, req, res, next) {
+  <span class="comment">// called if there are errors.</span>
+  <span class="keyword">if</span> (err.code !== <span class="string"><span class="delimiter">&quot;</span><span class="content">EBADCSRFTOKEN</span><span class="delimiter">&quot;</span></span>) {
+    <span class="keyword">return</span> next(err);
+  }
+
+  <span class="comment">// handle CSRF token errors here</span>
+  res.status(<span class="integer">403</span>);
+  res.send(<span class="string"><span class="delimiter">&quot;</span><span class="content">leave me alone~~</span><span class="delimiter">&quot;</span></span>);
+
+  console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">bad csrf token</span><span class="delimiter">&quot;</span></span>);
+});
+</pre></div>
+</div>
+</div>
+
+<p>In forms with method “POST”, set a hidden field with name “_csrf”:</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>form(method=<span class="string"><span class="delimiter">&quot;</span><span class="content">post</span><span class="delimiter">&quot;</span></span>, action=<span class="string"><span class="delimiter">&quot;</span><span class="content">/csrf</span><span class="delimiter">&quot;</span></span>)
+  input(type=<span class="string"><span class="delimiter">&quot;</span><span class="content">hidden</span><span class="delimiter">&quot;</span></span>, name=<span class="string"><span class="delimiter">&quot;</span><span class="content">_csrf</span><span class="delimiter">&quot;</span></span>, value=<span class="string"><span class="delimiter">&quot;</span><span class="content">#{ csrfToken }</span><span class="delimiter">&quot;</span></span>)
+</pre></div>
+</div>
+</div>
+
+<p>Angularjs read cookie ‘XSRF-TOKEN’ and send it back in header. Extra works are needed for jQuery.</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>html
+  head
+    meta(name=<span class="string"><span class="delimiter">&quot;</span><span class="content">csrf-token</span><span class="delimiter">&quot;</span></span>, content=<span class="string"><span class="delimiter">&quot;</span><span class="content">#{ csrfToken }</span><span class="delimiter">&quot;</span></span>)
+
+    script.
+      <span class="predefined">$</span>(document).ready(<span class="keyword">function</span> (e) {
+        <span class="predefined">$</span>.ajaxPrefilter(<span class="keyword">function</span>(options, _, xhr) {
+          <span class="keyword">if</span> (!xhr.crossDomain) {
+            <span class="keyword">var</span> token = <span class="predefined">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">meta[name=&quot;csrf-token&quot;]</span><span class="delimiter">'</span></span>).attr(<span class="string"><span class="delimiter">'</span><span class="content">content</span><span class="delimiter">'</span></span>);
+
+            xhr.setRequestHeader(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-CSRF-Token</span><span class="delimiter">&quot;</span></span>, token);
+          }
+        });
+      });
+</pre></div>
+</div>
+</div>
+
+<p><strong>Note: Why setRequestHeader for jQuery</strong></p>
+
+<p>In most cases, setting _csrf in data field when post via ajax is enough. The problem surfaces when uploading files with “multipart/form-data”. If <a href="https://github.com/andrewrk/node-multiparty/">multiparty</a> is used to handling file uploading, csrf checking happens before form processing which fails every time, because bodyparser ignore multipart form.</p>
+
+<h1 id="expose-less-information-to-attackers">Expose Less Information to Attackers</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">var</span> app = express();
+
+<span class="comment">// Disable the useless header &quot;x-powered-by&quot; whose value is &quot;Express&quot;.</span>
+app.disable(<span class="string"><span class="delimiter">&quot;</span><span class="content">x-powered-by</span><span class="delimiter">&quot;</span></span>);
+
+<span class="comment">// The default session cookie key of express is &quot;connect.sid&quot;, change it.</span>
+<span class="comment">// Secure cookie send session via https only.</span>
+<span class="comment">// express session always set session a httponly cookie.</span>
+app.use(session({
+  <span class="key">secret</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">do not touch me</span><span class="delimiter">&quot;</span></span>,
+  <span class="key">key</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">session_id</span><span class="delimiter">&quot;</span></span>,
+  <span class="key">cookie</span>: {
+    <span class="key">secure</span>: <span class="predefined-constant">true</span>
+  }
+}));
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

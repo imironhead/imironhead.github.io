@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Conway's Game of Life on CodeSkulptor</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/2014/12/29/conways-game-of-life.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Conway's Game of Life on CodeSkulptor</h1>
+    <p class="post-meta">Dec 29, 2014</p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="http://www.codeskulptor.org/#user38_iF5tSbexuT1XG1M_5.py">CodeSkulptor</a></p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">import</span> <span class="include">simplegui</span>
+
+
+<span class="keyword">class</span> <span class="class">GameOfLife</span> :
+  <span class="keyword">def</span> <span class="function">__init__</span>(<span class="predefined-constant">self</span>, col_num, row_num, cell_size, line_size = <span class="integer">1</span>) :
+    <span class="predefined-constant">self</span>._col_num = col_num
+    <span class="predefined-constant">self</span>._row_num = row_num
+    <span class="predefined-constant">self</span>._cell_size = cell_size
+    <span class="predefined-constant">self</span>._line_size = line_size
+
+    <span class="predefined-constant">self</span>._cells = [[<span class="integer">0</span>] * col_num <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(row_num)]
+
+  <span class="keyword">def</span> <span class="function">get_width</span>(<span class="predefined-constant">self</span>) :
+    <span class="keyword">return</span> <span class="predefined-constant">self</span>._col_num * (<span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size) + <span class="predefined-constant">self</span>._line_size
+
+  <span class="keyword">def</span> <span class="function">get_height</span>(<span class="predefined-constant">self</span>) :
+    <span class="keyword">return</span> <span class="predefined-constant">self</span>._row_num * (<span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size) + <span class="predefined-constant">self</span>._line_size
+
+  <span class="keyword">def</span> <span class="function">get_color_of_cell</span>(<span class="predefined-constant">self</span>, x, y) :
+    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Black</span><span class="delimiter">&quot;</span></span> <span class="keyword">if</span> <span class="predefined-constant">self</span>._cells[y][x] == <span class="integer">0</span> <span class="keyword">else</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Lime</span><span class="delimiter">&quot;</span></span>
+
+  <span class="keyword">def</span> <span class="function">get_position_of_cell</span>(<span class="predefined-constant">self</span>, x, y) :
+    px = x * (<span class="predefined-constant">self</span>._line_size + <span class="predefined-constant">self</span>._cell_size) + <span class="predefined-constant">self</span>._line_size + <span class="integer">1</span>
+    py = y * (<span class="predefined-constant">self</span>._line_size + <span class="predefined-constant">self</span>._cell_size) + <span class="predefined-constant">self</span>._line_size + <span class="integer">1</span>
+    ww = <span class="predefined-constant">self</span>._cell_size - <span class="integer">2</span>
+
+    <span class="keyword">return</span> [(px, py),  (px + ww, py), (px + ww, py + ww), (px, py + ww)]
+
+  <span class="keyword">def</span> <span class="function">reset</span>(<span class="predefined-constant">self</span>) :
+    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
+      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
+        <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">0</span>
+
+  <span class="keyword">def</span> <span class="function">toggle_cell</span>(<span class="predefined-constant">self</span>, x, y) :
+    <span class="predefined-constant">self</span>._cells[y][x] = (<span class="integer">1</span> + <span class="predefined-constant">self</span>._cells[y][x]) % <span class="integer">2</span>
+
+  <span class="keyword">def</span> <span class="function">toggle_position</span>(<span class="predefined-constant">self</span>, position) :
+    s = <span class="predefined-constant">self</span>._line_size + <span class="predefined-constant">self</span>._cell_size
+    x = position[<span class="integer">0</span>] / s
+    y = position[<span class="integer">1</span>] / s
+
+    <span class="keyword">if</span> x &lt; <span class="predefined-constant">self</span>._col_num <span class="keyword">and</span> y &lt; <span class="predefined-constant">self</span>._row_num <span class="keyword">and</span> x &gt;= <span class="integer">0</span> <span class="keyword">and</span> y &gt;= <span class="integer">0</span> :
+      <span class="predefined-constant">self</span>.toggle_cell(x, y)
+
+  <span class="keyword">def</span> <span class="function">update</span>(<span class="predefined-constant">self</span>) :
+    temp = [[<span class="integer">0</span>] * <span class="predefined-constant">self</span>._col_num <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num)]
+
+    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
+      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
+        z  = <span class="predefined-constant">self</span>._cells[y - <span class="integer">1</span>][x - <span class="integer">1</span>]
+        z += <span class="predefined-constant">self</span>._cells[y - <span class="integer">1</span>][x]
+        z += <span class="predefined-constant">self</span>._cells[y][x - <span class="integer">1</span>]
+        z += <span class="predefined-constant">self</span>._cells[y][x]
+
+        xx = <span class="integer">0</span> <span class="keyword">if</span> x + <span class="integer">1</span> == <span class="predefined-constant">self</span>._col_num <span class="keyword">else</span> x + <span class="integer">1</span>
+        yy = <span class="integer">0</span> <span class="keyword">if</span> y + <span class="integer">1</span> == <span class="predefined-constant">self</span>._row_num <span class="keyword">else</span> y + <span class="integer">1</span>
+
+        z += <span class="predefined-constant">self</span>._cells[y - <span class="integer">1</span>][xx]
+        z += <span class="predefined-constant">self</span>._cells[y][xx]
+        z += <span class="predefined-constant">self</span>._cells[yy][x - <span class="integer">1</span>]
+        z += <span class="predefined-constant">self</span>._cells[yy][x]
+        z += <span class="predefined-constant">self</span>._cells[yy][xx]
+
+        temp[y][x] = z
+
+    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
+      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
+        z = temp[y][x]
+
+        <span class="keyword">if</span> <span class="predefined-constant">self</span>._cells[y][x] == <span class="integer">1</span> :
+          z -= <span class="integer">1</span>
+
+        <span class="keyword">if</span> z &lt; <span class="integer">2</span> :
+          <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">0</span>
+        <span class="keyword">elif</span> z &lt; <span class="integer">4</span> :
+          <span class="keyword">pass</span>
+        <span class="keyword">else</span> :
+          <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">0</span>
+        <span class="keyword">elif</span> z == <span class="integer">3</span> :
+          <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">1</span>
+
+  <span class="keyword">def</span> <span class="function">draw</span>(<span class="predefined-constant">self</span>, canvas) :
+    width = <span class="predefined-constant">self</span>.get_width()
+
+    y = <span class="predefined-constant">self</span>._line_size / <span class="integer">2</span>
+
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(<span class="integer">1</span> + <span class="predefined-constant">self</span>._row_num) :
+      canvas.draw_line((<span class="integer">0</span>, y), (width, y), <span class="predefined-constant">self</span>._line_size, <span class="string"><span class="delimiter">&quot;</span><span class="content">Teal</span><span class="delimiter">&quot;</span></span>)
+
+      y += <span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size
+
+    height = <span class="predefined-constant">self</span>.get_height()
+
+    x = <span class="predefined-constant">self</span>._line_size / <span class="integer">2</span>
+
+    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(<span class="integer">1</span> + <span class="predefined-constant">self</span>._col_num) :
+      canvas.draw_line((x, <span class="integer">0</span>), (x, height), <span class="predefined-constant">self</span>._line_size, <span class="string"><span class="delimiter">&quot;</span><span class="content">Teal</span><span class="delimiter">&quot;</span></span>)
+
+      x += <span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size
+
+    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
+      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
+        color = <span class="predefined-constant">self</span>.get_color_of_cell(x, y)
+
+        canvas.draw_polygon(<span class="predefined-constant">self</span>.get_position_of_cell(x, y), <span class="integer">2</span>, color, color)
+
+button_start = <span class="predefined-constant">None</span>
+button_clear = <span class="predefined-constant">None</span>
+running = <span class="predefined-constant">False</span>
+
+gol = GameOfLife(<span class="integer">20</span>, <span class="integer">20</span>, <span class="integer">38</span>, <span class="integer">2</span>)
+
+<span class="keyword">def</span> <span class="function">demo</span>(name) :
+  <span class="keyword">global</span> running
+
+  running = <span class="predefined-constant">True</span>
+
+  gol.reset()
+
+  button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pause</span><span class="delimiter">&quot;</span></span>)
+
+  patterns = {
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">toad</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">3</span>, <span class="integer">2</span>), (<span class="integer">4</span>, <span class="integer">2</span>), (<span class="integer">5</span>, <span class="integer">2</span>), (<span class="integer">2</span>, <span class="integer">3</span>), (<span class="integer">3</span>, <span class="integer">3</span>), (<span class="integer">4</span>, <span class="integer">3</span>)],
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">blinker</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">4</span>, <span class="integer">3</span>), (<span class="integer">4</span>, <span class="integer">4</span>), (<span class="integer">4</span>, <span class="integer">5</span>)],
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">beacon</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">1</span>, <span class="integer">1</span>), (<span class="integer">2</span>, <span class="integer">1</span>), (<span class="integer">1</span>, <span class="integer">2</span>), (<span class="integer">4</span>, <span class="integer">4</span>), (<span class="integer">4</span>, <span class="integer">3</span>), (<span class="integer">3</span>, <span class="integer">4</span>)],
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">pulsar</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">4</span>, <span class="integer">2</span>), (<span class="integer">5</span>, <span class="integer">2</span>), (<span class="integer">6</span>, <span class="integer">2</span>), (<span class="integer">10</span>, <span class="integer">2</span>), (<span class="integer">11</span>, <span class="integer">2</span>), (<span class="integer">12</span>, <span class="integer">2</span>), \
+    (<span class="integer">2</span>, <span class="integer">4</span>), (<span class="integer">2</span>, <span class="integer">5</span>), (<span class="integer">2</span>, <span class="integer">6</span>), (<span class="integer">7</span>, <span class="integer">4</span>), (<span class="integer">7</span>, <span class="integer">5</span>), (<span class="integer">7</span>, <span class="integer">6</span>), \
+    (<span class="integer">9</span>, <span class="integer">4</span>), (<span class="integer">9</span>, <span class="integer">5</span>), (<span class="integer">9</span>, <span class="integer">6</span>), (<span class="integer">14</span>, <span class="integer">4</span>), (<span class="integer">14</span>, <span class="integer">5</span>), (<span class="integer">14</span>, <span class="integer">6</span>), \
+    (<span class="integer">4</span>, <span class="integer">7</span>), (<span class="integer">5</span>, <span class="integer">7</span>), (<span class="integer">6</span>, <span class="integer">7</span>), (<span class="integer">10</span>, <span class="integer">7</span>), (<span class="integer">11</span>, <span class="integer">7</span>), (<span class="integer">12</span>, <span class="integer">7</span>), \
+    (<span class="integer">4</span>, <span class="integer">9</span>), (<span class="integer">5</span>, <span class="integer">9</span>), (<span class="integer">6</span>, <span class="integer">9</span>), (<span class="integer">10</span>, <span class="integer">9</span>), (<span class="integer">11</span>, <span class="integer">9</span>), (<span class="integer">12</span>, <span class="integer">9</span>), \
+    (<span class="integer">2</span>, <span class="integer">10</span>), (<span class="integer">2</span>, <span class="integer">11</span>), (<span class="integer">2</span>, <span class="integer">12</span>), (<span class="integer">7</span>, <span class="integer">10</span>), (<span class="integer">7</span>, <span class="integer">11</span>), (<span class="integer">7</span>, <span class="integer">12</span>), \
+    (<span class="integer">9</span>, <span class="integer">10</span>), (<span class="integer">9</span>, <span class="integer">11</span>), (<span class="integer">9</span>, <span class="integer">12</span>), (<span class="integer">14</span>, <span class="integer">10</span>), (<span class="integer">14</span>, <span class="integer">11</span>), (<span class="integer">14</span>, <span class="integer">12</span>), \
+    (<span class="integer">4</span>, <span class="integer">14</span>), (<span class="integer">5</span>, <span class="integer">14</span>), (<span class="integer">6</span>, <span class="integer">14</span>), (<span class="integer">10</span>, <span class="integer">14</span>), (<span class="integer">11</span>, <span class="integer">14</span>), (<span class="integer">12</span>, <span class="integer">14</span>)],
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">glider</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">5</span>, <span class="integer">5</span>), (<span class="integer">6</span>, <span class="integer">6</span>), (<span class="integer">6</span>, <span class="integer">7</span>), (<span class="integer">5</span>, <span class="integer">7</span>), (<span class="integer">4</span>, <span class="integer">7</span>)],
+    <span class="string"><span class="delimiter">&quot;</span><span class="content">lwss</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">2</span>, <span class="integer">2</span>), (<span class="integer">2</span>, <span class="integer">4</span>), (<span class="integer">5</span>, <span class="integer">2</span>), (<span class="integer">6</span>, <span class="integer">3</span>), (<span class="integer">6</span>, <span class="integer">4</span>), (<span class="integer">6</span>, <span class="integer">5</span>), (<span class="integer">3</span>, <span class="integer">5</span>), (<span class="integer">4</span>, <span class="integer">5</span>), (<span class="integer">5</span>, <span class="integer">5</span>)]
+  }
+
+  <span class="predefined">map</span>(<span class="keyword">lambda</span> x : gol.toggle_cell(x[<span class="integer">0</span>], x[<span class="integer">1</span>]), patterns[name])
+
+<span class="keyword">def</span> <span class="function">on_mouse_clicked</span>(position) :
+  <span class="keyword">if</span> <span class="keyword">not</span> running :
+    gol.toggle_position(position)
+
+<span class="keyword">def</span> <span class="function">on_demo_toad</span>() :
+  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">toad</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> <span class="function">on_demo_blinker</span>() :
+  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">blinker</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> <span class="function">on_demo_beacon</span>() :
+  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">beacon</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> <span class="function">on_demo_pulsar</span>() :
+  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">pulsar</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> <span class="function">on_demo_glider</span>() :
+  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">glider</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> <span class="function">on_demo_lwss</span>() :
+  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">lwss</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> <span class="function">on_start</span>() :
+  <span class="keyword">global</span> running
+
+  running = <span class="keyword">not</span> running
+
+  <span class="keyword">if</span> running :
+    button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pause</span><span class="delimiter">&quot;</span></span>)
+  <span class="keyword">else</span> :
+    button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Start</span><span class="delimiter">&quot;</span></span>)
+
+<span class="keyword">def</span> <span class="function">on_clear</span>() :
+  <span class="keyword">global</span> running
+
+  running = <span class="predefined-constant">False</span>
+
+  button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Start</span><span class="delimiter">&quot;</span></span>)
+
+  gol.reset()
+
+<span class="keyword">def</span> <span class="function">update_game_of_life</span>() :
+  <span class="keyword">if</span> running :
+    gol.update()
+
+<span class="keyword">def</span> <span class="function">on_draw</span>(canvas) :
+  gol.draw(canvas)
+
+<span class="comment"># Create a frame and assign callbacks to event handlers</span>
+frame = simplegui.create_frame(<span class="string"><span class="delimiter">&quot;</span><span class="content">Game of Life</span><span class="delimiter">&quot;</span></span>, gol.get_width(), gol.get_height())
+
+frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Toad</span><span class="delimiter">'</span></span>, on_demo_toad)
+frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Blinker</span><span class="delimiter">'</span></span>, on_demo_blinker)
+frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Beacon</span><span class="delimiter">'</span></span>, on_demo_beacon)
+frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Pulsar</span><span class="delimiter">'</span></span>, on_demo_pulsar)
+frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Glider</span><span class="delimiter">'</span></span>, on_demo_glider)
+frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo LWSS</span><span class="delimiter">'</span></span>, on_demo_lwss)
+
+button_start = frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Start</span><span class="delimiter">'</span></span>, on_start)
+button_clear = frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Clear</span><span class="delimiter">'</span></span>, on_clear)
+
+frame.set_mouseclick_handler(on_mouse_clicked)
+frame.set_draw_handler(on_draw)
+frame.start()
+
+<span class="comment"># timer to update</span>
+timer = simplegui.create_timer(<span class="integer">500</span>, update_game_of_life)
+timer.start()
+
+on_demo_toad()
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

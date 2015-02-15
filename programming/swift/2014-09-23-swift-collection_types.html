@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>swift 筆記 - Collection Types</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/programming/swift/2014-09-23-swift-collection_types.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">swift 筆記 - Collection Types</h1>
+    <p class="post-meta"></p>
+  </header>
+
+  <article class="post-content">
+    <p>用中文記的難度真高，只希望能記完整份 Language Guide，並對英文苦手有些幫助。</p>
+
+<ul>
+  <li>有 array 跟 dictionary。</li>
+  <li>儲存的變數型別是固定的，不能把 Int 塞進 String 的 Array 裡。</li>
+  <li>mutability（可不可改變內容）取決於是 let 或 var。</li>
+</ul>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>// 型別是 Array&lt;SomeType&gt;，等同於 [SomeType]
+// 可以用 [obj0， obj1， obj2] 的 literal 初始化。
+// 也可以寫成 var shoppingList = [&quot;Eggs&quot;, &quot;Milk&quot;]
+// var shoppingList = [String]() 則產生一個空的 array
+var shoppingList: [String] = [&quot;Eggs&quot;, &quot;Milk&quot;]
+
+// shoppingList.count，長度，內含物件數量
+println(&quot;The shopping list contains \(shoppingList.count) items.&quot;)
+
+// isEmpty，這個 array 是不是空的
+if shoppingList.isEmpty {
+  println(&quot;The shopping list is empty.&quot;)
+}
+
+// 新增物件到 array 的末端
+shoppingList.append(&quot;Flour&quot;)
+shoppingList += [&quot;Baking Powder&quot;]
+shoppingList += [&quot;Chocolate Spread&quot;, &quot;Cheese&quot;, &quot;Butter&quot;]
+
+// 把 &quot;Chocolate Spread&quot;, &quot;Cheese&quot;, &quot;Butter&quot; 換成 &quot;Bananas&quot;, &quot;Apples&quot;
+// 不需要一樣長
+shoppingList[4...6] = [&quot;Bananas&quot;, &quot;Apples&quot;]
+
+// 增加一比新的資料到 index 的位置去，
+// index及index以後的所有資料的位置都 +1
+// 現在變成 [
+//   &quot;Maple Syrup&quot;, &quot;Eggs&quot;, &quot;Milk&quot;, &quot;Flour&quot;,
+//   &quot;Baking Powder&quot;, &quot;Bananas&quot;, &quot;Apples&quot;]
+shoppingList.insert(&quot;Maple Syrup&quot;, atIndex: 0)
+
+// shoppingList =&gt; [
+//   &quot;Eggs&quot;, &quot;Milk&quot;, &quot;Flour&quot;, &quot;Baking Powder&quot;, &quot;Bananas&quot;, &quot;Apples&quot;]
+// mapleSyrup =&gt; &quot;Maple Syrup&quot;
+let mapleSyrup = shoppingList.removeAtIndex(0)
+
+// 移除並傳回最後一筆資料
+// shoppingList不能是空的
+// 優點：不需要取得 array 目前的長度 =&gt; removeAtIndex(length - 1)
+let apples = shoppingList.removeLast()
+
+// for in
+for item in shoppingList {
+    println(item)
+}
+
+// for in
+for (index, value) in enumerate(shoppingList) {
+    println(&quot;Item \(index + 1): \(value)&quot;)
+}
+
+// 讓 shoppingList 變成空的 array，shoppingList 是 [String]，所以可以直接給予 []
+shoppingList = []
+
+// [0.0, 0.0, 0.0]
+var threeDoubles = [Double](count: 3, repeatedValue: 0.0)
+</pre></div>
+</div>
+</div>
+
+<p>字典</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>// 一個 key 跟 value 都是 String 的 dictionary
+// 也可不寫出 type，只要 literal 有明確的 type
+// var airports = [&quot;TYO&quot;: &quot;Tokyo&quot;, &quot;DUB&quot;: &quot;Dublin&quot;]
+var airports: [String: String] = [&quot;TYO&quot;: &quot;Tokyo&quot;, &quot;DUB&quot;: &quot;Dublin&quot;]
+
+println(&quot;The airports dictionary contains \(airports.count) items.&quot;)
+
+if airports.isEmpty {
+  println(&quot;The airports dictionary is empty.&quot;)
+} else {
+  println(&quot;The airports dictionary is not empty.&quot;)
+}
+
+// updateValue 傳回舊的 value 的 optional
+if let oldValue = airports.updateValue(&quot;Dublin International&quot;, forKey: &quot;DUB&quot;) {
+  println(&quot;The old value for DUB was \(oldValue).&quot;)
+}
+
+// airports[&quot;DUB&quot;]傳回一個 optional，因為 key &quot;DUB&quot; 可能不存在
+if let airportName = airports[&quot;DUB&quot;] {
+  println(&quot;The name of the airport is \(airportName).&quot;)
+} else {
+  println(&quot;That airport is not in the airports dictionary.&quot;)
+}
+
+// 移除
+airports[&quot;APL&quot;] = &quot;Apple International&quot;
+airports[&quot;APL&quot;] = nil
+
+// 如果 airports 裡有 &quot;DUB&quot;，回傳 value 的 optional，移除 &quot;DUB&quot;
+if let removedValue = airports.removeValueForKey(&quot;DUB&quot;) {
+  println(&quot;The removed airport's name is \(removedValue).&quot;)
+} else {
+  println(&quot;The airports dictionary does not contain a value for DUB.&quot;)
+}
+
+// for in
+for (airportCode, airportName) in airports {
+  println(&quot;\(airportCode): \(airportName)&quot;)
+}
+
+for airportCode in airports.keys {
+  println(&quot;Airport code: \(airportCode)&quot;)
+}
+
+for airportName in airports.values {
+  println(&quot;Airport name: \(airportName)&quot;)
+}
+
+// Hashable protocol
+// 新的 type 需要 hashValue 及 == 才能當作 key
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

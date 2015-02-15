@@ -1,0 +1,1707 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>iRonhead</title>
+    <description>wait.
+</description>
+    <link>http://ironhead.bitbucket.com/</link>
+    <atom:link href="http://ironhead.bitbucket.com/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sun, 15 Feb 2015 17:20:29 +0800</pubDate>
+    <lastBuildDate>Sun, 15 Feb 2015 17:20:29 +0800</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>CSRF of WebApp Frameworks</title>
+        <description>&lt;h1 id=&quot;csrf-protection-in-rails-4-2-stable&quot;&gt;CSRF Protection in Rails (4-2-stable)&lt;/h1&gt;
+
+&lt;h2 id=&quot;generate&quot;&gt;Generate&lt;/h2&gt;
+&lt;p&gt;In rails, we can find a csrf token in the head of html or a hidden input of forms:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;tag&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;tag&quot;&gt;&amp;lt;meta&lt;/span&gt; &lt;span class=&quot;attribute-name&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+          &lt;span class=&quot;attribute-name&quot;&gt;content&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;V6CZMZGA+lnkmonZbw74c81KAGjBAlK6Jk1UEbQkW95zjIMxU/G5ixcbokIG5GIzlG2gwtag4la/eLoTXT6/Dw==&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;tag&quot;&gt;/&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;tag&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;tag&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;tag&quot;&gt;&amp;lt;form&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;tag&quot;&gt;&amp;lt;input&lt;/span&gt; &lt;span class=&quot;attribute-name&quot;&gt;type&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;hidden&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+             &lt;span class=&quot;attribute-name&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;authenticity_token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+             &lt;span class=&quot;attribute-name&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;OFkGlN+ho64ffPlNEJ7P01VPO+dC7yQ96rl13pKNV8McdRyUHdDgfOz90tZ5dFWTDGibTVVNlNFzjJvce5ezEg==&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;tag&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;tag&quot;&gt;&amp;lt;/form&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;tag&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;tag&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Those tokens are generated in &lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionpack/lib/action_controller/metal/request_forgery_protection.rb&quot;&gt;ActionController&lt;/a&gt;
+and not predictable (that’s what we need for csrf protection).
+In &lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionview/lib/action_view/helpers/csrf_helper.rb&quot;&gt;ActionView module&lt;/a&gt; we can find how csrf meta tags are generated:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;csrf_meta_tags&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; protect_against_forgery?
+    [
+      tag(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;meta&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:name&lt;/span&gt; =&amp;gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-param&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:content&lt;/span&gt; =&amp;gt; request_forgery_protection_token),
+      tag(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;meta&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:name&lt;/span&gt; =&amp;gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:content&lt;/span&gt; =&amp;gt; form_authenticity_token)
+    ].join(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;char&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;).html_safe
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The methods &lt;strong&gt;form_authenticity_token&lt;/strong&gt; is in &lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionpack/lib/action_controller/metal/request_forgery_protection.rb&quot;&gt;ActionController&lt;/a&gt; :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;32&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;form_authenticity_token&lt;/span&gt;
+  masked_authenticity_token(session)
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;masked_authenticity_token&lt;/span&gt;(session)
+  one_time_pad = &lt;span class=&quot;constant&quot;&gt;SecureRandom&lt;/span&gt;.random_bytes(&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;)
+  encrypted_csrf_token = xor_byte_strings(one_time_pad, real_csrf_token(session))
+  masked_token = one_time_pad + encrypted_csrf_token
+  &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_encode64(masked_token)
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;valid_authenticity_token?&lt;/span&gt;(session, encoded_masked_token)
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; encoded_masked_token.nil? || encoded_masked_token.empty?
+
+  &lt;span class=&quot;keyword&quot;&gt;begin&lt;/span&gt;
+    masked_token = &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_decode64(encoded_masked_token)
+  &lt;span class=&quot;keyword&quot;&gt;rescue&lt;/span&gt; &lt;span class=&quot;constant&quot;&gt;ArgumentError&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;# encoded_masked_token is invalid Base64&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# See if it&#39;s actually a masked token or not. In order to&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# deploy this code, we should be able to handle any unmasked&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# tokens that we&#39;ve issued without error.&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; masked_token.length == &lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;
+    &lt;span class=&quot;comment&quot;&gt;# This is actually an unmasked token. This is expected if&lt;/span&gt;
+    &lt;span class=&quot;comment&quot;&gt;# you have just upgraded to masked tokens, but should stop&lt;/span&gt;
+    &lt;span class=&quot;comment&quot;&gt;# happening shortly after installing this gem&lt;/span&gt;
+    compare_with_real_token masked_token, session
+
+  &lt;span class=&quot;keyword&quot;&gt;elsif&lt;/span&gt; masked_token.length == &lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt; * &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+    &lt;span class=&quot;comment&quot;&gt;# Split the token into the one-time pad and the encrypted&lt;/span&gt;
+    &lt;span class=&quot;comment&quot;&gt;# value and decrypt it&lt;/span&gt;
+    one_time_pad = masked_token[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;]
+    encrypted_csrf_token = masked_token[&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;..&lt;span class=&quot;integer&quot;&gt;-1&lt;/span&gt;]
+    csrf_token = xor_byte_strings(one_time_pad, encrypted_csrf_token)
+
+    compare_with_real_token csrf_token, session
+
+  &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;# Token is malformed&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;real_csrf_token&lt;/span&gt;(session)
+  session[&lt;span class=&quot;symbol&quot;&gt;:_csrf_token&lt;/span&gt;] ||= &lt;span class=&quot;constant&quot;&gt;SecureRandom&lt;/span&gt;.base64(&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;)
+  &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_decode64(session[&lt;span class=&quot;symbol&quot;&gt;:_csrf_token&lt;/span&gt;])
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In brief, a token is generated by this steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;For each session, a random 32 bytes long token in base 64 is generated (44 long).&lt;/li&gt;
+  &lt;li&gt;Decode this token with base64 (to 32 bytes binary token).&lt;/li&gt;
+  &lt;li&gt;Everytime when we need a form authenticity token, a 32 bytes one time pad is generated.&lt;/li&gt;
+  &lt;li&gt;XOR one time pad and csrf token to encrypted_csrf_token.&lt;/li&gt;
+  &lt;li&gt;Concatenate csrf token and encrypted_csrf_token (32 + 32 = 64 bytes).&lt;/li&gt;
+  &lt;li&gt;Encode the result in base64 give us the final csrf token (64 * (4/3) = 88 bytes).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;code-tracing-verification&quot;&gt;Code tracing verification&lt;/h2&gt;
+
+&lt;p&gt;Now open a rails site in browser and find the csrf token, refresh the page to get 2 different tokens.
+In rails console def a decode method and pass those tokens to see the result. The result should be the same.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;# extract from valid_authenticity_token?&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;decode&lt;/span&gt;(token)
+  token = &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_decode64 token
+  t1 = token[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...&lt;span class=&quot;integer&quot;&gt;32&lt;/span&gt;]
+  t2 = token[&lt;span class=&quot;integer&quot;&gt;32&lt;/span&gt;..&lt;span class=&quot;integer&quot;&gt;-1&lt;/span&gt;]
+  t1.bytes.zip(t2.bytes).map { |(c1,c2)| c1 ^ c2 }.pack(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;c*&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Then re-launch the browser and decode another token, the result should be changed (bound to session!).&lt;/p&gt;
+
+&lt;h1 id=&quot;csrf-protection-in-nodejs&quot;&gt;CSRF Protection in Nodejs&lt;/h1&gt;
+
+&lt;p&gt;In &lt;a href=&quot;https://github.com/expressjs/csurf/blob/master/index.js&quot;&gt;CSURF middleware&lt;/a&gt;, a secret is generated
+using secretSync method of &lt;a href=&quot;https://github.com/pillarjs/csrf/blob/master/index.js&quot;&gt;csrf module&lt;/a&gt; which return
+pseudo random bytes.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;// generate &amp;amp; set new secret&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (sec === &lt;span class=&quot;predefined-constant&quot;&gt;undefined&lt;/span&gt;) {
+  sec = tokens.secretSync()
+  setsecret(req, res, sec, cookie)
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Then in &lt;a href=&quot;https://github.com/pillarjs/csrf/blob/master/index.js&quot;&gt;csrf module&lt;/a&gt;, use tokenize method to generate
+the final token:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;csrfTokens.&lt;span class=&quot;function&quot;&gt;tokenize&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;tokenize&lt;/span&gt;(secret, salt) {
+  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; hash = escape(crypto
+    .createHash(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;sha1&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+    .update(salt)
+    .update(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+    .update(secret)
+    .digest(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;base64&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;))
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; salt + &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt; + hash
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;To verify the token, re-generate the token with salt and secret and compare the result. As in the
+tokenize method, salt is in the beginning of the final token and hash is generated base on salt and
+the pseudo randome secret.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;function&quot;&gt;verify&lt;/span&gt;: &lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;verify&lt;/span&gt;(secret, token) {
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!secret || &lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; secret !== &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;) {
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+  }
+
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!token || &lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; token !== &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;) {
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+  }
+
+  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; index = token.indexOf(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (index === -&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;) {
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+  }
+
+  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; salt = token.substr(&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;, index)
+  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; expected = tokenize(secret, salt)
+
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; scmp(token, expected)
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;code-tracing-verification-1&quot;&gt;Code tracing verification&lt;/h2&gt;
+
+&lt;p&gt;Can not verify if we don’t known the secret.&lt;/p&gt;
+
+&lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionpack/lib/action_controller/metal/request_forgery_protection.rb&quot;&gt;Rails ActionController&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/pillarjs/csrf/blob/master/index.js&quot;&gt;Nodejs CSRF&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/expressjs/csurf/blob/master/index.js&quot;&gt;Nodejs CSURF&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 31 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2015/01/31/webapp-csrf.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2015/01/31/webapp-csrf.html</guid>
+        
+        <category>nodejs</category>
+        
+        <category>rails</category>
+        
+        <category>programming</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Fibonacci in Go</title>
+        <description>&lt;p&gt;Implement fibonacci to evaluate golang.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;package&lt;/span&gt; main
+
+&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; (
+  &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;math/big&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+)
+
+
+&lt;span class=&quot;keyword&quot;&gt;type&lt;/span&gt; M2 &lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; {
+  e00, e01, e10, e11 big.Int
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; NewM2(e00, e01, e10, e11 &lt;span class=&quot;predefined-type&quot;&gt;int64&lt;/span&gt;) *M2 {
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;M2 {
+    *big.NewInt(e00),
+    *big.NewInt(e01),
+    *big.NewInt(e10),
+    *big.NewInt(e11) }
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; (m *M2) String() &lt;span class=&quot;predefined-type&quot;&gt;string&lt;/span&gt; {
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; fmt.Sprintf(
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;[[ %v, %v ], [ %v, %v ]]&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &amp;amp;m.e00, &amp;amp;m.e01, &amp;amp;m.e10, &amp;amp;m.e11)
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Add(m, n *M2) *M2 {
+  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; r M2
+
+  (&amp;amp;r.e00).Add(&amp;amp;m.e00, &amp;amp;n.e00)
+  (&amp;amp;r.e01).Add(&amp;amp;m.e01, &amp;amp;n.e01)
+  (&amp;amp;r.e10).Add(&amp;amp;m.e10, &amp;amp;n.e10)
+  (&amp;amp;r.e11).Add(&amp;amp;m.e11, &amp;amp;n.e11)
+
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;r
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Mul(m, n *M2) *M2 {
+  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; r M2
+
+  (&amp;amp;r.e00).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e00, &amp;amp;n.e00),
+               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e01, &amp;amp;n.e10))
+  (&amp;amp;r.e01).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e00, &amp;amp;n.e01),
+               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e01, &amp;amp;n.e11))
+  (&amp;amp;r.e10).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e10, &amp;amp;n.e00),
+               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e11, &amp;amp;n.e10))
+  (&amp;amp;r.e11).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e10, &amp;amp;n.e01),
+               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e11, &amp;amp;n.e11))
+
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;r
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; IsOdd(i *big.Int) &lt;span class=&quot;predefined-type&quot;&gt;bool&lt;/span&gt; {
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; == &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mod(i, big.NewInt(&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;)).Cmp(big.NewInt(&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;))
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Pow(m *M2, p *big.Int) *M2 {
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; p.Cmp(big.NewInt(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; {
+    &lt;span class=&quot;comment&quot;&gt;// should ???&lt;/span&gt;
+    t := *m
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;t
+  } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
+    t := Pow(m, &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Div(p, big.NewInt(&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;)))
+
+    t = Mul(t, t)
+
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; IsOdd(p) {
+      t = Mul(t, m)
+    }
+
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; t
+  }
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Fib(i *big.Int) *big.Int {
+  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;Pow(NewM2(&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;), i).e10
+}
+
+&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; main() {
+  fmt.Println(Fib(big.NewInt(&lt;span class=&quot;integer&quot;&gt;1000&lt;/span&gt;)))
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 26 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2015/01/26/fibonacci-in-golang.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2015/01/26/fibonacci-in-golang.html</guid>
+        
+        <category>golang</category>
+        
+        <category>programming</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Sketch: Another Long Hair Girl</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/assets/images/sketch-0001.jpg&quot; alt=&quot;Another Long Hair Girl&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 17 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2015/01/17/sketch.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2015/01/17/sketch.html</guid>
+        
+        <category>sketch</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Node.js Security Note</title>
+        <description>&lt;h1 id=&quot;dependency&quot;&gt;Dependency&lt;/h1&gt;
+
+&lt;p&gt;The version of express is 4.10.6. When this note was made, I still found many code samples for express 3. So I guess this note would also to be deprecated soon.&lt;/p&gt;
+
+&lt;h1 id=&quot;reference&quot;&gt;Reference&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://cdn.oreillystatic.com/en/assets/1/event/106/Top%20Overlooked%20Security%20Threats%20To%20Node_js%20Web%20Applications%20Presentation%201.pdf&quot;&gt;Top Overlooked Security Threats To Node.js Web Applications&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;csrf&quot;&gt;CSRF&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/expressjs/csurf&quot;&gt;csurf: Node.js CSRF protection middleware&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;// dependency&lt;/span&gt;
+{
+  &lt;span class=&quot;key&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;dependencies&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;: {
+    &lt;span class=&quot;key&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csurf&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;^1.6.5&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  }
+}
+
+&lt;span class=&quot;comment&quot;&gt;// routes&lt;/span&gt;
+app.use(csrf());
+app.use(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(req, res, next) {
+  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; token = req.csrfToken();
+
+  &lt;span class=&quot;comment&quot;&gt;// for jade&lt;/span&gt;
+  res.locals.csrfToken = token;
+  &lt;span class=&quot;comment&quot;&gt;// for Angularjs&lt;/span&gt;
+  res.cookie(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;XSRF-TOKEN&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, token);
+
+  next();
+});
+app.use(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(err, req, res, next) {
+  &lt;span class=&quot;comment&quot;&gt;// called if there are errors.&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (err.code !== &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;EBADCSRFTOKEN&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) {
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; next(err);
+  }
+
+  &lt;span class=&quot;comment&quot;&gt;// handle CSRF token errors here&lt;/span&gt;
+  res.status(&lt;span class=&quot;integer&quot;&gt;403&lt;/span&gt;);
+  res.send(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;leave me alone~~&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;);
+
+  console.log(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;bad csrf token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;);
+});
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In forms with method “POST”, set a hidden field with name “_csrf”:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;form(method=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, action=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;/csrf&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+  input(type=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;hidden&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, name=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;_csrf&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, value=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;#{ csrfToken }&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Angularjs read cookie ‘XSRF-TOKEN’ and send it back in header. Extra works are needed for jQuery.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;html
+  head
+    meta(name=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, content=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;#{ csrfToken }&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+    script.
+      &lt;span class=&quot;predefined&quot;&gt;$&lt;/span&gt;(document).ready(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; (e) {
+        &lt;span class=&quot;predefined&quot;&gt;$&lt;/span&gt;.ajaxPrefilter(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(options, _, xhr) {
+          &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!xhr.crossDomain) {
+            &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; token = &lt;span class=&quot;predefined&quot;&gt;$&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;meta[name=&amp;quot;csrf-token&amp;quot;]&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;).attr(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;);
+
+            xhr.setRequestHeader(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;X-CSRF-Token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, token);
+          }
+        });
+      });
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Note: Why setRequestHeader for jQuery&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In most cases, setting _csrf in data field when post via ajax is enough. The problem surfaces when uploading files with “multipart/form-data”. If &lt;a href=&quot;https://github.com/andrewrk/node-multiparty/&quot;&gt;multiparty&lt;/a&gt; is used to handling file uploading, csrf checking happens before form processing which fails every time, because bodyparser ignore multipart form.&lt;/p&gt;
+
+&lt;h1 id=&quot;expose-less-information-to-attackers&quot;&gt;Expose Less Information to Attackers&lt;/h1&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; app = express();
+
+&lt;span class=&quot;comment&quot;&gt;// Disable the useless header &amp;quot;x-powered-by&amp;quot; whose value is &amp;quot;Express&amp;quot;.&lt;/span&gt;
+app.disable(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;x-powered-by&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;);
+
+&lt;span class=&quot;comment&quot;&gt;// The default session cookie key of express is &amp;quot;connect.sid&amp;quot;, change it.&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;// Secure cookie send session via https only.&lt;/span&gt;
+&lt;span class=&quot;comment&quot;&gt;// express session always set session a httponly cookie.&lt;/span&gt;
+app.use(session({
+  &lt;span class=&quot;key&quot;&gt;secret&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;do not touch me&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;,
+  &lt;span class=&quot;key&quot;&gt;key&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;session_id&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;,
+  &lt;span class=&quot;key&quot;&gt;cookie&lt;/span&gt;: {
+    &lt;span class=&quot;key&quot;&gt;secure&lt;/span&gt;: &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;
+  }
+}));
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sat, 17 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2015/01/17/nodejs-security-note.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2015/01/17/nodejs-security-note.html</guid>
+        
+        <category>nodejs</category>
+        
+        <category>programming</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Conway&#39;s Game of Life on CodeSkulptor</title>
+        <description>&lt;p&gt;&lt;a href=&quot;http://www.codeskulptor.org/#user38_iF5tSbexuT1XG1M_5.py&quot;&gt;CodeSkulptor&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;simplegui&lt;/span&gt;
+
+
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;GameOfLife&lt;/span&gt; :
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, col_num, row_num, cell_size, line_size = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;) :
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num = col_num
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num = row_num
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size = cell_size
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size = line_size
+
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells = [[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] * col_num &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(row_num)]
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_width&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_height&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_color_of_cell&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, x, y) :
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Black&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Lime&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_position_of_cell&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, x, y) :
+    px = x * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+    py = y * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+    ww = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size - &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; [(px, py),  (px + ww, py), (px + ww, py + ww), (px, py + ww)]
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;reset&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
+      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
+        &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;toggle_cell&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, x, y) :
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = (&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x]) % &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;toggle_position&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, position) :
+    s = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size
+    x = position[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] / s
+    y = position[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;] / s
+
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; x &amp;lt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; y &amp;lt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; x &amp;gt;= &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; y &amp;gt;= &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; :
+      &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.toggle_cell(x, y)
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;update&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
+    temp = [[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] * &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num)]
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
+      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
+        z  = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;][x - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;][x]
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x]
+
+        xx = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; x + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; == &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; x + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+        yy = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; y + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; == &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; y + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;][xx]
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][xx]
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[yy][x - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[yy][x]
+        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[yy][xx]
+
+        temp[y][x] = z
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
+      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
+        z = temp[y][x]
+
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] == &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; :
+          z -= &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; z &amp;lt; &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; :
+          &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; z &amp;lt; &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt; :
+          &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; :
+          &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; z == &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt; :
+          &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;draw&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, canvas) :
+    width = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_width()
+
+    y = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size / &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
+      canvas.draw_line((&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;, y), (width, y), &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Teal&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+      y += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+
+    height = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_height()
+
+    x = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size / &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
+      canvas.draw_line((x, &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;), (x, height), &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Teal&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+      x += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
+      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
+        color = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_color_of_cell(x, y)
+
+        canvas.draw_polygon(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_position_of_cell(x, y), &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, color, color)
+
+button_start = &lt;span class=&quot;predefined-constant&quot;&gt;None&lt;/span&gt;
+button_clear = &lt;span class=&quot;predefined-constant&quot;&gt;None&lt;/span&gt;
+running = &lt;span class=&quot;predefined-constant&quot;&gt;False&lt;/span&gt;
+
+gol = GameOfLife(&lt;span class=&quot;integer&quot;&gt;20&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;20&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;38&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;demo&lt;/span&gt;(name) :
+  &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; running
+
+  running = &lt;span class=&quot;predefined-constant&quot;&gt;True&lt;/span&gt;
+
+  gol.reset()
+
+  button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Pause&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+  patterns = {
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;toad&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;)],
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;blinker&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;)],
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;beacon&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;)],
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;pulsar&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), \
+    (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), \
+    (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), \
+    (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), \
+    (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), \
+    (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), \
+    (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), \
+    (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;)],
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;glider&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;)],
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;lwss&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;)]
+  }
+
+  &lt;span class=&quot;predefined&quot;&gt;map&lt;/span&gt;(&lt;span class=&quot;keyword&quot;&gt;lambda&lt;/span&gt; x : gol.toggle_cell(x[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;], x[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]), patterns[name])
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_mouse_clicked&lt;/span&gt;(position) :
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; running :
+    gol.toggle_position(position)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_toad&lt;/span&gt;() :
+  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;toad&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_blinker&lt;/span&gt;() :
+  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;blinker&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_beacon&lt;/span&gt;() :
+  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;beacon&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_pulsar&lt;/span&gt;() :
+  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;pulsar&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_glider&lt;/span&gt;() :
+  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;glider&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_lwss&lt;/span&gt;() :
+  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;lwss&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_start&lt;/span&gt;() :
+  &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; running
+
+  running = &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; running
+
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; running :
+    button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Pause&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+  &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; :
+    button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_clear&lt;/span&gt;() :
+  &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; running
+
+  running = &lt;span class=&quot;predefined-constant&quot;&gt;False&lt;/span&gt;
+
+  button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+
+  gol.reset()
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;update_game_of_life&lt;/span&gt;() :
+  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; running :
+    gol.update()
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_draw&lt;/span&gt;(canvas) :
+  gol.draw(canvas)
+
+&lt;span class=&quot;comment&quot;&gt;# Create a frame and assign callbacks to event handlers&lt;/span&gt;
+frame = simplegui.create_frame(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Game of Life&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, gol.get_width(), gol.get_height())
+
+frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Toad&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_toad)
+frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Blinker&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_blinker)
+frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Beacon&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_beacon)
+frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Pulsar&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_pulsar)
+frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Glider&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_glider)
+frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo LWSS&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_lwss)
+
+button_start = frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_start)
+button_clear = frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Clear&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_clear)
+
+frame.set_mouseclick_handler(on_mouse_clicked)
+frame.set_draw_handler(on_draw)
+frame.start()
+
+&lt;span class=&quot;comment&quot;&gt;# timer to update&lt;/span&gt;
+timer = simplegui.create_timer(&lt;span class=&quot;integer&quot;&gt;500&lt;/span&gt;, update_game_of_life)
+timer.start()
+
+on_demo_toad()
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 29 Dec 2014 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2014/12/29/conways-game-of-life.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/12/29/conways-game-of-life.html</guid>
+        
+        <category>python</category>
+        
+        <category>programming</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Sketch: Long Hair Girl</title>
+        <description>&lt;p&gt;&lt;img src=&quot;/assets/images/sketch-0000.jpg&quot; alt=&quot;Long Hair Girl&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 21 Dec 2014 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2014/12/21/sketch.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/12/21/sketch.html</guid>
+        
+        <category>sketch</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>BaseX Quick Start</title>
+        <description>&lt;h2 id=&quot;installation&quot;&gt;Installation&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://brewformulas.org/Basex&quot;&gt;brew install basex&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;If you want to change the datebase path, run “basexgui” in terminal and change it in preference.&lt;/li&gt;
+  &lt;li&gt;command to start server: basexserver&lt;/li&gt;
+  &lt;li&gt;command to start client: basexclient, default username and password are admin/admin.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;create-database-and-add-some-nodes&quot;&gt;Create Database and Add Some Nodes&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: create a database and name it &amp;quot;tv-shows&amp;quot;. :)
+(: attention: this command cleans the &amp;quot;tv-shows&amp;quot; database if it exist. :)
+create db tv-shows
+
+(: open the database whose name is tv-shows. :)
+open tv-shows
+
+(: add xml to the currently opened database at the path &amp;quot;shows&amp;quot;. :)
+add to shows &amp;lt;shows&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;/shows&amp;gt;
+
+(: list all database, there should be 1 resource under tv-shows database. :)
+list
+
+(: list all resources of tv-shows, :)
+(: there should be 1 xml whose name is &amp;quot;shows&amp;quot;. :)
+list tv-shows
+
+(: get all &amp;lt;show/&amp;gt; node under &amp;lt;shows&amp;gt;&amp;lt;/shows&amp;gt;. :)
+(: the result should be &amp;lt;show/&amp;gt;&amp;lt;show/&amp;gt;&amp;lt;show/&amp;gt;. :)
+xquery for $s in shows/show return $s
+
+(: get all &amp;lt;show/&amp;gt; nodes under shows, :)
+(: add a new node &amp;lt;name/&amp;gt; to each one of them. :)
+xquery for $s in shows/show return insert node &amp;lt;name/&amp;gt; into $s
+
+(: watch the content of the currently opened database :)
+(: it should be like this: :)
+(: &amp;lt;shows&amp;gt; :)
+(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;/show&amp;gt; :)
+(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;/show&amp;gt; :)
+(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;/show&amp;gt; :)
+(: &amp;lt;/shows&amp;gt; :)
+xquery *
+
+(: insert a new node &amp;lt;rating/&amp;gt; into the first &amp;lt;show/&amp;gt; node under &amp;lt;shows/&amp;gt;. :)
+(: attention: the first element is [1], not zero based! :)
+xquery insert node &amp;lt;rating/&amp;gt; into shows/show[1]
+
+(: insert a new node &amp;lt;rating/&amp;gt; into the last &amp;lt;show/&amp;gt; node under &amp;lt;shows/&amp;gt;. :)
+xquery insert node &amp;lt;rating/&amp;gt; into shows/show[last()]
+
+(: declare that $s is the second &amp;lt;show/&amp;gt; node under &amp;lt;shows/&amp;gt;, :)
+(: insert a new &amp;lt;rating/&amp;gt; node into it :)
+xquery let $s := shows/show[2] return insert node &amp;lt;rating/&amp;gt; into $s
+
+(: delete the 1st node under &amp;lt;shows/&amp;gt; :)
+(: try xquery * again and you should get: :)
+(: &amp;lt;shows&amp;gt;                          :)
+(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;rating/&amp;gt;&amp;lt;/show&amp;gt;  :)
+(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;rating/&amp;gt;&amp;lt;/show&amp;gt;  :)
+(: &amp;lt;/shows&amp;gt;                         :)
+xquery delete node shows/show[1]
+
+(: destroy the database &amp;quot;tv-shows&amp;quot;. :)
+drop db tv-shows
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;update-a-node&quot;&gt;Update a Node&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;create db tv-shows
+open tv-shows
+add to shows &amp;lt;shows&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;/shows&amp;gt;
+
+(: add attribute &#39;update&#39; with current datetime to &amp;lt;shows/&amp;gt; :)
+xquery insert node attribute{&#39;update&#39;}{current-dateTime()} into shows
+
+(: add attribute &#39;season&#39; to shows :)
+xquery insert node attribute{&#39;seasons&#39;}{5} into shows/show[1]
+xquery insert node attribute{&#39;seasons&#39;}{2} into shows/show[2]
+
+(: add node &amp;lt;name/&amp;gt; to each show :)
+xquery insert node &amp;lt;name&amp;gt;Game of Thrones&amp;lt;/name&amp;gt; into shows/show[1]
+xquery insert node &amp;lt;name&amp;gt;Penny Dreadful&amp;lt;/name&amp;gt; into shows/show[2]
+
+(: add &amp;lt;star/&amp;gt; to &amp;quot;Game of Thrones&amp;quot; :)
+xquery insert node (&amp;lt;star&amp;gt;Lena Headey&amp;lt;/star&amp;gt;, &amp;lt;star&amp;gt;Peter Dinklage&amp;lt;/star&amp;gt;)
+  into shows/show[1]
+
+(: add &amp;lt;star/&amp;gt; to the node whose &amp;lt;name/&amp;gt; is Penny Dreadful :)
+xquery for $s in shows/show where $s/name=&#39;Penny Dreadful&#39; return insert
+  node (&amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt;,&amp;lt;star&amp;gt;ironhead&amp;lt;/star&amp;gt;) into $s
+
+(: current contents                                 :)
+(:  &amp;lt;shows update=&amp;quot;2014-12-11T14:26:04.139+08:00&amp;quot;&amp;gt;  :)
+(:    &amp;lt;show seasons=&amp;quot;5&amp;quot;&amp;gt;                            :)
+(:      &amp;lt;name&amp;gt;Game of Thrones&amp;lt;/name&amp;gt;                :)
+(:      &amp;lt;star&amp;gt;Lena Headey&amp;lt;/star&amp;gt;                    :)
+(:      &amp;lt;star&amp;gt;Peter Dinklage&amp;lt;/star&amp;gt;                 :)
+(:    &amp;lt;/show&amp;gt;                                       :)
+(:    &amp;lt;show seasons=&amp;quot;2&amp;quot;&amp;gt;                            :)
+(:      &amp;lt;name&amp;gt;Penny Dreadful&amp;lt;/name&amp;gt;                 :)
+(:      &amp;lt;star&amp;gt;Eva Green&amp;lt;/star&amp;gt;                      :)
+(:      &amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt;                  :)
+(:      &amp;lt;star&amp;gt;ironhead&amp;lt;/star&amp;gt;                       :)
+(:    &amp;lt;/show&amp;gt;                                       :)
+(:  &amp;lt;/shows&amp;gt;                                        :)
+xquery *
+
+(: find &amp;lt;show/&amp;gt; whose name is &#39;Penny Dreadful&#39; and delete the incorrect :)
+(: star node &amp;lt;star&amp;gt;ironhead&amp;lt;/star&amp;gt;. :)
+xquery for $x in shows/show where $x/name=&#39;Penny Dreadful&#39;
+  return delete node $x/star[.=&#39;ironhead&#39;]
+
+(: replace a &amp;lt;star/&amp;gt; node. :)
+xquery for $s in shows/show where $s/name=&amp;quot;Penny Dreadful&amp;quot;
+  return (replace node $s/star[.=&#39;Josh Hartnett&#39;] with
+  &amp;lt;star&amp;gt;Timothy Dalton&amp;lt;/star&amp;gt;)
+
+(: rename all &amp;lt;star/&amp;gt; node as &amp;lt;cast/&amp;gt; node :)
+xquery for $s in shows/show/star return rename node $s as &#39;cast&#39;
+
+(: copy the 2nd &amp;lt;show/&amp;gt; node, modify and return it. :)
+(: there is nothing happened in the original node. :)
+xquery copy $temp := shows/show[2] modify (insert node
+  &amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt; into $temp) return $temp
+
+(: should not find &amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt; in shows/show[2] :)
+xquery *
+
+drop db tv-shows
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;write-function---functional-programming&quot;&gt;Write Function - Functional Programming&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: In test database, shows resource.
+  &amp;lt;shows&amp;gt;
+    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
+  &amp;lt;/shows&amp;gt; :)
+
+(: To declare function in this way, namespace must be local.
+  node()* is type of node.
+  node-name($n) returns name of $n.
+  $n/@* returns all attributes of $n.
+  element { node-name($n) }{ $n/@* } clone $n :)
+
+(: result: &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt; :)
+
+xquery declare function local:clone($n as node()*) as node()* {
+  element { node-name($n) }{ $n/@* }
+};
+let $x := doc(&#39;test/shows&#39;)/shows/show[1]
+return local:clone($x)
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;get-elements-childlessly&quot;&gt;Get Elements Childlessly&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: In test database, shows resource.
+  &amp;lt;shows&amp;gt;
+    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
+    &amp;lt;show name=&amp;quot;Penny Dreadful&amp;quot;/&amp;gt;
+    &amp;lt;movie name=&amp;quot;The Maze Runner&amp;quot;/&amp;gt;
+  &amp;lt;/shows&amp;gt;
+:)
+
+(: Result:
+  &amp;lt;root&amp;gt;
+    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
+    &amp;lt;show name=&amp;quot;Penny Dreadful&amp;quot;/&amp;gt;
+    &amp;lt;movie name=&amp;quot;The Maze Runner&amp;quot;/&amp;gt;
+  &amp;lt;/root&amp;gt;
+:)
+
+xquery declare function local:clone($n as node()*) as node()* {
+  element { node-name($n) }{ $n/@* }
+};
+let $x := doc(&#39;test/shows&#39;)/shows/*
+return &amp;lt;root&amp;gt;{
+  for $c in $x return local:clone($c)
+}&amp;lt;/root&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Wed, 10 Dec 2014 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2014/12/10/basex-quick-start.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/12/10/basex-quick-start.html</guid>
+        
+        <category>database</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Arduino: Snake on 8x8 LED Matrix</title>
+        <description>&lt;h2 id=&quot;source-code-on-githubhttpsgithubcomimironheadarduino-practice&quot;&gt;&lt;a href=&quot;https://github.com/imironhead/arduino-practice&quot;&gt;Source Code on Github&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/arduino_snake_v1.jpg&quot; alt=&quot;arduino_snake_v1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://youtu.be/VC2F66MZuh0&quot;&gt;YouTube&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;hardware-required&quot;&gt;Hardware Required&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Arduino Board&lt;/li&gt;
+  &lt;li&gt;8x8 LED Matrix&lt;/li&gt;
+  &lt;li&gt;Infrared Sensor&lt;/li&gt;
+  &lt;li&gt;220 ohm resistor&lt;/li&gt;
+  &lt;li&gt;Hook-up wires&lt;/li&gt;
+  &lt;li&gt;breadboard&lt;/li&gt;
+  &lt;li&gt;remote control&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;library&quot;&gt;Library&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/coopermaa/Arduino-IRremote&quot;&gt;Arduino-IRremote&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;how-to-receive-ir&quot;&gt;How to Receive IR&lt;/h3&gt;
+
+&lt;p&gt;Get &lt;a href=&quot;https://github.com/coopermaa/Arduino-IRremote&quot;&gt;Arduino-IRremote&lt;/a&gt;, change forlder name to ‘IRremote’ and put it into Arduino IDE’s subdirectory. If you work on OS X, find Arduino.app in Applications folder, open its context menu and select ‘Show Package Contents’. Then put ‘IRremote’ under ‘Arduino.app/contents/java/libraries/’. Re-launch Arduino IDE and you’ll find ‘IRremote’ examples.&lt;/p&gt;
+
+&lt;p&gt;To make sure we can receive infrared singnals, prepare a circuit to test it. A infrared sensor has 3 pins, connect the middle pin to ground. Connect the other 2 pins to 3.3v and pin 11 on Arduino. Between the pin of sensor and 3.3v pin, connect a 220 ohm resistor. Then upload the IRrecvDemo code to Arduino. If everything is fine, you could read something on serial monitor.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/arduino-ir-sensor.jpg&quot; alt=&quot;IR sensor&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;left pin -&amp;gt; 11 pin of Arduino&lt;/li&gt;
+  &lt;li&gt;middle pin -&amp;gt; GND of Arduino&lt;/li&gt;
+  &lt;li&gt;right pin -&amp;gt; 220 ohm resistor -&amp;gt; 3.3v pin of Arduino&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In the source code of snake, A0 pin is used instead 11 pin.&lt;/p&gt;
+
+&lt;h3 id=&quot;x8-led-matrix&quot;&gt;8x8 LED Matrix&lt;/h3&gt;
+
+&lt;p&gt;Play the &lt;a href=&quot;http://arduino.cc/en/Tutorial/RowColumnScanning&quot;&gt;Row Column Scanning example&lt;/a&gt;, I have not run this example but connect the circuit as it.&lt;/p&gt;
+
+&lt;p&gt;To light up a LED, we have to connect it to a HIGH pin and a LOW pin. But there are only 16 pins on the 8x8 LED matrix which has only 2^16 combinations. To simulate 2^64 combinations, we have to do something like &lt;a href=&quot;http://arduino.cc/en/Tutorial/PWM&quot;&gt;PWM&lt;/a&gt;. For example, if we want to light up LED in (1, 1), set pin of 1st row to HIGH and set pin of 1st column to LOW can tuen on the LED. In each loop, we turn on and off the LEDs.&lt;/p&gt;
+
+&lt;p&gt;The Refresh method is used to display the game on the LED matrix. In order to make the display stable, we need a stable refresh rate in this method. In other words, to display a pattern stablely, we must spend the same time period on each loop and LED. That’s why I turn off some LEDs twice (set a pin to HIGH twice).&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; Refresh() {
+  &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; row, col, msk;
+
+  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (row = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; row &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++row) {
+    msk = &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;masks[row];
+
+    digitalWrite(SnakeBoard::ROW[row], HIGH);
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (col = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; col &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++col) {
+      &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (msk &amp;amp; (&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; col)) {
+        digitalWrite(SnakeBoard::COL[col], LOW);
+        digitalWrite(SnakeBoard::COL[col], HIGH);
+      } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
+        digitalWrite(SnakeBoard::COL[col], HIGH);
+        digitalWrite(SnakeBoard::COL[col], HIGH);
+      }
+    }
+
+    digitalWrite(ROW[row], LOW);
+  }
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;the-final-result&quot;&gt;The Final Result&lt;/h3&gt;
+
+&lt;p&gt;To run the source code, you have to define the singals from infrared sensor. You can find the correct value by running the ‘IRremote’ example.&lt;/p&gt;
+
+&lt;p&gt;Now we can combine a circuit from ‘IRremote’ and ‘Row Column Scanning’ example. Remember to change the data pin of infrared sensor from 11 to A0. Then upload the snake to Arduino and start to play!&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_UP               (&lt;span class=&quot;hex&quot;&gt;0x85AEFD19&lt;/span&gt;)
+&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_DOWN             (&lt;span class=&quot;hex&quot;&gt;0xB66D73CD&lt;/span&gt;)
+&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_RIGHT            (&lt;span class=&quot;hex&quot;&gt;0x5C5C901D&lt;/span&gt;)
+&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_LEFT             (&lt;span class=&quot;hex&quot;&gt;0x8F890759&lt;/span&gt;)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;update-20141127&quot;&gt;Update 20141127&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/arduino_snake_v2.jpg&quot; alt=&quot;arduino_snake_v2&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://arduino.cc/en/tutorial/ShiftOut&quot;&gt;ShiftOut Example&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/imironhead/arduino-practice/tree/master/arduino-snake-v2&quot;&gt;Github&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Reconnect all column pins of the LED matrix to a 74HC595 chip (because I have only one in hand :)). Refresh method become:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; Refresh() {
+  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; row = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; row &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++row) {
+    digitalWrite(SnakeBoard::ROW[row], HIGH);
+
+    digitalWrite(PIN_SIFTING_OUT_LATCH, LOW);
+    shiftOut(
+      PIN_SIFTING_DATA,
+      PIN_SIFTING_CLOCK,
+      LSBFIRST,
+      ~(&lt;span class=&quot;predefined-type&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;predefined-type&quot;&gt;char&lt;/span&gt;)&lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;masks[row]);
+    digitalWrite(PIN_SIFTING_OUT_LATCH, HIGH);
+
+    digitalWrite(PIN_SIFTING_OUT_LATCH, LOW);
+    shiftOut(PIN_SIFTING_DATA, PIN_SIFTING_CLOCK, MSBFIRST, &lt;span class=&quot;integer&quot;&gt;255&lt;/span&gt;);
+    digitalWrite(PIN_SIFTING_OUT_LATCH, HIGH);
+
+    digitalWrite(ROW[row], LOW);
+  }
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Tue, 25 Nov 2014 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2014/11/25/arduino-snake.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/11/25/arduino-snake.html</guid>
+        
+        <category>arduinno</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Regular Number Generator</title>
+        <description>&lt;p&gt;aka “Hamming numbers”, “ugly numbers”.&lt;/p&gt;
+
+&lt;p&gt;Prime factors of those numbers are 2, 3 or 5.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt; Ugly = 2^a * 3^b * 5^c &lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+ 0 &lt;= a, b, c  %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;How to implement?&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;1 is the first ugly number.&lt;/li&gt;
+  &lt;li&gt;If R is an ugly number, then 2&lt;em&gt;R, 3&lt;/em&gt;R and 5*R are all ugly numbers as well.&lt;/li&gt;
+  &lt;li&gt;There are many ugly numbers so we need a priority queue to select them in ascending order.&lt;/li&gt;
+  &lt;li&gt;Suppose R equals to 2^a * 3^b, should 2&lt;em&gt;R be pushed into the priority queue? Considering another number R’ which equals to 2^(a+1) * 3^(b-1), we known that R’ &amp;lt; R. So even if both of R’ &amp;amp; R are in the priority queue, R’ would be selected before R. When R’ is selected, 3&lt;/em&gt;R’ should be pushed into priority queue at the same time. Which means 3&lt;em&gt;R’ is pushed into queue before 2&lt;/em&gt;R, so we do not have to push 2&lt;em&gt;R again (3&lt;/em&gt;R’ = 2^(a+1) * 3^b = 2*R).&lt;/li&gt;
+  &lt;li&gt;So every time when a number R is selected, new ugly number should be generated by multiply the selected number with a new factor P, and P must greater or equal to the largest prime factor of R.&lt;/li&gt;
+  &lt;li&gt;To illustrate the idea, build a tree with root node 1 (the first ugly number). All node values in this tree are their parent values multiple 2, 3, or 5 (e.g. children of 1 are 2, 3 and 5. children of 2 are 2&lt;em&gt;2, 2&lt;/em&gt;3 and 2*5. etc.). Remove the duplicated numbers and selected remains in ascending order.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;queue&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;vector&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;directive&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;namespace&lt;/span&gt; std;
+
+
+&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; Generator {
+  priority_queue&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;, vector&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;&amp;gt;, greater&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;&amp;gt;&amp;gt;  pool;
+
+  Generator() {
+    &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;);
+  }
+
+  &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; Next() {
+    &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; number = &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.top();
+
+    &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.pop();
+
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (number % &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt; == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;) {
+      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
+    } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (number % &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt; == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;) {
+      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;);
+      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
+    } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
+      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;);
+      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;);
+      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
+    }
+
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; number;
+  }
+};
+
+&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; main() {
+  Generator g;
+
+  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&quot;integer&quot;&gt;100&lt;/span&gt;; ++i) {
+    cout &amp;lt;&amp;lt; g.Next() &amp;lt;&amp;lt; endl;
+  }
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Wed, 12 Nov 2014 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2014/11/12/regular-number-generator.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/11/12/regular-number-generator.html</guid>
+        
+        <category>c++</category>
+        
+        <category>programming</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Circle Elimination Game with AI in Ruby</title>
+        <description>&lt;ul&gt;
+  &lt;li&gt;Learning UCT, not finish yet.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Reference: &lt;a href=&quot;http://mcts.ai/code/python.html&quot;&gt;mcts.ai&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;-p, –power N                    power of AI&lt;/li&gt;
+  &lt;li&gt;-s, –size N                     play game on board of size N&lt;/li&gt;
+  &lt;li&gt;-e, –eliminate N                maximum stones can be eliminated one time&lt;/li&gt;
+  &lt;li&gt;-f, –first                      player first&lt;/li&gt;
+  &lt;li&gt;-l, –last                       player who eliminates the last stone lose the game&lt;/li&gt;
+  &lt;li&gt;-h, –help                       show this message&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In each turn, the input may be:
+* “row1, col1, row2, col2” (eg: 0,0,2,2) which would eliminate all stones between
+(row1, col1) and (row2, col2) (both inclusive).
+* “row, col” which eliminate only 1 stone.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;# reference: http://mcts.ai/code/python.html&lt;/span&gt;
+
+require &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;optparse&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+
+
+&lt;span class=&quot;comment&quot;&gt;# stone position&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;Position&lt;/span&gt;
+  attr_accessor &lt;span class=&quot;symbol&quot;&gt;:row&lt;/span&gt;
+  attr_accessor &lt;span class=&quot;symbol&quot;&gt;:col&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;initialize&lt;/span&gt;(pos_row, pos_col)
+    &lt;span class=&quot;instance-variable&quot;&gt;@row&lt;/span&gt; = pos_row
+    &lt;span class=&quot;instance-variable&quot;&gt;@col&lt;/span&gt; = pos_col
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;right!&lt;/span&gt;(distance = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)
+    &lt;span class=&quot;instance-variable&quot;&gt;@col&lt;/span&gt; += distance
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;down!&lt;/span&gt;(distance = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)
+    &lt;span class=&quot;instance-variable&quot;&gt;@row&lt;/span&gt; += distance
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;diagonal!&lt;/span&gt;(distance = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)
+    &lt;span class=&quot;instance-variable&quot;&gt;@col&lt;/span&gt; += distance
+    &lt;span class=&quot;instance-variable&quot;&gt;@row&lt;/span&gt; += distance
+    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;==&lt;/span&gt;(that)
+    that.col == col &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; that.row == row
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;inspect&lt;/span&gt;
+    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;pos (&lt;/span&gt;&lt;span class=&quot;inline&quot;&gt;&lt;span class=&quot;inline-delimiter&quot;&gt;#{&lt;/span&gt;row&lt;span class=&quot;inline-delimiter&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;, &lt;/span&gt;&lt;span class=&quot;inline&quot;&gt;&lt;span class=&quot;inline-delimiter&quot;&gt;#{&lt;/span&gt;col&lt;span class=&quot;inline-delimiter&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;comment&quot;&gt;# A move represents all positions between head and tail.&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;Move&lt;/span&gt;
+  attr_accessor &lt;span class=&quot;symbol&quot;&gt;:head&lt;/span&gt;
+  attr_accessor &lt;span class=&quot;symbol&quot;&gt;:tail&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;initialize&lt;/span&gt;(pos1, pos2 = &lt;span class=&quot;predefined-constant&quot;&gt;nil&lt;/span&gt;)
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; pos2.nil?
+      pos2 = pos1
+    &lt;span class=&quot;keyword&quot;&gt;elsif&lt;/span&gt; pos2.col &amp;lt; pos1.col &lt;span class=&quot;keyword&quot;&gt;or&lt;/span&gt; pos2.row &amp;lt; pos1.row
+      pos1, pos2 = pos2, pos1
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;instance-variable&quot;&gt;@head&lt;/span&gt; = &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos1.row, pos1.col)
+    &lt;span class=&quot;instance-variable&quot;&gt;@tail&lt;/span&gt; = &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos2.row, pos2.col)
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# return all positions between head and tail (head and tail are included)&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;positions&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; head.row == tail.row
+      (head.col..tail.col).each.map { | c | &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(head.row, c) }
+    &lt;span class=&quot;keyword&quot;&gt;elsif&lt;/span&gt; head.col == tail.col
+      (head.row..tail.row).each.map { | r | &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(r, head.col) }
+    &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;
+      (head.row..tail.row).each_with_index.map &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | r, i |
+        &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(r, head.col + i)
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;==&lt;/span&gt;(that)
+    that.head == head &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; that.tail == tail
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;Board&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;LIVE_STONE_SIGN&lt;/span&gt; = &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;○&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;DEAD_STONE_SIGN&lt;/span&gt; = &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;●&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+
+  &lt;span class=&quot;constant&quot;&gt;LIVE_STONE&lt;/span&gt; = &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;DEAD_STONE&lt;/span&gt; = &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+
+  attr_reader &lt;span class=&quot;symbol&quot;&gt;:max_elimination&lt;/span&gt;
+  attr_reader &lt;span class=&quot;symbol&quot;&gt;:stones&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# board_size: height of the triangle with circles.&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# max_elimination: max number of connected circles can be eliminated in each turn.&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;initialize&lt;/span&gt;(board_size = &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, max_elimination = &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;)
+    &lt;span class=&quot;instance-variable&quot;&gt;@max_elimination&lt;/span&gt; = [&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, max_elimination].max
+
+    &lt;span class=&quot;instance-variable&quot;&gt;@stones&lt;/span&gt; = &lt;span class=&quot;constant&quot;&gt;Array&lt;/span&gt;.new([&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, board_size].max) &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | line |
+      &lt;span class=&quot;constant&quot;&gt;Array&lt;/span&gt;.new(line + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;constant&quot;&gt;LIVE_STONE&lt;/span&gt;)
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# the representation of a board with height 10:&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# --------------&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   0 ○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   1 ○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   2 ○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   3 ○○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   4 ○○○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   5 ○○○○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   6 ○○○○○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   7 ○○○○○○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   8 ○○○○○○○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#   9 ○○○○○○○○○○&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;#     0123456789&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# --------------&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;inspect&lt;/span&gt;
+    gutter_size = size.to_s.length + &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+
+    spliter = &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; * (gutter_size + size)
+
+    result = spliter.clone
+
+    stones.each_with_index &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | line, i |
+      result &amp;lt;&amp;lt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;char&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;inline&quot;&gt;&lt;span class=&quot;inline-delimiter&quot;&gt;#{&lt;/span&gt; i.to_s.rjust gutter_size - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;inline-delimiter&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt; &lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+
+      line.each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | s |
+        result &amp;lt;&amp;lt; (s == &lt;span class=&quot;constant&quot;&gt;LIVE_STONE&lt;/span&gt; ? &lt;span class=&quot;constant&quot;&gt;LIVE_STONE_SIGN&lt;/span&gt; : &lt;span class=&quot;constant&quot;&gt;DEAD_STONE_SIGN&lt;/span&gt;)
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    result &amp;lt;&amp;lt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;char&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+    result &amp;lt;&amp;lt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt; &lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; * gutter_size
+
+    size.times { | i | result &amp;lt;&amp;lt; (i % &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;).to_s }
+
+    result &amp;lt;&amp;lt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;char&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;inline&quot;&gt;&lt;span class=&quot;inline-delimiter&quot;&gt;#{&lt;/span&gt;spliter&lt;span class=&quot;inline-delimiter&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# clone the board and return it&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;copy&lt;/span&gt;
+    board = &lt;span class=&quot;constant&quot;&gt;Board&lt;/span&gt;.new(size, max_elimination)
+
+    dead_stones.each { | pos | board.dead_stone!(pos) }
+
+    board
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;size&lt;/span&gt;
+    stones.length
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;stone&lt;/span&gt;(pos)
+    stones[pos.row][pos.col]
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;filtered_stones&lt;/span&gt;(filter)
+    result = []
+
+    stones.each_with_index &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | line, row |
+      line.each_with_index &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | s, col |
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; filter.call(row, col, s)
+          result &amp;lt;&amp;lt; &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(row, col)
+        &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    result
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;valid_stone?&lt;/span&gt;(pos)
+    pos.row &amp;lt; size &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; pos.col &amp;lt;= pos.row
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;live_stone?&lt;/span&gt;(pos)
+    valid_stone?(pos) &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; stone(pos) == &lt;span class=&quot;constant&quot;&gt;LIVE_STONE&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;dead_stone?&lt;/span&gt;(pos)
+    valid_stone?(pos) &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; stone(pos) == &lt;span class=&quot;constant&quot;&gt;DEAD_STONE&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;dead_stone!&lt;/span&gt;(pos)
+    &lt;span class=&quot;instance-variable&quot;&gt;@stones&lt;/span&gt;[pos.row][pos.col] = &lt;span class=&quot;constant&quot;&gt;DEAD_STONE&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# =&amp;gt; return positions of all live stones&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;live_stones&lt;/span&gt;
+    filtered_stones(lambda { | row, col, live | live == &lt;span class=&quot;constant&quot;&gt;LIVE_STONE&lt;/span&gt; })
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# =&amp;gt; return positions of all dead stones&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;dead_stones&lt;/span&gt;
+    filtered_stones(lambda { | row, col, live | live == &lt;span class=&quot;constant&quot;&gt;DEAD_STONE&lt;/span&gt; })
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# max length that all stones between (row, col) and (row, col + length - 1)&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# are alive.&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;max_row_length_from&lt;/span&gt;(pos)
+    (&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...max_elimination).each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | l |
+      &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; l &lt;span class=&quot;keyword&quot;&gt;unless&lt;/span&gt; live_stone?(&lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos.row, pos.col + l))
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    max_elimination
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# max length that all stones between (row, col) and (row + length - 1, col)&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# are alive.&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;max_col_length_from&lt;/span&gt;(pos)
+    (&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...max_elimination).each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | l |
+      &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; l &lt;span class=&quot;keyword&quot;&gt;unless&lt;/span&gt; live_stone?(&lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos.row + l, pos.col))
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    max_elimination
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# max length that all stones between (row, col) and&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# (row + length - 1, col + length - 1) are alive.&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;max_dia_length_from&lt;/span&gt;(pos)
+    (&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...max_elimination).each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | l |
+      &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; l &lt;span class=&quot;keyword&quot;&gt;unless&lt;/span&gt; live_stone?(&lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos.row + l, pos.col + l))
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    max_elimination
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# eliminate stones between (row, col) and (row, col + l)&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# l is a random length less than max_row_length_from(row, col)&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;random_row_move_from&lt;/span&gt;(pos)
+    length = rand(max_row_length_from(pos))
+
+    &lt;span class=&quot;constant&quot;&gt;Move&lt;/span&gt;.new(pos, &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos.row, pos.col + length))
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# eliminate stones between (row, col) and (row + l, col)&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# l is a random length less than max_col_length_from(row, col)&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;random_col_move_from&lt;/span&gt;(pos)
+    length = rand(max_col_length_from(pos))
+
+    &lt;span class=&quot;constant&quot;&gt;Move&lt;/span&gt;.new(pos, &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos.row + length, pos.col))
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# eliminate stones between (row, col) and (row + l, col + l)&lt;/span&gt;
+  &lt;span class=&quot;comment&quot;&gt;# l is a random length less than max_dia_length_from(row, col)&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;random_dia_move_from&lt;/span&gt;(pos)
+    length = rand(max_dia_length_from(pos))
+
+    &lt;span class=&quot;constant&quot;&gt;Move&lt;/span&gt;.new(pos, &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(pos.row + length, pos.col + length))
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;random_live_stone&lt;/span&gt;
+    live_stones.sample
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;random_eliminate&lt;/span&gt;
+    head = random_live_stone
+
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; head.nil?
+
+    move = &lt;span class=&quot;keyword&quot;&gt;case&lt;/span&gt; rand(&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;)
+    &lt;span class=&quot;keyword&quot;&gt;when&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+      random_row_move_from(head)
+    &lt;span class=&quot;keyword&quot;&gt;when&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+      random_col_move_from(head)
+    &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;
+      random_dia_move_from(head)
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    eliminate move
+
+    move
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;eliminate&lt;/span&gt;(move)
+    move.positions.each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | pos |
+      dead_stone! pos
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;comment&quot;&gt;# all possible moves from current states&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;moves&lt;/span&gt;
+    all = []
+
+    live_stones.each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | head |
+      len = max_row_length_from(head)
+
+      (&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...len).each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | l |
+        all &amp;lt;&amp;lt; &lt;span class=&quot;constant&quot;&gt;Move&lt;/span&gt;.new(head, &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(head.row, head.col + l))
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      len = max_col_length_from(head)
+
+      (&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...len).each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | l |
+        all &amp;lt;&amp;lt; &lt;span class=&quot;constant&quot;&gt;Move&lt;/span&gt;.new(head, &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(head.row + l, head.col))
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      len = max_dia_length_from(head)
+
+      (&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...len).each &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | l |
+        all &amp;lt;&amp;lt; &lt;span class=&quot;constant&quot;&gt;Move&lt;/span&gt;.new(head, &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(head.row + l, head.col + l))
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    all
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;Node&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;PLAYER_BOT&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;PLAYER_USR&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+  attr_reader &lt;span class=&quot;symbol&quot;&gt;:move&lt;/span&gt;
+  attr_reader &lt;span class=&quot;symbol&quot;&gt;:possible_moves&lt;/span&gt;
+  attr_reader &lt;span class=&quot;symbol&quot;&gt;:children&lt;/span&gt;
+  attr_reader &lt;span class=&quot;symbol&quot;&gt;:parent&lt;/span&gt;
+  attr_reader &lt;span class=&quot;symbol&quot;&gt;:player&lt;/span&gt;
+
+  attr_accessor &lt;span class=&quot;symbol&quot;&gt;:count_of_wins&lt;/span&gt;
+  attr_accessor &lt;span class=&quot;symbol&quot;&gt;:count_of_visits&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;initialize&lt;/span&gt;(current_move, parent, current_player, board)
+    &lt;span class=&quot;instance-variable&quot;&gt;@move&lt;/span&gt; = current_move
+    &lt;span class=&quot;instance-variable&quot;&gt;@parent&lt;/span&gt; = parent
+    &lt;span class=&quot;instance-variable&quot;&gt;@children&lt;/span&gt; = []
+    &lt;span class=&quot;instance-variable&quot;&gt;@count_of_wins&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+    &lt;span class=&quot;instance-variable&quot;&gt;@count_of_visits&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+    &lt;span class=&quot;instance-variable&quot;&gt;@player&lt;/span&gt; = current_player
+    &lt;span class=&quot;instance-variable&quot;&gt;@possible_moves&lt;/span&gt; = board.moves
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;select&lt;/span&gt;
+    &lt;span class=&quot;instance-variable&quot;&gt;@children&lt;/span&gt;.max &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | a, b |
+      x = &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; * &lt;span class=&quot;constant&quot;&gt;Math&lt;/span&gt;.log(count_of_visits) / a.count_of_visits
+      y = &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; * &lt;span class=&quot;constant&quot;&gt;Math&lt;/span&gt;.log(count_of_visits) / b.count_of_visits
+
+      x = a.count_of_wins / a.count_of_visits + &lt;span class=&quot;constant&quot;&gt;Math&lt;/span&gt;.sqrt(x)
+      y = b.count_of_wins / b.count_of_visits + &lt;span class=&quot;constant&quot;&gt;Math&lt;/span&gt;.sqrt(y)
+
+      x &amp;lt;=&amp;gt; y
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;add_child&lt;/span&gt;(move, board)
+    &lt;span class=&quot;instance-variable&quot;&gt;@possible_moves&lt;/span&gt;.delete(move)
+
+    &lt;span class=&quot;instance-variable&quot;&gt;@children&lt;/span&gt; &amp;lt;&amp;lt; &lt;span class=&quot;constant&quot;&gt;Node&lt;/span&gt;.new(move, &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, match, board)
+
+    &lt;span class=&quot;instance-variable&quot;&gt;@children&lt;/span&gt;[&lt;span class=&quot;integer&quot;&gt;-1&lt;/span&gt;]
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;update&lt;/span&gt;(winner)
+    &lt;span class=&quot;instance-variable&quot;&gt;@count_of_visits&lt;/span&gt; += &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;instance-variable&quot;&gt;@count_of_wins&lt;/span&gt; += &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; winner == player &lt;span class=&quot;keyword&quot;&gt;then&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;-1&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;match&lt;/span&gt;
+    &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; - player
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;Game&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;MODE_LAST_WIN&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;MODE_LAST_LOSE&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+  &lt;span class=&quot;constant&quot;&gt;STATE_NOT_ENDED&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;STATE_USR_WIN&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;constant&quot;&gt;STATE_BOT_WIN&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.&lt;span class=&quot;function&quot;&gt;parse_args&lt;/span&gt;
+    arguments = {}
+
+    arguments[&lt;span class=&quot;symbol&quot;&gt;:size&lt;/span&gt;] = &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;
+    arguments[&lt;span class=&quot;symbol&quot;&gt;:max_elimination&lt;/span&gt;] = &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;
+    arguments[&lt;span class=&quot;symbol&quot;&gt;:last_win&lt;/span&gt;] = &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;
+    arguments[&lt;span class=&quot;symbol&quot;&gt;:usr_first&lt;/span&gt;] = &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+    arguments[&lt;span class=&quot;symbol&quot;&gt;:power&lt;/span&gt;] = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+    option_parser = &lt;span class=&quot;constant&quot;&gt;OptionParser&lt;/span&gt;.new &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | options |
+      options.banner = &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Usage: circles.rb [options]&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+
+      options.separator &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+      options.separator &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Specific options:&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+
+      options.on(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-p N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;--power N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;constant&quot;&gt;Integer&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;power of AI&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | s |
+        arguments[&lt;span class=&quot;symbol&quot;&gt;:power&lt;/span&gt;] = s
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      options.on(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-s N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;--size N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;constant&quot;&gt;Integer&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;play game on board of size N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | s |
+        arguments[&lt;span class=&quot;symbol&quot;&gt;:size&lt;/span&gt;] = s
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      options.on(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-e N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;--eliminate N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;constant&quot;&gt;Integer&lt;/span&gt;,
+        &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;maximum stones can be eliminated one time&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; | e |
+        arguments[&lt;span class=&quot;symbol&quot;&gt;:max_elimination&lt;/span&gt;] = e
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      options.on(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-f&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;--first&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;player first&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; |v|
+        arguments[&lt;span class=&quot;symbol&quot;&gt;:usr_first&lt;/span&gt;] = &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      options.on(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-l&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;--last&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;,
+        &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;player who eliminates the last stone lost the game&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt; |v|
+        arguments[&lt;span class=&quot;symbol&quot;&gt;:last_win&lt;/span&gt;] = &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      options.on_tail(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-h&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;--help&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;show this message&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;
+        puts options
+        exit
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      &lt;span class=&quot;comment&quot;&gt;# options.on_tail(&amp;quot;-t&amp;quot;, &amp;quot;--test&amp;quot;, &amp;quot;run test&amp;quot;) do&lt;/span&gt;
+      &lt;span class=&quot;comment&quot;&gt;#   Test.test&lt;/span&gt;
+      &lt;span class=&quot;comment&quot;&gt;#   exit&lt;/span&gt;
+      &lt;span class=&quot;comment&quot;&gt;# end&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    option_parser.parse!(&lt;span class=&quot;predefined-constant&quot;&gt;ARGV&lt;/span&gt;)
+
+    arguments
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;initialize&lt;/span&gt;(arguments = &lt;span class=&quot;predefined-constant&quot;&gt;nil&lt;/span&gt;)
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; arguments.nil?
+      arguments = {
+        &lt;span class=&quot;key&quot;&gt;size&lt;/span&gt;: &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;,
+        &lt;span class=&quot;key&quot;&gt;max_elimination&lt;/span&gt;: &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;,
+        &lt;span class=&quot;key&quot;&gt;last_win&lt;/span&gt;: &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;,
+        &lt;span class=&quot;key&quot;&gt;usr_first&lt;/span&gt;: &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;,
+        &lt;span class=&quot;key&quot;&gt;power&lt;/span&gt;: &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+      }
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt; = &lt;span class=&quot;constant&quot;&gt;Board&lt;/span&gt;.new(arguments[&lt;span class=&quot;symbol&quot;&gt;:size&lt;/span&gt;], arguments[&lt;span class=&quot;symbol&quot;&gt;:max_elimination&lt;/span&gt;])
+    &lt;span class=&quot;instance-variable&quot;&gt;@mode&lt;/span&gt; = arguments[&lt;span class=&quot;symbol&quot;&gt;:last_win&lt;/span&gt;] ? &lt;span class=&quot;constant&quot;&gt;MODE_LAST_WIN&lt;/span&gt; : &lt;span class=&quot;constant&quot;&gt;MODE_LAST_LOSE&lt;/span&gt;
+    &lt;span class=&quot;instance-variable&quot;&gt;@bot_first&lt;/span&gt; = !arguments[&lt;span class=&quot;symbol&quot;&gt;:usr_first&lt;/span&gt;]
+    &lt;span class=&quot;instance-variable&quot;&gt;@state&lt;/span&gt; = &lt;span class=&quot;constant&quot;&gt;STATE_NOT_ENDED&lt;/span&gt;
+    &lt;span class=&quot;instance-variable&quot;&gt;@number_of_trials&lt;/span&gt; = arguments[&lt;span class=&quot;symbol&quot;&gt;:power&lt;/span&gt;] * &lt;span class=&quot;integer&quot;&gt;200&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;ended?&lt;/span&gt;
+    &lt;span class=&quot;instance-variable&quot;&gt;@state&lt;/span&gt; != &lt;span class=&quot;constant&quot;&gt;STATE_NOT_ENDED&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;bot_eliminate&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ended?
+
+    root = &lt;span class=&quot;constant&quot;&gt;Node&lt;/span&gt;.new(&lt;span class=&quot;predefined-constant&quot;&gt;nil&lt;/span&gt;, &lt;span class=&quot;predefined-constant&quot;&gt;nil&lt;/span&gt;, &lt;span class=&quot;constant&quot;&gt;Node&lt;/span&gt;::&lt;span class=&quot;constant&quot;&gt;PLAYER_USR&lt;/span&gt;, &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;)
+
+    &lt;span class=&quot;instance-variable&quot;&gt;@number_of_trials&lt;/span&gt;.times &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;
+      node = root
+
+      dup_board = &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;.copy
+
+      &lt;span class=&quot;comment&quot;&gt;# select&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; node.possible_moves.empty? &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; node.children.length &amp;gt; &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;
+        node = node.select
+
+        dup_board.eliminate node.move
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      &lt;span class=&quot;comment&quot;&gt;# Expand&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;unless&lt;/span&gt; node.possible_moves.empty?
+        move = node.possible_moves.sample
+
+        dup_board.eliminate move
+
+        node = node.add_child(move, dup_board)
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      &lt;span class=&quot;comment&quot;&gt;# Rollout&lt;/span&gt;
+      count = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+
+      &lt;span class=&quot;keyword&quot;&gt;until&lt;/span&gt; dup_board.random_eliminate.nil? &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;
+        count += &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      winner = &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;instance-variable&quot;&gt;@mode&lt;/span&gt; = &lt;span class=&quot;constant&quot;&gt;MODE_LAST_WIN&lt;/span&gt;
+        count.odd? ? &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; - node.player : node.player
+      &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;
+        count.odd? ? node.player : &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; - node.player
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      &lt;span class=&quot;comment&quot;&gt;# Backpropagate&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;until&lt;/span&gt; node.nil? &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;
+        node.update winner
+        node = node.parent
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    node = root.children.max { | a, b | a.count_of_visits &amp;lt;=&amp;gt; b.count_of_visits }
+
+    &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;.eliminate node.move
+
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;.live_stones.empty?
+      &lt;span class=&quot;instance-variable&quot;&gt;@state&lt;/span&gt; = (&lt;span class=&quot;instance-variable&quot;&gt;@mode&lt;/span&gt; == &lt;span class=&quot;constant&quot;&gt;MODE_LAST_WIN&lt;/span&gt;) ? &lt;span class=&quot;constant&quot;&gt;STATE_BOT_WIN&lt;/span&gt; : &lt;span class=&quot;constant&quot;&gt;STATE_USR_WIN&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;usr_eliminate&lt;/span&gt;(row1, col1, row2, col2)
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ended?
+
+    move = &lt;span class=&quot;constant&quot;&gt;Move&lt;/span&gt;.new(&lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(row1, col1), &lt;span class=&quot;constant&quot;&gt;Position&lt;/span&gt;.new(row2, col2))
+
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;unless&lt;/span&gt; &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;.eliminate(move)
+
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;.live_stones.empty?
+      &lt;span class=&quot;instance-variable&quot;&gt;@state&lt;/span&gt; = (&lt;span class=&quot;instance-variable&quot;&gt;@mode&lt;/span&gt; == &lt;span class=&quot;constant&quot;&gt;MODE_LAST_WIN&lt;/span&gt;) ? &lt;span class=&quot;constant&quot;&gt;STATE_USR_WIN&lt;/span&gt; : &lt;span class=&quot;constant&quot;&gt;STATE_BOT_WIN&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;play&lt;/span&gt;
+    turn = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+
+    &lt;span class=&quot;keyword&quot;&gt;unless&lt;/span&gt; &lt;span class=&quot;instance-variable&quot;&gt;@bot_first&lt;/span&gt;
+      turn = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+      p &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    loop &lt;span class=&quot;keyword&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; turn.even?
+        bot_eliminate
+      &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;
+        target = &lt;span class=&quot;predefined-constant&quot;&gt;STDIN&lt;/span&gt;.gets.chomp
+
+        positions = target.split(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;).map { | s | s.to_i }
+
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; positions.length &amp;gt;= &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;
+          usr_eliminate(positions[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;], positions[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;], positions[&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;], positions[&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;])
+        &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;
+          usr_eliminate(positions[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;], positions[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;], positions[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;], positions[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;])
+        &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+      &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+      p &lt;span class=&quot;instance-variable&quot;&gt;@board&lt;/span&gt;
+
+      &lt;span class=&quot;keyword&quot;&gt;break&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ended?
+
+      turn += &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+    p &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;You &lt;/span&gt;&lt;span class=&quot;inline&quot;&gt;&lt;span class=&quot;inline-delimiter&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;instance-variable&quot;&gt;@state&lt;/span&gt; == &lt;span class=&quot;constant&quot;&gt;STATE_BOT_WIN&lt;/span&gt; ? &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;LOSE&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;WIN&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;inline-delimiter&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;constant&quot;&gt;Game&lt;/span&gt;.new(&lt;span class=&quot;constant&quot;&gt;Game&lt;/span&gt;.parse_args).play &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;__FILE__&lt;/span&gt; == &lt;span class=&quot;global-variable&quot;&gt;$0&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sat, 18 Oct 2014 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2014/10/18/circle-elimination-ai.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/10/18/circle-elimination-ai.html</guid>
+        
+        <category>ruby</category>
+        
+        <category>programming</category>
+        
+        <category>ai</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>
