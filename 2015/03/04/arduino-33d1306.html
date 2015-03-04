@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Arduino SSD1306 LED</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/2015/03/04/arduino-33d1306.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Arduino SSD1306 LED</h1>
+    <p class="post-meta">Mar 4, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p>A more simple version of <a href="http://www.instructables.com/id/How-to-use-OLED-display-arduino-module/">Instructables example</a>.
+For me, the most interesting part is the speeds to fill 1 byte ad fill 128 bytes in the same page
+are almost the same.</p>
+
+<p><img src="/assets/images/arduino_ssd1306.jpg" alt="arduino + ssd1306" /></p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">// SSD1306</span>
+<span class="comment">// https://www.adafruit.com/datasheets/SSD1306.pdf</span>
+<span class="comment">// 5v</span>
+
+<span class="preprocessor">#define</span> PIN_DATA_COMMAND  (<span class="integer">11</span>)
+<span class="preprocessor">#define</span> PIN_RESET         (<span class="integer">13</span>)
+<span class="preprocessor">#define</span> PIN_SCL           (<span class="integer">10</span>)
+<span class="preprocessor">#define</span> PIN_SDA           (<span class="integer">9</span>)
+
+<span class="directive">void</span> led_send(<span class="predefined-type">bool</span> is_data, uint8_t data) {
+  <span class="keyword">if</span> (is_data) {
+    digitalWrite(PIN_DATA_COMMAND, HIGH);
+  } <span class="keyword">else</span> {
+    digitalWrite(PIN_DATA_COMMAND, LOW);
+  }
+
+  <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; <span class="integer">8</span>; ++i) {
+    digitalWrite(PIN_SCL, LOW);
+
+    <span class="keyword">if</span> (data &amp; <span class="hex">0x80</span>) {
+      digitalWrite(PIN_SDA, <span class="integer">1</span>);
+    } <span class="keyword">else</span> {
+      digitalWrite(PIN_SDA, <span class="integer">0</span>);
+    }
+
+    digitalWrite(PIN_SCL, HIGH);
+
+    data &lt;&lt;= <span class="integer">1</span>;
+  }
+}
+
+<span class="directive">void</span> led_send_data(uint8_t data) {
+  led_send(<span class="predefined-constant">true</span>, data);
+}
+
+<span class="directive">void</span> led_send_command(uint8_t command) {
+  led_send(<span class="predefined-constant">false</span>, command);
+}
+
+<span class="directive">void</span> led_init() {
+  digitalWrite(PIN_SCL, HIGH);
+  digitalWrite(PIN_RESET, LOW);
+  delay(<span class="integer">50</span>);
+  digitalWrite(PIN_RESET, HIGH);
+  digitalWrite(PIN_SCL, LOW);
+
+  <span class="comment">// display off (sleep mode)</span>
+  led_send_command(<span class="hex">0xae</span>);
+
+  <span class="comment">// segment remap (?)</span>
+  led_send_command(<span class="hex">0xa1</span>);
+
+  <span class="comment">// VCOMH deselect level (?)</span>
+  led_send_command(<span class="hex">0xdb</span>);
+  led_send_command(<span class="hex">0x40</span>);
+
+  <span class="comment">// pre-charge period</span>
+  <span class="comment">// http://en.wikipedia.org/wiki/Pre-charge</span>
+  led_send_command(<span class="hex">0xd9</span>);
+  led_send_command(<span class="hex">0xf1</span>);
+
+  <span class="comment">// COM pins hardware configuration (?)</span>
+  led_send_command(<span class="hex">0xda</span>);
+  led_send_command(<span class="hex">0x12</span>);
+
+  <span class="comment">// memory addressing mode</span>
+  <span class="comment">// 0x00 : horizontal</span>
+  <span class="comment">// 0x01 : vertical</span>
+  <span class="comment">// 0x02 : page</span>
+  led_send_command(<span class="hex">0x20</span>);
+  led_send_command(<span class="hex">0x02</span>);
+
+  <span class="comment">// enable charge pump, dc/dc converter</span>
+  <span class="comment">// http://en.wikipedia.org/wiki/Charge_pump</span>
+  led_send_command(<span class="hex">0x8d</span>);
+  led_send_command(<span class="hex">0x14</span>);
+
+  <span class="comment">// display start line? (0x40 | (0 ~ 63))</span>
+  led_send_command(<span class="hex">0x40</span> | <span class="integer">0</span>);
+
+  <span class="comment">// display offset (vertical shift), 0 ~ 63</span>
+  led_send_command(<span class="hex">0xd3</span>);
+  led_send_command(<span class="hex">0x00</span>);
+
+  <span class="comment">// multiplex ratio</span>
+  <span class="comment">// http://en.wikipedia.org/wiki/Multiplexed_display</span>
+  led_send_command(<span class="hex">0xa8</span>);
+  led_send_command(<span class="hex">0x3f</span>);
+
+  <span class="comment">// display clock divide ratio / oscillator frequency</span>
+  led_send_command(<span class="hex">0xd5</span>);
+  led_send_command(<span class="hex">0x80</span>);
+
+  <span class="comment">// contrast</span>
+  <span class="comment">// double byte, 2nd byte means contrast. Constrast increases as it increses.</span>
+  led_send_command(<span class="hex">0x81</span>);
+  led_send_command(<span class="hex">0x00</span>);
+
+  <span class="comment">// entire display off</span>
+  <span class="comment">// 0xa4 : pixels are on based on datas in RAM</span>
+  <span class="comment">// 0xa5 : all pixels are on</span>
+  led_send_command(<span class="hex">0xa4</span>);
+
+  <span class="comment">// normal display</span>
+  <span class="comment">// 0xa6 : bit 0 -&gt; pixel off, bit 1 -&gt; pixel on</span>
+  <span class="comment">// 0xa7 : bit 1 -&gt; pixel off, bit 0 -&gt; pixel on</span>
+  led_send_command(<span class="hex">0xa6</span>);
+
+  <span class="comment">// display on (normal mode)</span>
+  led_send_command(<span class="hex">0xaf</span>);
+}
+
+<span class="directive">void</span> led_fill(<span class="directive">const</span> uint8_t* map) {
+  uint8_t y;
+
+  <span class="keyword">for</span> (y = <span class="integer">0</span>; y &lt; <span class="integer">8</span>; ++y) {
+    led_send_command(<span class="hex">0xb0</span> + y);
+    led_send_command(<span class="hex">0x01</span>);
+    led_send_command(<span class="hex">0x10</span>);
+
+    <span class="keyword">for</span> (<span class="predefined-type">int</span> x = <span class="integer">0</span>; x &lt; <span class="integer">128</span>; ++x) {
+      led_send_data(*map++);
+    }
+  }
+}
+
+uint8_t led_set_pixel(uint8_t* map, <span class="predefined-type">int</span> x, <span class="predefined-type">int</span> y, uint8_t c) {
+  <span class="comment">// to page</span>
+  map += <span class="integer">128</span> * (y / <span class="integer">8</span>);
+
+  y %= <span class="integer">8</span>;
+
+  <span class="comment">// to row</span>
+  map += x;
+
+  <span class="comment">// set col</span>
+  *map &amp;= ~(<span class="integer">1</span> &lt;&lt; y);
+  *map |=  (c &lt;&lt; y);
+
+  <span class="keyword">return</span> *map;
+}
+
+uint8_t display_map[<span class="integer">1024</span>];
+
+uint8_t pixel = <span class="integer">0</span>;
+
+<span class="directive">void</span> setup() {
+  pinMode(PIN_SCL,OUTPUT);
+  pinMode(PIN_SDA,OUTPUT);
+  pinMode(PIN_RESET,OUTPUT);
+  pinMode(PIN_DATA_COMMAND,OUTPUT);
+
+  led_init();
+  led_fill(display_map);
+}
+
+<span class="directive">void</span> loop() {
+  pixel ^= <span class="integer">1</span>;
+
+  <span class="keyword">for</span> (<span class="predefined-type">int</span> y = <span class="integer">0</span> ; y &lt; <span class="integer">64</span>; ++y) {
+    <span class="keyword">for</span> (<span class="predefined-type">int</span> x = <span class="integer">0</span>; x &lt; <span class="integer">128</span>; ++x) {
+      led_send_command(<span class="hex">0xb0</span> + y / <span class="integer">8</span>);
+      led_send_command(<span class="hex">0x00</span> + x % <span class="integer">16</span>);
+      led_send_command(<span class="hex">0x10</span> + x / <span class="integer">16</span>);
+
+      led_send_data(led_set_pixel(display_map, x, y, pixel));
+
+      delay(<span class="integer">100</span>);
+    }
+  }
+}
+
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
