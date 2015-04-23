@@ -10,6 +10,8 @@ tags: ["django", "programming", "python"]
 
 ### Escape {{ or }}
 
+{% raw %}
 ~~~ html
 {% templatetag openvariable %} message {% templatetag closevariable %}
 ~~~
+{% endraw %}
