@@ -169,27 +169,30 @@ For example,</p>
   <li>(1234, 1234) =&gt; palindromic</li>
 </ul>
 
-<pre><code class="language-cpp">// my first implementation, overflow is not handled.
-class Solution {
-public:
-  bool isPalindrome(int x) {
-    if (x &lt; 0) {
-      return false;
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">// my first implementation, overflow is not handled.</span>
+<span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+  <span class="predefined-type">bool</span> isPalindrome(<span class="predefined-type">int</span> x) {
+    <span class="keyword">if</span> (x &lt; <span class="integer">0</span>) {
+      <span class="keyword">return</span> <span class="predefined-constant">false</span>;
     }
 
-    int a = x;
-    int b = 0;
+    <span class="predefined-type">int</span> a = x;
+    <span class="predefined-type">int</span> b = <span class="integer">0</span>;
 
-    while (a) {
-      b = b * 10 + a % 10;
+    <span class="keyword">while</span> (a) {
+      b = b * <span class="integer">10</span> + a % <span class="integer">10</span>;
 
-      a /= 10;
+      a /= <span class="integer">10</span>;
     }
 
-    return x == b;
+    <span class="keyword">return</span> x == b;
   }
 };
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

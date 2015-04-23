@@ -159,23 +159,24 @@
   <li><strong>slice</strong> : reference</li>
 </ul>
 
-<pre><code class="language-go">package main
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">package</span> main
 
-import (
-        "fmt"
+<span class="keyword">import</span> (
+        <span class="string"><span class="delimiter">&quot;</span><span class="content">fmt</span><span class="delimiter">&quot;</span></span>
 )
 
-func testArray(s [3]int) {
-        s[0] = 4;
+<span class="keyword">func</span> testArray(s [<span class="integer">3</span>]<span class="predefined-type">int</span>) {
+        s[<span class="integer">0</span>] = <span class="integer">4</span>;
 }
 
-func testSlice(s []int) {
-        s[0] = 4;
+<span class="keyword">func</span> testSlice(s []<span class="predefined-type">int</span>) {
+        s[<span class="integer">0</span>] = <span class="integer">4</span>;
 }
 
-func main() {
-        a := [3]int{0, 1, 2}
-        s := []int{0, 1, 2}
+<span class="keyword">func</span> main() {
+        a := [<span class="integer">3</span>]<span class="predefined-type">int</span>{<span class="integer">0</span>, <span class="integer">1</span>, <span class="integer">2</span>}
+        s := []<span class="predefined-type">int</span>{<span class="integer">0</span>, <span class="integer">1</span>, <span class="integer">2</span>}
 
         fmt.Println(a)
         fmt.Println(s)
@@ -183,12 +184,14 @@ func main() {
         testArray(a)
         testSlice(s)
 
-        // a: [0 1 2]
-        // s: [4 1 2]
+        <span class="comment">// a: [0 1 2]</span>
+        <span class="comment">// s: [4 1 2]</span>
         fmt.Println(a)
         fmt.Println(s)
 }
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

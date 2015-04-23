@@ -170,35 +170,38 @@ type of input is long long, you do not have “long long long long”.</li>
 (compare to predefined max int string alphabetically).</li>
 </ul>
 
-<pre><code class="language-cpp">class Solution {
-public:
-  int reverse(int x) {
-    int y = 0;
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+  <span class="predefined-type">int</span> reverse(<span class="predefined-type">int</span> x) {
+    <span class="predefined-type">int</span> y = <span class="integer">0</span>;
 
-    bool minus;
+    <span class="predefined-type">bool</span> minus;
 
-    if (x &lt; 0) {
-      minus = true;
+    <span class="keyword">if</span> (x &lt; <span class="integer">0</span>) {
+      minus = <span class="predefined-constant">true</span>;
 
       x = -x;
-    } else {
-      minus = false;
+    } <span class="keyword">else</span> {
+      minus = <span class="predefined-constant">false</span>;
     }
 
-    while (x &gt; 0) {
-      y = 10 * y + x % 10;
+    <span class="keyword">while</span> (x &gt; <span class="integer">0</span>) {
+      y = <span class="integer">10</span> * y + x % <span class="integer">10</span>;
 
-      x /= 10;
+      x /= <span class="integer">10</span>;
     }
 
-    if (minus) {
+    <span class="keyword">if</span> (minus) {
       y = -y;
     }
 
-    return y;
+    <span class="keyword">return</span> y;
   }
 };
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

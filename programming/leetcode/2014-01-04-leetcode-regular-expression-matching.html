@@ -179,47 +179,50 @@
   <li>isMatch(“aab”, “c<em>a</em>b”) → true</li>
 </ul>
 
-<pre><code class="language-cpp">class Solution {
-public:
-  bool isMatch(const char *s, const char *p) {
-    // if the pattern is ended, they are match only if the string is also ended.
-    if (!*p) {
-      return !*s;
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+  <span class="predefined-type">bool</span> isMatch(<span class="directive">const</span> <span class="predefined-type">char</span> *s, <span class="directive">const</span> <span class="predefined-type">char</span> *p) {
+    <span class="comment">// if the pattern is ended, they are match only if the string is also ended.</span>
+    <span class="keyword">if</span> (!*p) {
+      <span class="keyword">return</span> !*s;
     }
 
-    // if there is only one character in the pattern,
-    // or the 2nd character in the pattern is not '*' :
-    if (!p[1] || (p[1] != '*')) {
-      // they are match if:
-      // - the 1st character of both strings are the same.
-      // - the remain strings (sub-string without the 1st character) are matched.
+    <span class="comment">// if there is only one character in the pattern,</span>
+    <span class="comment">// or the 2nd character in the pattern is not '*' :</span>
+    <span class="keyword">if</span> (!p[<span class="integer">1</span>] || (p[<span class="integer">1</span>] != <span class="char">'*'</span>)) {
+      <span class="comment">// they are match if:</span>
+      <span class="comment">// - the 1st character of both strings are the same.</span>
+      <span class="comment">// - the remain strings (sub-string without the 1st character) are matched.</span>
 
-      return (*s &amp;&amp; ((*s == *p) || ('.' == *p))) &amp;&amp; this-&gt;isMatch(s + 1, p + 1);
+      <span class="keyword">return</span> (*s &amp;&amp; ((*s == *p) || (<span class="char">'.'</span> == *p))) &amp;&amp; <span class="local-variable">this</span>-&gt;isMatch(s + <span class="integer">1</span>, p + <span class="integer">1</span>);
     }
 
-    // in this stage, the pattern is began with 'x*' or '.*' (x can be
-    // any other character).
+    <span class="comment">// in this stage, the pattern is began with 'x*' or '.*' (x can be</span>
+    <span class="comment">// any other character).</span>
 
-    // if the 'x*' pattern is skipped
-    if (this-&gt;isMatch(s, p + 2)) {
-      return true;
+    <span class="comment">// if the 'x*' pattern is skipped</span>
+    <span class="keyword">if</span> (<span class="local-variable">this</span>-&gt;isMatch(s, p + <span class="integer">2</span>)) {
+      <span class="keyword">return</span> <span class="predefined-constant">true</span>;
     }
 
-    // try to match:
-    // =&gt; abcdefX : .*X
-    // =&gt; yyyyyyX : y*X
-    while (*s &amp;&amp; ((*s == *p) || ('.' == *p))) {
-      if (this-&gt;isMatch(s + 1, p + 2)) {
-        return true;
+    <span class="comment">// try to match:</span>
+    <span class="comment">// =&gt; abcdefX : .*X</span>
+    <span class="comment">// =&gt; yyyyyyX : y*X</span>
+    <span class="keyword">while</span> (*s &amp;&amp; ((*s == *p) || (<span class="char">'.'</span> == *p))) {
+      <span class="keyword">if</span> (<span class="local-variable">this</span>-&gt;isMatch(s + <span class="integer">1</span>, p + <span class="integer">2</span>)) {
+        <span class="keyword">return</span> <span class="predefined-constant">true</span>;
       }
 
-      s += 1;
+      s += <span class="integer">1</span>;
     }
 
-    return false;
+    <span class="keyword">return</span> <span class="predefined-constant">false</span>;
   }
 };
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

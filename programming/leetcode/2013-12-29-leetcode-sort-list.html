@@ -159,23 +159,24 @@
 - Length counting of list is O(n)
 - Total complexity is O((n log n) + n) =&gt; O(n log n)</p>
 
-<pre><code class="language-cpp">/**
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">/**
  * Definition for singly-linked list.
  * struct ListNode {
  *     int val;
  *     ListNode *next;
  *     ListNode(int x) : val(x), next(NULL) {}
  * };
- */
-class Solution {
-public:
-  ListNode* mergesort(ListNode* node, int len) {
-    if (len &lt; 2) {
-      // end, nothing to sort
-      return node;
-    } else if (len == 2) {
-      // sort two nodes
-      if (node-&gt;val &gt; node-&gt;next-&gt;val) {
+ */</span>
+<span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+  ListNode* mergesort(ListNode* node, <span class="predefined-type">int</span> len) {
+    <span class="keyword">if</span> (len &lt; <span class="integer">2</span>) {
+      <span class="comment">// end, nothing to sort</span>
+      <span class="keyword">return</span> node;
+    } <span class="keyword">else</span> <span class="keyword">if</span> (len == <span class="integer">2</span>) {
+      <span class="comment">// sort two nodes</span>
+      <span class="keyword">if</span> (node-&gt;val &gt; node-&gt;next-&gt;val) {
         node-&gt;next-&gt;next = node;
 
         node = node-&gt;next;
@@ -183,50 +184,50 @@ public:
         node-&gt;next-&gt;next = nullptr;
       }
 
-      return node;
+      <span class="keyword">return</span> node;
     }
 
-    int nlen = (len &gt;&gt; 1);
-    int mlen = nlen - 1;
+    <span class="predefined-type">int</span> nlen = (len &gt;&gt; <span class="integer">1</span>);
+    <span class="predefined-type">int</span> mlen = nlen - <span class="integer">1</span>;
 
     ListNode* l1 = node;
     ListNode* l2 = node;
     ListNode* temp;
 
-    while (mlen) {
+    <span class="keyword">while</span> (mlen) {
       l2 = l2-&gt;next;
 
-      mlen -= 1;
+      mlen -= <span class="integer">1</span>;
     }
 
     temp = l2;
     l2 = l2-&gt;next;
     temp-&gt;next = nullptr;
 
-    // divide the list into l1 and l2, sort them
-    l1 = this-&gt;mergesort(l1, nlen);
-    l2 = this-&gt;mergesort(l2, len - nlen);
+    <span class="comment">// divide the list into l1 and l2, sort them</span>
+    l1 = <span class="local-variable">this</span>-&gt;mergesort(l1, nlen);
+    l2 = <span class="local-variable">this</span>-&gt;mergesort(l2, len - nlen);
 
-    // merge two sorted list
+    <span class="comment">// merge two sorted list</span>
     ListNode* head(nullptr);
     ListNode* tail(nullptr);
 
-    while (l1 &amp;&amp; l2) {
-      if (l1-&gt;val &lt; l2-&gt;val) {
+    <span class="keyword">while</span> (l1 &amp;&amp; l2) {
+      <span class="keyword">if</span> (l1-&gt;val &lt; l2-&gt;val) {
         temp = l1;
 
         l1 = l1-&gt;next;
-      } else {
+      } <span class="keyword">else</span> {
         temp = l2;
 
         l2 = l2-&gt;next;
       }
 
-      if (tail) {
+      <span class="keyword">if</span> (tail) {
         tail-&gt;next = temp;
 
         tail = temp;
-      } else {
+      } <span class="keyword">else</span> {
         head = temp;
         tail = temp;
       }
@@ -234,39 +235,41 @@ public:
       temp-&gt;next = nullptr;
     }
 
-    // append remained nodes, they are larger than merged nodes
-    if (l1) {
-      if (tail) {
+    <span class="comment">// append remained nodes, they are larger than merged nodes</span>
+    <span class="keyword">if</span> (l1) {
+      <span class="keyword">if</span> (tail) {
         tail-&gt;next = l1;
-      } else {
+      } <span class="keyword">else</span> {
         head = l1;
       }
-    } else if (l2) {
-      if (tail) {
+    } <span class="keyword">else</span> <span class="keyword">if</span> (l2) {
+      <span class="keyword">if</span> (tail) {
         tail-&gt;next = l2;
-      } else {
+      } <span class="keyword">else</span> {
         head = l2;
       }
     }
 
-    return head;
+    <span class="keyword">return</span> head;
   }
 
   ListNode *sortList(ListNode *head) {
-    int len = 0;
+    <span class="predefined-type">int</span> len = <span class="integer">0</span>;
 
     ListNode* temp = head;
 
-    while (temp) {
+    <span class="keyword">while</span> (temp) {
       temp = temp-&gt;next;
 
-      len += 1;
+      len += <span class="integer">1</span>;
     }
 
-    return this-&gt;mergesort(head, len);
+    <span class="keyword">return</span> <span class="local-variable">this</span>-&gt;mergesort(head, len);
   }
 };
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

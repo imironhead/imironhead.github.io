@@ -158,39 +158,42 @@
 
 <p>Note: You may not slant the container.</p>
 
-<pre><code class="language-cpp">class Solution {
-public:
-  int maxArea(vector&lt;int&gt; &amp;height) {
-    // empty container
-    if (height.size() &lt; 2) {
-      return 0;
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+  <span class="predefined-type">int</span> maxArea(vector&lt;<span class="predefined-type">int</span>&gt; &amp;height) {
+    <span class="comment">// empty container</span>
+    <span class="keyword">if</span> (height.size() &lt; <span class="integer">2</span>) {
+      <span class="keyword">return</span> <span class="integer">0</span>;
     }
 
-    // only two lines
-    if (height.size() == 2) {
-      return min(height[0], height[1]);
+    <span class="comment">// only two lines</span>
+    <span class="keyword">if</span> (height.size() == <span class="integer">2</span>) {
+      <span class="keyword">return</span> min(height[<span class="integer">0</span>], height[<span class="integer">1</span>]);
     }
 
-    int i = 0;
-    int j = height.size() - 1;
-    int a = 0;
+    <span class="predefined-type">int</span> i = <span class="integer">0</span>;
+    <span class="predefined-type">int</span> j = height.size() - <span class="integer">1</span>;
+    <span class="predefined-type">int</span> a = <span class="integer">0</span>;
 
-    while (i &lt; j) {
+    <span class="keyword">while</span> (i &lt; j) {
       a = max(a, (j - i) * min(height[j], height[i]));
 
-      // change the index of lower line to find larger container.
-      // it's impossible to find larger container if the higher line is changed.
-      if (height[i] &lt; height[j]) {
-        i += 1;
-      } else {
-        j -= 1;
+      <span class="comment">// change the index of lower line to find larger container.</span>
+      <span class="comment">// it's impossible to find larger container if the higher line is changed.</span>
+      <span class="keyword">if</span> (height[i] &lt; height[j]) {
+        i += <span class="integer">1</span>;
+      } <span class="keyword">else</span> {
+        j -= <span class="integer">1</span>;
       }
     }
 
-    return a;
+    <span class="keyword">return</span> a;
   }
 };
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

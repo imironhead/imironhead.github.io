@@ -156,78 +156,81 @@
   <article class="post-content">
     <p>Idea: implement an algorithm that works like how you multiply 2 integers on paper.</p>
 
-<pre><code class="language-cpp">class Solution {
-public:
-  string multiply(string num1, string num2) {
-    if ((num1 == string("0")) || (num2 == string("0"))) {
-      return string("0");
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+  <span class="predefined-type">string</span> multiply(<span class="predefined-type">string</span> num1, <span class="predefined-type">string</span> num2) {
+    <span class="keyword">if</span> ((num1 == <span class="predefined-type">string</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">0</span><span class="delimiter">&quot;</span></span>)) || (num2 == <span class="predefined-type">string</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">0</span><span class="delimiter">&quot;</span></span>))) {
+      <span class="keyword">return</span> <span class="predefined-type">string</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">0</span><span class="delimiter">&quot;</span></span>);
     }
 
-    if (num1 == string("1")) {
-      return num2;
+    <span class="keyword">if</span> (num1 == <span class="predefined-type">string</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">1</span><span class="delimiter">&quot;</span></span>)) {
+      <span class="keyword">return</span> num2;
     }
 
-    if (num2 == string("1")) {
-      return num1;
+    <span class="keyword">if</span> (num2 == <span class="predefined-type">string</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">1</span><span class="delimiter">&quot;</span></span>)) {
+      <span class="keyword">return</span> num1;
     }
 
-    vector&lt;int&gt; num(1);
+    vector&lt;<span class="predefined-type">int</span>&gt; num(<span class="integer">1</span>);
 
-    num[0] = 0;
+    num[<span class="integer">0</span>] = <span class="integer">0</span>;
 
-    int a;
-    int b;
-    int i;
-    int j;
-    int d1;
-    int d2;
+    <span class="predefined-type">int</span> a;
+    <span class="predefined-type">int</span> b;
+    <span class="predefined-type">int</span> i;
+    <span class="predefined-type">int</span> j;
+    <span class="predefined-type">int</span> d1;
+    <span class="predefined-type">int</span> d2;
 
-    for (i = num2.size() - 1; i &gt;= 0; --i) {
-      d2 = num2.size() - 1 - i;
+    <span class="keyword">for</span> (i = num2.size() - <span class="integer">1</span>; i &gt;= <span class="integer">0</span>; --i) {
+      d2 = num2.size() - <span class="integer">1</span> - i;
 
-      b = 0;
+      b = <span class="integer">0</span>;
 
-      for (j = num1.size() - 1; j &gt;= 0; --j) {
-        d1 = num1.size() - 1 - j;
+      <span class="keyword">for</span> (j = num1.size() - <span class="integer">1</span>; j &gt;= <span class="integer">0</span>; --j) {
+        d1 = num1.size() - <span class="integer">1</span> - j;
 
-        if (d1 + d2 &gt;= num.size()) {
-          num.resize(d1 + d2 + 1, 0);
+        <span class="keyword">if</span> (d1 + d2 &gt;= num.size()) {
+          num.resize(d1 + d2 + <span class="integer">1</span>, <span class="integer">0</span>);
         }
 
-        a = b + (num1[j] - '0') * (num2[i] - '0') + num[d1 + d2];
+        a = b + (num1[j] - <span class="char">'0'</span>) * (num2[i] - <span class="char">'0'</span>) + num[d1 + d2];
 
-        if (a &gt; 9) {
-          b = a / 10;
+        <span class="keyword">if</span> (a &gt; <span class="integer">9</span>) {
+          b = a / <span class="integer">10</span>;
 
-          num[d1 + d2] = a % 10;
-        } else {
-          b = 0;
+          num[d1 + d2] = a % <span class="integer">10</span>;
+        } <span class="keyword">else</span> {
+          b = <span class="integer">0</span>;
 
           num[d1 + d2] = a;
         }
       }
 
-      if (b) {
-        d1 += 1;
+      <span class="keyword">if</span> (b) {
+        d1 += <span class="integer">1</span>;
 
-        if (d1 + d2 &gt;= num.size()) {
-          num.resize(d1 + d2 + 1, 0);
+        <span class="keyword">if</span> (d1 + d2 &gt;= num.size()) {
+          num.resize(d1 + d2 + <span class="integer">1</span>, <span class="integer">0</span>);
         }
 
         num[d1 + d2] = b;
       }
     }
 
-    string ans("");
+    <span class="predefined-type">string</span> ans(<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>);
 
-    for (int i = num.size() - 1; i &gt;= 0; --i) {
-      ans.append(1, '0' + num[i]);
+    <span class="keyword">for</span> (<span class="predefined-type">int</span> i = num.size() - <span class="integer">1</span>; i &gt;= <span class="integer">0</span>; --i) {
+      ans.append(<span class="integer">1</span>, <span class="char">'0'</span> + num[i]);
     }
 
-    return ans;
+    <span class="keyword">return</span> ans;
   }
 };
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

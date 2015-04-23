@@ -202,19 +202,20 @@
 
 <p>The Refresh method is used to display the game on the LED matrix. In order to make the display stable, we need a stable refresh rate in this method. In other words, to display a pattern stablely, we must spend the same time period on each loop and LED. That’s why I turn off some LEDs twice (set a pin to HIGH twice).</p>
 
-<pre><code class="language-cpp">void Refresh() {
-  int row, col, msk;
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="directive">void</span> Refresh() {
+  <span class="predefined-type">int</span> row, col, msk;
 
-  for (row = 0; row &lt; 8; ++row) {
-    msk = this-&gt;masks[row];
+  <span class="keyword">for</span> (row = <span class="integer">0</span>; row &lt; <span class="integer">8</span>; ++row) {
+    msk = <span class="local-variable">this</span>-&gt;masks[row];
 
     digitalWrite(SnakeBoard::ROW[row], HIGH);
 
-    for (col = 0; col &lt; 8; ++col) {
-      if (msk &amp; (1 &lt;&lt; col)) {
+    <span class="keyword">for</span> (col = <span class="integer">0</span>; col &lt; <span class="integer">8</span>; ++col) {
+      <span class="keyword">if</span> (msk &amp; (<span class="integer">1</span> &lt;&lt; col)) {
         digitalWrite(SnakeBoard::COL[col], LOW);
         digitalWrite(SnakeBoard::COL[col], HIGH);
-      } else {
+      } <span class="keyword">else</span> {
         digitalWrite(SnakeBoard::COL[col], HIGH);
         digitalWrite(SnakeBoard::COL[col], HIGH);
       }
@@ -223,7 +224,9 @@
     digitalWrite(ROW[row], LOW);
   }
 }
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h3 id="the-final-result">The Final Result</h3>
 
@@ -231,11 +234,14 @@
 
 <p>Now we can combine a circuit from ‘IRremote’ and ‘Row Column Scanning’ example. Remember to change the data pin of infrared sensor from 11 to A0. Then upload the snake to Arduino and start to play!</p>
 
-<pre><code class="language-cpp">#define REMOTE_UP               (0x85AEFD19)
-#define REMOTE_DOWN             (0xB66D73CD)
-#define REMOTE_RIGHT            (0x5C5C901D)
-#define REMOTE_LEFT             (0x8F890759)
-</code></pre>
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="preprocessor">#define</span> REMOTE_UP               (<span class="hex">0x85AEFD19</span>)
+<span class="preprocessor">#define</span> REMOTE_DOWN             (<span class="hex">0xB66D73CD</span>)
+<span class="preprocessor">#define</span> REMOTE_RIGHT            (<span class="hex">0x5C5C901D</span>)
+<span class="preprocessor">#define</span> REMOTE_LEFT             (<span class="hex">0x8F890759</span>)
+</pre></div>
+</div>
+</div>
 
 <h3 id="update-20141127">Update 20141127</h3>
 
@@ -248,8 +254,9 @@
 
 <p>Reconnect all column pins of the LED matrix to a 74HC595 chip (because I have only one in hand :)). Refresh method become:</p>
 
-<pre><code class="language-cpp">void Refresh() {
-  for (int row = 0; row &lt; 8; ++row) {
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="directive">void</span> Refresh() {
+  <span class="keyword">for</span> (<span class="predefined-type">int</span> row = <span class="integer">0</span>; row &lt; <span class="integer">8</span>; ++row) {
     digitalWrite(SnakeBoard::ROW[row], HIGH);
 
     digitalWrite(PIN_SIFTING_OUT_LATCH, LOW);
@@ -257,17 +264,19 @@
       PIN_SIFTING_DATA,
       PIN_SIFTING_CLOCK,
       LSBFIRST,
-      ~(unsigned char)this-&gt;masks[row]);
+      ~(<span class="predefined-type">unsigned</span> <span class="predefined-type">char</span>)<span class="local-variable">this</span>-&gt;masks[row]);
     digitalWrite(PIN_SIFTING_OUT_LATCH, HIGH);
 
     digitalWrite(PIN_SIFTING_OUT_LATCH, LOW);
-    shiftOut(PIN_SIFTING_DATA, PIN_SIFTING_CLOCK, MSBFIRST, 255);
+    shiftOut(PIN_SIFTING_DATA, PIN_SIFTING_CLOCK, MSBFIRST, <span class="integer">255</span>);
     digitalWrite(PIN_SIFTING_OUT_LATCH, HIGH);
 
     digitalWrite(ROW[row], LOW);
   }
 }
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

@@ -158,9 +158,12 @@
 
 <h2 id="section">變數與常數</h2>
 
-<pre><code class="language-swift">let x = 10    // let =&gt; x 是常數
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let x = 10    // let =&gt; x 是常數
 var y = 100   // var =&gt; y 是變數
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h2 id="section-1">變數型別</h2>
 
@@ -178,19 +181,25 @@ var y: Double           // y 的型別是 Double</p>
 
 <p>我覺得用處不大，除非鍵盤可以輕易打出這些字。</p>
 
-<pre><code class="language-swift">let π = 3.14159
-let 你好 = "你好世界"
-</code></pre>
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let π = 3.14159
+let 你好 = &quot;你好世界&quot;
+</pre></div>
+</div>
+</div>
 
 <h2 id="section-2">印出字串</h2>
 
-<pre><code class="language-swift">print("hello")              // 印出 hello 不換行
-println("hello")            // 印出 hello 並換行
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>print(&quot;hello&quot;)              // 印出 hello 不換行
+println(&quot;hello&quot;)            // 印出 hello 並換行
 
-var name = "ironhead"
+var name = &quot;ironhead&quot;
 
-println("hello \(name)")    // 印出 hello ironhead 並換行
-</code></pre>
+println(&quot;hello \(name)&quot;)    // 印出 hello ironhead 並換行
+</pre></div>
+</div>
+</div>
 
 <h2 id="section-3">註解</h2>
 
@@ -198,8 +207,11 @@ println("hello \(name)")    // 印出 hello ironhead 並換行
 
 <h2 id="section-4">除非要在一行內寫出多個式子，否則可以不加分號</h2>
 
-<pre><code class="language-swift">let name = "cat"; print(name)
-</code></pre>
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let name = &quot;cat&quot;; print(name)
+</pre></div>
+</div>
+</div>
 
 <h2 id="section-5">整數</h2>
 
@@ -208,7 +220,8 @@ println("hello \(name)")    // 印出 hello ironhead 並換行
   <li>在 64-bit 平台上，Int 跟 Int64 一樣，UInt 跟 UInt64 一樣</li>
 </ul>
 
-<pre><code class="language-swift">let minValue = UInt8.min  // minValue 的型別是 UInt8 而且值是 0
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let minValue = UInt8.min  // minValue 的型別是 UInt8 而且值是 0
 let maxValue = UInt8.max  // maxValue 的型別是 UInt8 而且值是 255
 
 let a = 100000      // 10 進位整數
@@ -216,26 +229,34 @@ let b = 0b1001      //  2 進位整數
 let c = 0o2121      //  8 進位整數
 let d = 0xffee      // 16 進位整數
 let e = 1_000_000   // 1000000 ，加底線增加可讀性
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h2 id="section-6">浮點數</h2>
 
 <p>未指定型別時，預設為 Double</p>
 
-<pre><code class="language-swift">let aDouble = 12.1875
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let aDouble = 12.1875
 let bDouble = 1.21875e1
 let cDouble = 0xC.3p0         // 16 進位, p快示以 2為底的指數
 let dDouble = 000123.456
 let eDouble = 1_000.000_001   // 用底線增加可讀性
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h2 id="section-7">型別轉換</h2>
 
-<pre><code class="language-swift">let a: UInt8 = -1             // 編譯錯誤
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let a: UInt8 = -1             // 編譯錯誤
 let b: Int8 = Int8.max + 1    // 編譯錯誤
 
 let c = Int(1.23)             // 將 Double 轉換成 Int
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h2 id="section-8">型別別名</h2>
 
@@ -253,24 +274,27 @@ typealias Length = UInt16</p>
   <li>簡易的暫用結構（struct）</li>
 </ul>
 
-<pre><code class="language-swift">let http404Error = (404, "Not Found")                         // 型別是 (Int, String)
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>let http404Error = (404, &quot;Not Found&quot;)                         // 型別是 (Int, String)
 
 let (statusCode, statusMessage) = http404Error
 
-println("The status code is \(statusCode)")
-println("The status message is \(statusMessage)")
+println(&quot;The status code is \(statusCode)&quot;)
+println(&quot;The status message is \(statusMessage)&quot;)
 
 let (justTheStatusCode, _) = http404Error                     // 不需要的值可以用 _ 代替
-println("The status code is \(justTheStatusCode)")
+println(&quot;The status code is \(justTheStatusCode)&quot;)
 
-println("The status code is \(http404Error.0)")               // 可以用 index，從 0開始
-println("The status message is \(http404Error.1)")            // 可以用 index，從 0開始
+println(&quot;The status code is \(http404Error.0)&quot;)               // 可以用 index，從 0開始
+println(&quot;The status message is \(http404Error.1)&quot;)            // 可以用 index，從 0開始
 
-let http200Status = (statusCode: 200, description: "OK")      // 可以替欄位取名字
+let http200Status = (statusCode: 200, description: &quot;OK&quot;)      // 可以替欄位取名字
 
-println("The status code is \(http200Status.statusCode)")     // 然後用欄位取值
-println("The status message is \(http200Status.description)")
-</code></pre>
+println(&quot;The status code is \(http200Status.statusCode)&quot;)     // 然後用欄位取值
+println(&quot;The status message is \(http200Status.description)&quot;)
+</pre></div>
+</div>
+</div>
 
 <h2 id="optionals">Optionals（中文是啥？）</h2>
 <p>這是新的概念，在c/c++或python裡沒有。
@@ -278,13 +302,16 @@ println("The status message is \(http200Status.description)")
 比如在c/c++裡記錄字數時可能會用整數來儲存，而且 0行是合理的，
 然後用小於 0行來表示這個變數還沒被初始化。「小於零」就是一個特別的狀態。</p>
 
-<pre><code class="language-swift">var line: Int?    // 型別之後加上問號，就成為一個新的 optional型別
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>var line: Int?    // 型別之後加上問號，就成為一個新的 optional型別
 
 line = nil        // 所有的optional變數，都用 nil表示「不存在」
                   // 現在line變數不存在任何值
 
 line = 1024
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <p>在這樣的情況下可讀性較高，字串轉換成整數時有可能因為不合格的格式轉換失敗，
 有些語言的處理方式是傳回特別的值，但是這種情況下所有的整數都應該是合理的。
@@ -295,32 +322,38 @@ let possibleNumber = “123”
 let convertedNumber = possibleNumber.toInt()  // convertedNumber 是 Int?
 ~~~</p>
 
-<pre><code class="language-swift">var a: Int?   // optional 預設初始為 nil
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>var a: Int?   // optional 預設初始為 nil
 
 if a == nil {
   // 如果 a是 nil的話就....
   // 如果替 nil的 optional 變數加上驚嘆號，產生執行時期錯誤
-  println("\(a!)")
+  println(&quot;\(a!)&quot;)
 } else {
   // 不能直接使用 optional 變數
   // 加上驚嘆號告訴編譯器「我確定 a有值，不是 nil」
-  println("\(a!)")
+  println(&quot;\(a!)&quot;)
 }
-</code></pre>
+</pre></div>
+</div>
+</div>
 
-<pre><code class="language-swift">var a: Int?
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>var a: Int?
 
 ......
 
 if let b = a {
   // 如果 a 不是 nil
   //  b是 Int，不是 Int? 了，不需要加 !
-  println("\(b)")
+  println(&quot;\(b)&quot;)
 } else {
   // 如果 a 是 nil
 }
 
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <p>加 !的 optional變數跟加 ?的 optional變數一樣，但是可以當一般變數使用，取用時不需要再加上 !。
 通常用在一開始是 nil（不是 optional就不能是 nil），但是一經付值後就不會再變回 nil的變數。

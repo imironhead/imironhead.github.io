@@ -156,35 +156,38 @@
   <article class="post-content">
     <p>Write a function to find the longest common prefix string amongst an array of strings.</p>
 
-<pre><code class="language-cpp">class Solution {
-public:
-  string longestCommonPrefix(vector&lt;string&gt;&amp; strs) {
-    if (strs.empty()) {
-      return string("");
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+  <span class="predefined-type">string</span> longestCommonPrefix(vector&lt;<span class="predefined-type">string</span>&gt;&amp; strs) {
+    <span class="keyword">if</span> (strs.empty()) {
+      <span class="keyword">return</span> <span class="predefined-type">string</span>(<span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>);
     }
 
-    int i;
+    <span class="predefined-type">int</span> i;
 
-    bool done = true;
+    <span class="predefined-type">bool</span> done = <span class="predefined-constant">true</span>;
 
-    for (i = 0; i &lt; strs[0].length(); ++i) {
-      for (auto&amp; s : strs) {
-        if ((i &gt;= s.length()) || (s[i] != strs[0][i])) {
-          done = false;
+    <span class="keyword">for</span> (i = <span class="integer">0</span>; i &lt; strs[<span class="integer">0</span>].length(); ++i) {
+      <span class="keyword">for</span> (<span class="directive">auto</span>&amp; s : strs) {
+        <span class="keyword">if</span> ((i &gt;= s.length()) || (s[i] != strs[<span class="integer">0</span>][i])) {
+          done = <span class="predefined-constant">false</span>;
 
-          break;
+          <span class="keyword">break</span>;
         }
       }
 
-      if (!done) {
-        break;
+      <span class="keyword">if</span> (!done) {
+        <span class="keyword">break</span>;
       }
     }
 
-    return strs[0].substr(0, i);
+    <span class="keyword">return</span> strs[<span class="integer">0</span>].substr(<span class="integer">0</span>, i);
   }
 };
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

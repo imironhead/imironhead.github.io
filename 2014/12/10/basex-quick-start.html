@@ -165,21 +165,22 @@
 
 <h3 id="create-database-and-add-some-nodes">Create Database and Add Some Nodes</h3>
 
-<pre><code class="language-xquery">(: create a database and name it "tv-shows". :)
-(: attention: this command cleans the "tv-shows" database if it exist. :)
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>(: create a database and name it &quot;tv-shows&quot;. :)
+(: attention: this command cleans the &quot;tv-shows&quot; database if it exist. :)
 create db tv-shows
 
 (: open the database whose name is tv-shows. :)
 open tv-shows
 
-(: add xml to the currently opened database at the path "shows". :)
+(: add xml to the currently opened database at the path &quot;shows&quot;. :)
 add to shows &lt;shows&gt;&lt;show&gt;&lt;/show&gt;&lt;show&gt;&lt;/show&gt;&lt;show&gt;&lt;/show&gt;&lt;/shows&gt;
 
 (: list all database, there should be 1 resource under tv-shows database. :)
 list
 
 (: list all resources of tv-shows, :)
-(: there should be 1 xml whose name is "shows". :)
+(: there should be 1 xml whose name is &quot;shows&quot;. :)
 list tv-shows
 
 (: get all &lt;show/&gt; node under &lt;shows&gt;&lt;/shows&gt;. :)
@@ -218,13 +219,16 @@ xquery let $s := shows/show[2] return insert node &lt;rating/&gt; into $s
 (: &lt;/shows&gt;                         :)
 xquery delete node shows/show[1]
 
-(: destroy the database "tv-shows". :)
+(: destroy the database &quot;tv-shows&quot;. :)
 drop db tv-shows
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h3 id="update-a-node">Update a Node</h3>
 
-<pre><code class="language-xquery">create db tv-shows
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>create db tv-shows
 open tv-shows
 add to shows &lt;shows&gt;&lt;show&gt;&lt;/show&gt;&lt;show&gt;&lt;/show&gt;&lt;/shows&gt;
 
@@ -239,7 +243,7 @@ xquery insert node attribute{'seasons'}{2} into shows/show[2]
 xquery insert node &lt;name&gt;Game of Thrones&lt;/name&gt; into shows/show[1]
 xquery insert node &lt;name&gt;Penny Dreadful&lt;/name&gt; into shows/show[2]
 
-(: add &lt;star/&gt; to "Game of Thrones" :)
+(: add &lt;star/&gt; to &quot;Game of Thrones&quot; :)
 xquery insert node (&lt;star&gt;Lena Headey&lt;/star&gt;, &lt;star&gt;Peter Dinklage&lt;/star&gt;)
   into shows/show[1]
 
@@ -248,13 +252,13 @@ xquery for $s in shows/show where $s/name='Penny Dreadful' return insert
   node (&lt;star&gt;Josh Hartnett&lt;/star&gt;,&lt;star&gt;ironhead&lt;/star&gt;) into $s
 
 (: current contents                                 :)
-(:  &lt;shows update="2014-12-11T14:26:04.139+08:00"&gt;  :)
-(:    &lt;show seasons="5"&gt;                            :)
+(:  &lt;shows update=&quot;2014-12-11T14:26:04.139+08:00&quot;&gt;  :)
+(:    &lt;show seasons=&quot;5&quot;&gt;                            :)
 (:      &lt;name&gt;Game of Thrones&lt;/name&gt;                :)
 (:      &lt;star&gt;Lena Headey&lt;/star&gt;                    :)
 (:      &lt;star&gt;Peter Dinklage&lt;/star&gt;                 :)
 (:    &lt;/show&gt;                                       :)
-(:    &lt;show seasons="2"&gt;                            :)
+(:    &lt;show seasons=&quot;2&quot;&gt;                            :)
 (:      &lt;name&gt;Penny Dreadful&lt;/name&gt;                 :)
 (:      &lt;star&gt;Eva Green&lt;/star&gt;                      :)
 (:      &lt;star&gt;Josh Hartnett&lt;/star&gt;                  :)
@@ -269,7 +273,7 @@ xquery for $x in shows/show where $x/name='Penny Dreadful'
   return delete node $x/star[.='ironhead']
 
 (: replace a &lt;star/&gt; node. :)
-xquery for $s in shows/show where $s/name="Penny Dreadful"
+xquery for $s in shows/show where $s/name=&quot;Penny Dreadful&quot;
   return (replace node $s/star[.='Josh Hartnett'] with
   &lt;star&gt;Timothy Dalton&lt;/star&gt;)
 
@@ -285,13 +289,16 @@ xquery copy $temp := shows/show[2] modify (insert node
 xquery *
 
 drop db tv-shows
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h3 id="write-function---functional-programming">Write Function - Functional Programming</h3>
 
-<pre><code class="language-xquery">(: In test database, shows resource.
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>(: In test database, shows resource.
   &lt;shows&gt;
-    &lt;show name="Game of Thrones"/&gt;
+    &lt;show name=&quot;Game of Thrones&quot;/&gt;
   &lt;/shows&gt; :)
 
 (: To declare function in this way, namespace must be local.
@@ -300,7 +307,7 @@ drop db tv-shows
   $n/@* returns all attributes of $n.
   element { node-name($n) }{ $n/@* } clone $n :)
 
-(: result: &lt;show name="Game of Thrones"/&gt; :)
+(: result: &lt;show name=&quot;Game of Thrones&quot;/&gt; :)
 
 xquery declare function local:clone($n as node()*) as node()* {
   element { node-name($n) }{ $n/@* }
@@ -308,23 +315,26 @@ xquery declare function local:clone($n as node()*) as node()* {
 let $x := doc('test/shows')/shows/show[1]
 return local:clone($x)
 
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <h3 id="get-elements-childlessly">Get Elements Childlessly</h3>
 
-<pre><code class="language-xquery">(: In test database, shows resource.
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>(: In test database, shows resource.
   &lt;shows&gt;
-    &lt;show name="Game of Thrones"/&gt;
-    &lt;show name="Penny Dreadful"/&gt;
-    &lt;movie name="The Maze Runner"/&gt;
+    &lt;show name=&quot;Game of Thrones&quot;/&gt;
+    &lt;show name=&quot;Penny Dreadful&quot;/&gt;
+    &lt;movie name=&quot;The Maze Runner&quot;/&gt;
   &lt;/shows&gt;
 :)
 
 (: Result:
   &lt;root&gt;
-    &lt;show name="Game of Thrones"/&gt;
-    &lt;show name="Penny Dreadful"/&gt;
-    &lt;movie name="The Maze Runner"/&gt;
+    &lt;show name=&quot;Game of Thrones&quot;/&gt;
+    &lt;show name=&quot;Penny Dreadful&quot;/&gt;
+    &lt;movie name=&quot;The Maze Runner&quot;/&gt;
   &lt;/root&gt;
 :)
 
@@ -335,7 +345,9 @@ let $x := doc('test/shows')/shows/*
 return &lt;root&gt;{
   for $c in $x return local:clone($c)
 }&lt;/root&gt;
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

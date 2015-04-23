@@ -158,10 +158,10 @@
 
 <p>Prime factors of those numbers are 2, 3 or 5.</p>
 
-<script type="math/tex; mode=display">Ugly = 2^a * 3^b * 5^c</script>
+<script type="math/tex; mode=display"> Ugly = 2^a * 3^b * 5^c </script>
 
 <script type="math/tex; mode=display">% <![CDATA[
-0 <= a, b, c %]]></script>
+ 0 <= a, b, c  %]]></script>
 
 <p>How to implement?</p>
 
@@ -174,48 +174,51 @@
   <li>To illustrate the idea, build a tree with root node 1 (the first ugly number). All node values in this tree are their parent values multiple 2, 3, or 5 (e.g. children of 1 are 2, 3 and 5. children of 2 are 2<em>2, 2</em>3 and 2*5. etc.). Remove the duplicated numbers and selected remains in ascending order.</li>
 </ul>
 
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;queue&gt;
-#include &lt;vector&gt;
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;queue&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;vector&gt;</span>
 
-using namespace std;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
 
 
-struct Generator {
-  priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt;  pool;
+<span class="keyword">struct</span> Generator {
+  priority_queue&lt;<span class="predefined-type">int</span>, vector&lt;<span class="predefined-type">int</span>&gt;, greater&lt;<span class="predefined-type">int</span>&gt;&gt;  pool;
 
   Generator() {
-    this-&gt;pool.push(1);
+    <span class="local-variable">this</span>-&gt;pool.push(<span class="integer">1</span>);
   }
 
-  int Next() {
-    int number = this-&gt;pool.top();
+  <span class="predefined-type">int</span> Next() {
+    <span class="predefined-type">int</span> number = <span class="local-variable">this</span>-&gt;pool.top();
 
-    this-&gt;pool.pop();
+    <span class="local-variable">this</span>-&gt;pool.pop();
 
-    if (number % 5 == 0) {
-      this-&gt;pool.push(number * 5);
-    } else if (number % 3 == 0) {
-      this-&gt;pool.push(number * 3);
-      this-&gt;pool.push(number * 5);
-    } else {
-      this-&gt;pool.push(number * 2);
-      this-&gt;pool.push(number * 3);
-      this-&gt;pool.push(number * 5);
+    <span class="keyword">if</span> (number % <span class="integer">5</span> == <span class="integer">0</span>) {
+      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">5</span>);
+    } <span class="keyword">else</span> <span class="keyword">if</span> (number % <span class="integer">3</span> == <span class="integer">0</span>) {
+      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">3</span>);
+      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">5</span>);
+    } <span class="keyword">else</span> {
+      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">2</span>);
+      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">3</span>);
+      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">5</span>);
     }
 
-    return number;
+    <span class="keyword">return</span> number;
   }
 };
 
-int main() {
+<span class="predefined-type">int</span> main() {
   Generator g;
 
-  for (int i = 0; i &lt; 100; ++i) {
+  <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; <span class="integer">100</span>; ++i) {
     cout &lt;&lt; g.Next() &lt;&lt; endl;
   }
 }
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 

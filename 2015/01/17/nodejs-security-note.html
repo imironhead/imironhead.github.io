@@ -170,62 +170,71 @@
   <li><a href="https://github.com/expressjs/csurf">csurf: Node.js CSRF protection middleware</a></li>
 </ul>
 
-<pre><code class="language-javascript">// dependency
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">// dependency</span>
 {
-  "dependencies": {
-    "csurf": "^1.6.5"
+  <span class="key"><span class="delimiter">&quot;</span><span class="content">dependencies</span><span class="delimiter">&quot;</span></span>: {
+    <span class="key"><span class="delimiter">&quot;</span><span class="content">csurf</span><span class="delimiter">&quot;</span></span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">^1.6.5</span><span class="delimiter">&quot;</span></span>
   }
 }
 
-// routes
+<span class="comment">// routes</span>
 app.use(csrf());
-app.use(function(req, res, next) {
-  var token = req.csrfToken();
+app.use(<span class="keyword">function</span>(req, res, next) {
+  <span class="keyword">var</span> token = req.csrfToken();
 
-  // for jade
+  <span class="comment">// for jade</span>
   res.locals.csrfToken = token;
-  // for Angularjs
-  res.cookie('XSRF-TOKEN', token);
+  <span class="comment">// for Angularjs</span>
+  res.cookie(<span class="string"><span class="delimiter">'</span><span class="content">XSRF-TOKEN</span><span class="delimiter">'</span></span>, token);
 
   next();
 });
-app.use(function(err, req, res, next) {
-  // called if there are errors.
-  if (err.code !== "EBADCSRFTOKEN") {
-    return next(err);
+app.use(<span class="keyword">function</span>(err, req, res, next) {
+  <span class="comment">// called if there are errors.</span>
+  <span class="keyword">if</span> (err.code !== <span class="string"><span class="delimiter">&quot;</span><span class="content">EBADCSRFTOKEN</span><span class="delimiter">&quot;</span></span>) {
+    <span class="keyword">return</span> next(err);
   }
 
-  // handle CSRF token errors here
-  res.status(403);
-  res.send("leave me alone~~");
+  <span class="comment">// handle CSRF token errors here</span>
+  res.status(<span class="integer">403</span>);
+  res.send(<span class="string"><span class="delimiter">&quot;</span><span class="content">leave me alone~~</span><span class="delimiter">&quot;</span></span>);
 
-  console.log("bad csrf token");
+  console.log(<span class="string"><span class="delimiter">&quot;</span><span class="content">bad csrf token</span><span class="delimiter">&quot;</span></span>);
 });
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <p>In forms with method “POST”, set a hidden field with name “_csrf”:</p>
 
-<pre><code class="language-javascript">form(method="post", action="/csrf")
-  input(type="hidden", name="_csrf", value="#{ csrfToken }")
-</code></pre>
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>form(method=<span class="string"><span class="delimiter">&quot;</span><span class="content">post</span><span class="delimiter">&quot;</span></span>, action=<span class="string"><span class="delimiter">&quot;</span><span class="content">/csrf</span><span class="delimiter">&quot;</span></span>)
+  input(type=<span class="string"><span class="delimiter">&quot;</span><span class="content">hidden</span><span class="delimiter">&quot;</span></span>, name=<span class="string"><span class="delimiter">&quot;</span><span class="content">_csrf</span><span class="delimiter">&quot;</span></span>, value=<span class="string"><span class="delimiter">&quot;</span><span class="content">#{ csrfToken }</span><span class="delimiter">&quot;</span></span>)
+</pre></div>
+</div>
+</div>
 
 <p>Angularjs read cookie ‘XSRF-TOKEN’ and send it back in header. Extra works are needed for jQuery.</p>
 
-<pre><code class="language-javascript">html
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>html
   head
-    meta(name="csrf-token", content="#{ csrfToken }")
+    meta(name=<span class="string"><span class="delimiter">&quot;</span><span class="content">csrf-token</span><span class="delimiter">&quot;</span></span>, content=<span class="string"><span class="delimiter">&quot;</span><span class="content">#{ csrfToken }</span><span class="delimiter">&quot;</span></span>)
 
     script.
-      $(document).ready(function (e) {
-        $.ajaxPrefilter(function(options, _, xhr) {
-          if (!xhr.crossDomain) {
-            var token = $('meta[name="csrf-token"]').attr('content');
+      <span class="predefined">$</span>(document).ready(<span class="keyword">function</span> (e) {
+        <span class="predefined">$</span>.ajaxPrefilter(<span class="keyword">function</span>(options, _, xhr) {
+          <span class="keyword">if</span> (!xhr.crossDomain) {
+            <span class="keyword">var</span> token = <span class="predefined">$</span>(<span class="string"><span class="delimiter">'</span><span class="content">meta[name=&quot;csrf-token&quot;]</span><span class="delimiter">'</span></span>).attr(<span class="string"><span class="delimiter">'</span><span class="content">content</span><span class="delimiter">'</span></span>);
 
-            xhr.setRequestHeader("X-CSRF-Token", token);
+            xhr.setRequestHeader(<span class="string"><span class="delimiter">&quot;</span><span class="content">X-CSRF-Token</span><span class="delimiter">&quot;</span></span>, token);
           }
         });
       });
-</code></pre>
+</pre></div>
+</div>
+</div>
 
 <p><strong>Note: Why setRequestHeader for jQuery</strong></p>
 
@@ -233,22 +242,25 @@ app.use(function(err, req, res, next) {
 
 <h1 id="expose-less-information-to-attackers">Expose Less Information to Attackers</h1>
 
-<pre><code class="language-javascript">var app = express();
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">var</span> app = express();
 
-// Disable the useless header "x-powered-by" whose value is "Express".
-app.disable("x-powered-by");
+<span class="comment">// Disable the useless header &quot;x-powered-by&quot; whose value is &quot;Express&quot;.</span>
+app.disable(<span class="string"><span class="delimiter">&quot;</span><span class="content">x-powered-by</span><span class="delimiter">&quot;</span></span>);
 
-// The default session cookie key of express is "connect.sid", change it.
-// Secure cookie send session via https only.
-// express session always set session a httponly cookie.
+<span class="comment">// The default session cookie key of express is &quot;connect.sid&quot;, change it.</span>
+<span class="comment">// Secure cookie send session via https only.</span>
+<span class="comment">// express session always set session a httponly cookie.</span>
 app.use(session({
-  secret: "do not touch me",
-  key: "session_id",
-  cookie: {
-    secure: true
+  <span class="key">secret</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">do not touch me</span><span class="delimiter">&quot;</span></span>,
+  <span class="key">key</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">session_id</span><span class="delimiter">&quot;</span></span>,
+  <span class="key">cookie</span>: {
+    <span class="key">secure</span>: <span class="predefined-constant">true</span>
   }
 }));
-</code></pre>
+</pre></div>
+</div>
+</div>
 
   </article>
 
