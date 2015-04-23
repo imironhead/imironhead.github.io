@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  <title>swift cheat sheet</title>
+  <title>Django Code Snippets</title>
   <meta name="description" content="wait.
 ">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://ironhead.bitbucket.com/programming/swift/2014-09-10-swift-cheat-sheet.html">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/programming/python/2015-04-11-django-snippets.html">
 
   <script type="text/javascript"
            src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
@@ -149,23 +149,18 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">swift cheat sheet</h1>
+    <h1 class="post-title">Django Code Snippets</h1>
     <p class="post-meta"></p>
   </header>
 
   <article class="post-content">
-    <pre><code class="language-swift">// nil coalescing operator
-// equals to "a == nil ? b : a!", if type of a is T!, b must be T
-a ?? b
+    <h2 id="template">Template</h2>
+
+<h3 id="escape">Escape</h3>
+
+<pre><code class="language-html">{% templatetag openvariable %} message {% templatetag closevariable %}
 </code></pre>
 
-<pre><code class="language-swift">// closed range operator
-// a...b =&gt; a must not greater than b. Both a and b are included.
-// a..&lt;b =&gt; from a to b-1
-for i in 1...5 {
-  println("\(i)")
-}
-</code></pre>
 
   </article>
 

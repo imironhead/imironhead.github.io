@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -152,219 +156,216 @@
   <article class="post-content">
     <p><a href="http://www.codeskulptor.org/#user38_iF5tSbexuT1XG1M_5.py">CodeSkulptor</a></p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="keyword">import</span> <span class="include">simplegui</span>
+<pre><code class="language-python">import simplegui
 
 
-<span class="keyword">class</span> <span class="class">GameOfLife</span> :
-  <span class="keyword">def</span> <span class="function">__init__</span>(<span class="predefined-constant">self</span>, col_num, row_num, cell_size, line_size = <span class="integer">1</span>) :
-    <span class="predefined-constant">self</span>._col_num = col_num
-    <span class="predefined-constant">self</span>._row_num = row_num
-    <span class="predefined-constant">self</span>._cell_size = cell_size
-    <span class="predefined-constant">self</span>._line_size = line_size
+class GameOfLife :
+  def __init__(self, col_num, row_num, cell_size, line_size = 1) :
+    self._col_num = col_num
+    self._row_num = row_num
+    self._cell_size = cell_size
+    self._line_size = line_size
 
-    <span class="predefined-constant">self</span>._cells = [[<span class="integer">0</span>] * col_num <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(row_num)]
+    self._cells = [[0] * col_num for _ in range(row_num)]
 
-  <span class="keyword">def</span> <span class="function">get_width</span>(<span class="predefined-constant">self</span>) :
-    <span class="keyword">return</span> <span class="predefined-constant">self</span>._col_num * (<span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size) + <span class="predefined-constant">self</span>._line_size
+  def get_width(self) :
+    return self._col_num * (self._cell_size + self._line_size) + self._line_size
 
-  <span class="keyword">def</span> <span class="function">get_height</span>(<span class="predefined-constant">self</span>) :
-    <span class="keyword">return</span> <span class="predefined-constant">self</span>._row_num * (<span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size) + <span class="predefined-constant">self</span>._line_size
+  def get_height(self) :
+    return self._row_num * (self._cell_size + self._line_size) + self._line_size
 
-  <span class="keyword">def</span> <span class="function">get_color_of_cell</span>(<span class="predefined-constant">self</span>, x, y) :
-    <span class="keyword">return</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Black</span><span class="delimiter">&quot;</span></span> <span class="keyword">if</span> <span class="predefined-constant">self</span>._cells[y][x] == <span class="integer">0</span> <span class="keyword">else</span> <span class="string"><span class="delimiter">&quot;</span><span class="content">Lime</span><span class="delimiter">&quot;</span></span>
+  def get_color_of_cell(self, x, y) :
+    return "Black" if self._cells[y][x] == 0 else "Lime"
 
-  <span class="keyword">def</span> <span class="function">get_position_of_cell</span>(<span class="predefined-constant">self</span>, x, y) :
-    px = x * (<span class="predefined-constant">self</span>._line_size + <span class="predefined-constant">self</span>._cell_size) + <span class="predefined-constant">self</span>._line_size + <span class="integer">1</span>
-    py = y * (<span class="predefined-constant">self</span>._line_size + <span class="predefined-constant">self</span>._cell_size) + <span class="predefined-constant">self</span>._line_size + <span class="integer">1</span>
-    ww = <span class="predefined-constant">self</span>._cell_size - <span class="integer">2</span>
+  def get_position_of_cell(self, x, y) :
+    px = x * (self._line_size + self._cell_size) + self._line_size + 1
+    py = y * (self._line_size + self._cell_size) + self._line_size + 1
+    ww = self._cell_size - 2
 
-    <span class="keyword">return</span> [(px, py),  (px + ww, py), (px + ww, py + ww), (px, py + ww)]
+    return [(px, py),  (px + ww, py), (px + ww, py + ww), (px, py + ww)]
 
-  <span class="keyword">def</span> <span class="function">reset</span>(<span class="predefined-constant">self</span>) :
-    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
-      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
-        <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">0</span>
+  def reset(self) :
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
+        self._cells[y][x] = 0
 
-  <span class="keyword">def</span> <span class="function">toggle_cell</span>(<span class="predefined-constant">self</span>, x, y) :
-    <span class="predefined-constant">self</span>._cells[y][x] = (<span class="integer">1</span> + <span class="predefined-constant">self</span>._cells[y][x]) % <span class="integer">2</span>
+  def toggle_cell(self, x, y) :
+    self._cells[y][x] = (1 + self._cells[y][x]) % 2
 
-  <span class="keyword">def</span> <span class="function">toggle_position</span>(<span class="predefined-constant">self</span>, position) :
-    s = <span class="predefined-constant">self</span>._line_size + <span class="predefined-constant">self</span>._cell_size
-    x = position[<span class="integer">0</span>] / s
-    y = position[<span class="integer">1</span>] / s
+  def toggle_position(self, position) :
+    s = self._line_size + self._cell_size
+    x = position[0] / s
+    y = position[1] / s
 
-    <span class="keyword">if</span> x &lt; <span class="predefined-constant">self</span>._col_num <span class="keyword">and</span> y &lt; <span class="predefined-constant">self</span>._row_num <span class="keyword">and</span> x &gt;= <span class="integer">0</span> <span class="keyword">and</span> y &gt;= <span class="integer">0</span> :
-      <span class="predefined-constant">self</span>.toggle_cell(x, y)
+    if x &lt; self._col_num and y &lt; self._row_num and x &gt;= 0 and y &gt;= 0 :
+      self.toggle_cell(x, y)
 
-  <span class="keyword">def</span> <span class="function">update</span>(<span class="predefined-constant">self</span>) :
-    temp = [[<span class="integer">0</span>] * <span class="predefined-constant">self</span>._col_num <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num)]
+  def update(self) :
+    temp = [[0] * self._col_num for _ in range(self._row_num)]
 
-    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
-      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
-        z  = <span class="predefined-constant">self</span>._cells[y - <span class="integer">1</span>][x - <span class="integer">1</span>]
-        z += <span class="predefined-constant">self</span>._cells[y - <span class="integer">1</span>][x]
-        z += <span class="predefined-constant">self</span>._cells[y][x - <span class="integer">1</span>]
-        z += <span class="predefined-constant">self</span>._cells[y][x]
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
+        z  = self._cells[y - 1][x - 1]
+        z += self._cells[y - 1][x]
+        z += self._cells[y][x - 1]
+        z += self._cells[y][x]
 
-        xx = <span class="integer">0</span> <span class="keyword">if</span> x + <span class="integer">1</span> == <span class="predefined-constant">self</span>._col_num <span class="keyword">else</span> x + <span class="integer">1</span>
-        yy = <span class="integer">0</span> <span class="keyword">if</span> y + <span class="integer">1</span> == <span class="predefined-constant">self</span>._row_num <span class="keyword">else</span> y + <span class="integer">1</span>
+        xx = 0 if x + 1 == self._col_num else x + 1
+        yy = 0 if y + 1 == self._row_num else y + 1
 
-        z += <span class="predefined-constant">self</span>._cells[y - <span class="integer">1</span>][xx]
-        z += <span class="predefined-constant">self</span>._cells[y][xx]
-        z += <span class="predefined-constant">self</span>._cells[yy][x - <span class="integer">1</span>]
-        z += <span class="predefined-constant">self</span>._cells[yy][x]
-        z += <span class="predefined-constant">self</span>._cells[yy][xx]
+        z += self._cells[y - 1][xx]
+        z += self._cells[y][xx]
+        z += self._cells[yy][x - 1]
+        z += self._cells[yy][x]
+        z += self._cells[yy][xx]
 
         temp[y][x] = z
 
-    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
-      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
         z = temp[y][x]
 
-        <span class="keyword">if</span> <span class="predefined-constant">self</span>._cells[y][x] == <span class="integer">1</span> :
-          z -= <span class="integer">1</span>
+        if self._cells[y][x] == 1 :
+          z -= 1
 
-        <span class="keyword">if</span> z &lt; <span class="integer">2</span> :
-          <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">0</span>
-        <span class="keyword">elif</span> z &lt; <span class="integer">4</span> :
-          <span class="keyword">pass</span>
-        <span class="keyword">else</span> :
-          <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">0</span>
-        <span class="keyword">elif</span> z == <span class="integer">3</span> :
-          <span class="predefined-constant">self</span>._cells[y][x] = <span class="integer">1</span>
+        if z &lt; 2 :
+          self._cells[y][x] = 0
+        elif z &lt; 4 :
+          pass
+        else :
+          self._cells[y][x] = 0
+        elif z == 3 :
+          self._cells[y][x] = 1
 
-  <span class="keyword">def</span> <span class="function">draw</span>(<span class="predefined-constant">self</span>, canvas) :
-    width = <span class="predefined-constant">self</span>.get_width()
+  def draw(self, canvas) :
+    width = self.get_width()
 
-    y = <span class="predefined-constant">self</span>._line_size / <span class="integer">2</span>
+    y = self._line_size / 2
 
-    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(<span class="integer">1</span> + <span class="predefined-constant">self</span>._row_num) :
-      canvas.draw_line((<span class="integer">0</span>, y), (width, y), <span class="predefined-constant">self</span>._line_size, <span class="string"><span class="delimiter">&quot;</span><span class="content">Teal</span><span class="delimiter">&quot;</span></span>)
+    for _ in range(1 + self._row_num) :
+      canvas.draw_line((0, y), (width, y), self._line_size, "Teal")
 
-      y += <span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size
+      y += self._cell_size + self._line_size
 
-    height = <span class="predefined-constant">self</span>.get_height()
+    height = self.get_height()
 
-    x = <span class="predefined-constant">self</span>._line_size / <span class="integer">2</span>
+    x = self._line_size / 2
 
-    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">range</span>(<span class="integer">1</span> + <span class="predefined-constant">self</span>._col_num) :
-      canvas.draw_line((x, <span class="integer">0</span>), (x, height), <span class="predefined-constant">self</span>._line_size, <span class="string"><span class="delimiter">&quot;</span><span class="content">Teal</span><span class="delimiter">&quot;</span></span>)
+    for _ in range(1 + self._col_num) :
+      canvas.draw_line((x, 0), (x, height), self._line_size, "Teal")
 
-      x += <span class="predefined-constant">self</span>._cell_size + <span class="predefined-constant">self</span>._line_size
+      x += self._cell_size + self._line_size
 
-    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._row_num) :
-      <span class="keyword">for</span> x <span class="keyword">in</span> <span class="predefined">range</span>(<span class="predefined-constant">self</span>._col_num) :
-        color = <span class="predefined-constant">self</span>.get_color_of_cell(x, y)
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
+        color = self.get_color_of_cell(x, y)
 
-        canvas.draw_polygon(<span class="predefined-constant">self</span>.get_position_of_cell(x, y), <span class="integer">2</span>, color, color)
+        canvas.draw_polygon(self.get_position_of_cell(x, y), 2, color, color)
 
-button_start = <span class="predefined-constant">None</span>
-button_clear = <span class="predefined-constant">None</span>
-running = <span class="predefined-constant">False</span>
+button_start = None
+button_clear = None
+running = False
 
-gol = GameOfLife(<span class="integer">20</span>, <span class="integer">20</span>, <span class="integer">38</span>, <span class="integer">2</span>)
+gol = GameOfLife(20, 20, 38, 2)
 
-<span class="keyword">def</span> <span class="function">demo</span>(name) :
-  <span class="keyword">global</span> running
+def demo(name) :
+  global running
 
-  running = <span class="predefined-constant">True</span>
+  running = True
 
   gol.reset()
 
-  button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pause</span><span class="delimiter">&quot;</span></span>)
+  button_start.set_text("Pause")
 
   patterns = {
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">toad</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">3</span>, <span class="integer">2</span>), (<span class="integer">4</span>, <span class="integer">2</span>), (<span class="integer">5</span>, <span class="integer">2</span>), (<span class="integer">2</span>, <span class="integer">3</span>), (<span class="integer">3</span>, <span class="integer">3</span>), (<span class="integer">4</span>, <span class="integer">3</span>)],
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">blinker</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">4</span>, <span class="integer">3</span>), (<span class="integer">4</span>, <span class="integer">4</span>), (<span class="integer">4</span>, <span class="integer">5</span>)],
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">beacon</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">1</span>, <span class="integer">1</span>), (<span class="integer">2</span>, <span class="integer">1</span>), (<span class="integer">1</span>, <span class="integer">2</span>), (<span class="integer">4</span>, <span class="integer">4</span>), (<span class="integer">4</span>, <span class="integer">3</span>), (<span class="integer">3</span>, <span class="integer">4</span>)],
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">pulsar</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">4</span>, <span class="integer">2</span>), (<span class="integer">5</span>, <span class="integer">2</span>), (<span class="integer">6</span>, <span class="integer">2</span>), (<span class="integer">10</span>, <span class="integer">2</span>), (<span class="integer">11</span>, <span class="integer">2</span>), (<span class="integer">12</span>, <span class="integer">2</span>), \
-    (<span class="integer">2</span>, <span class="integer">4</span>), (<span class="integer">2</span>, <span class="integer">5</span>), (<span class="integer">2</span>, <span class="integer">6</span>), (<span class="integer">7</span>, <span class="integer">4</span>), (<span class="integer">7</span>, <span class="integer">5</span>), (<span class="integer">7</span>, <span class="integer">6</span>), \
-    (<span class="integer">9</span>, <span class="integer">4</span>), (<span class="integer">9</span>, <span class="integer">5</span>), (<span class="integer">9</span>, <span class="integer">6</span>), (<span class="integer">14</span>, <span class="integer">4</span>), (<span class="integer">14</span>, <span class="integer">5</span>), (<span class="integer">14</span>, <span class="integer">6</span>), \
-    (<span class="integer">4</span>, <span class="integer">7</span>), (<span class="integer">5</span>, <span class="integer">7</span>), (<span class="integer">6</span>, <span class="integer">7</span>), (<span class="integer">10</span>, <span class="integer">7</span>), (<span class="integer">11</span>, <span class="integer">7</span>), (<span class="integer">12</span>, <span class="integer">7</span>), \
-    (<span class="integer">4</span>, <span class="integer">9</span>), (<span class="integer">5</span>, <span class="integer">9</span>), (<span class="integer">6</span>, <span class="integer">9</span>), (<span class="integer">10</span>, <span class="integer">9</span>), (<span class="integer">11</span>, <span class="integer">9</span>), (<span class="integer">12</span>, <span class="integer">9</span>), \
-    (<span class="integer">2</span>, <span class="integer">10</span>), (<span class="integer">2</span>, <span class="integer">11</span>), (<span class="integer">2</span>, <span class="integer">12</span>), (<span class="integer">7</span>, <span class="integer">10</span>), (<span class="integer">7</span>, <span class="integer">11</span>), (<span class="integer">7</span>, <span class="integer">12</span>), \
-    (<span class="integer">9</span>, <span class="integer">10</span>), (<span class="integer">9</span>, <span class="integer">11</span>), (<span class="integer">9</span>, <span class="integer">12</span>), (<span class="integer">14</span>, <span class="integer">10</span>), (<span class="integer">14</span>, <span class="integer">11</span>), (<span class="integer">14</span>, <span class="integer">12</span>), \
-    (<span class="integer">4</span>, <span class="integer">14</span>), (<span class="integer">5</span>, <span class="integer">14</span>), (<span class="integer">6</span>, <span class="integer">14</span>), (<span class="integer">10</span>, <span class="integer">14</span>), (<span class="integer">11</span>, <span class="integer">14</span>), (<span class="integer">12</span>, <span class="integer">14</span>)],
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">glider</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">5</span>, <span class="integer">5</span>), (<span class="integer">6</span>, <span class="integer">6</span>), (<span class="integer">6</span>, <span class="integer">7</span>), (<span class="integer">5</span>, <span class="integer">7</span>), (<span class="integer">4</span>, <span class="integer">7</span>)],
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">lwss</span><span class="delimiter">&quot;</span></span> : [(<span class="integer">2</span>, <span class="integer">2</span>), (<span class="integer">2</span>, <span class="integer">4</span>), (<span class="integer">5</span>, <span class="integer">2</span>), (<span class="integer">6</span>, <span class="integer">3</span>), (<span class="integer">6</span>, <span class="integer">4</span>), (<span class="integer">6</span>, <span class="integer">5</span>), (<span class="integer">3</span>, <span class="integer">5</span>), (<span class="integer">4</span>, <span class="integer">5</span>), (<span class="integer">5</span>, <span class="integer">5</span>)]
+    "toad" : [(3, 2), (4, 2), (5, 2), (2, 3), (3, 3), (4, 3)],
+    "blinker" : [(4, 3), (4, 4), (4, 5)],
+    "beacon" : [(1, 1), (2, 1), (1, 2), (4, 4), (4, 3), (3, 4)],
+    "pulsar" : [(4, 2), (5, 2), (6, 2), (10, 2), (11, 2), (12, 2), \
+    (2, 4), (2, 5), (2, 6), (7, 4), (7, 5), (7, 6), \
+    (9, 4), (9, 5), (9, 6), (14, 4), (14, 5), (14, 6), \
+    (4, 7), (5, 7), (6, 7), (10, 7), (11, 7), (12, 7), \
+    (4, 9), (5, 9), (6, 9), (10, 9), (11, 9), (12, 9), \
+    (2, 10), (2, 11), (2, 12), (7, 10), (7, 11), (7, 12), \
+    (9, 10), (9, 11), (9, 12), (14, 10), (14, 11), (14, 12), \
+    (4, 14), (5, 14), (6, 14), (10, 14), (11, 14), (12, 14)],
+    "glider" : [(5, 5), (6, 6), (6, 7), (5, 7), (4, 7)],
+    "lwss" : [(2, 2), (2, 4), (5, 2), (6, 3), (6, 4), (6, 5), (3, 5), (4, 5), (5, 5)]
   }
 
-  <span class="predefined">map</span>(<span class="keyword">lambda</span> x : gol.toggle_cell(x[<span class="integer">0</span>], x[<span class="integer">1</span>]), patterns[name])
+  map(lambda x : gol.toggle_cell(x[0], x[1]), patterns[name])
 
-<span class="keyword">def</span> <span class="function">on_mouse_clicked</span>(position) :
-  <span class="keyword">if</span> <span class="keyword">not</span> running :
+def on_mouse_clicked(position) :
+  if not running :
     gol.toggle_position(position)
 
-<span class="keyword">def</span> <span class="function">on_demo_toad</span>() :
-  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">toad</span><span class="delimiter">&quot;</span></span>)
+def on_demo_toad() :
+  demo("toad")
 
-<span class="keyword">def</span> <span class="function">on_demo_blinker</span>() :
-  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">blinker</span><span class="delimiter">&quot;</span></span>)
+def on_demo_blinker() :
+  demo("blinker")
 
-<span class="keyword">def</span> <span class="function">on_demo_beacon</span>() :
-  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">beacon</span><span class="delimiter">&quot;</span></span>)
+def on_demo_beacon() :
+  demo("beacon")
 
-<span class="keyword">def</span> <span class="function">on_demo_pulsar</span>() :
-  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">pulsar</span><span class="delimiter">&quot;</span></span>)
+def on_demo_pulsar() :
+  demo("pulsar")
 
-<span class="keyword">def</span> <span class="function">on_demo_glider</span>() :
-  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">glider</span><span class="delimiter">&quot;</span></span>)
+def on_demo_glider() :
+  demo("glider")
 
-<span class="keyword">def</span> <span class="function">on_demo_lwss</span>() :
-  demo(<span class="string"><span class="delimiter">&quot;</span><span class="content">lwss</span><span class="delimiter">&quot;</span></span>)
+def on_demo_lwss() :
+  demo("lwss")
 
-<span class="keyword">def</span> <span class="function">on_start</span>() :
-  <span class="keyword">global</span> running
+def on_start() :
+  global running
 
-  running = <span class="keyword">not</span> running
+  running = not running
 
-  <span class="keyword">if</span> running :
-    button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Pause</span><span class="delimiter">&quot;</span></span>)
-  <span class="keyword">else</span> :
-    button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Start</span><span class="delimiter">&quot;</span></span>)
+  if running :
+    button_start.set_text("Pause")
+  else :
+    button_start.set_text("Start")
 
-<span class="keyword">def</span> <span class="function">on_clear</span>() :
-  <span class="keyword">global</span> running
+def on_clear() :
+  global running
 
-  running = <span class="predefined-constant">False</span>
+  running = False
 
-  button_start.set_text(<span class="string"><span class="delimiter">&quot;</span><span class="content">Start</span><span class="delimiter">&quot;</span></span>)
+  button_start.set_text("Start")
 
   gol.reset()
 
-<span class="keyword">def</span> <span class="function">update_game_of_life</span>() :
-  <span class="keyword">if</span> running :
+def update_game_of_life() :
+  if running :
     gol.update()
 
-<span class="keyword">def</span> <span class="function">on_draw</span>(canvas) :
+def on_draw(canvas) :
   gol.draw(canvas)
 
-<span class="comment"># Create a frame and assign callbacks to event handlers</span>
-frame = simplegui.create_frame(<span class="string"><span class="delimiter">&quot;</span><span class="content">Game of Life</span><span class="delimiter">&quot;</span></span>, gol.get_width(), gol.get_height())
+# Create a frame and assign callbacks to event handlers
+frame = simplegui.create_frame("Game of Life", gol.get_width(), gol.get_height())
 
-frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Toad</span><span class="delimiter">'</span></span>, on_demo_toad)
-frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Blinker</span><span class="delimiter">'</span></span>, on_demo_blinker)
-frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Beacon</span><span class="delimiter">'</span></span>, on_demo_beacon)
-frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Pulsar</span><span class="delimiter">'</span></span>, on_demo_pulsar)
-frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo Glider</span><span class="delimiter">'</span></span>, on_demo_glider)
-frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Demo LWSS</span><span class="delimiter">'</span></span>, on_demo_lwss)
+frame.add_button('Demo Toad', on_demo_toad)
+frame.add_button('Demo Blinker', on_demo_blinker)
+frame.add_button('Demo Beacon', on_demo_beacon)
+frame.add_button('Demo Pulsar', on_demo_pulsar)
+frame.add_button('Demo Glider', on_demo_glider)
+frame.add_button('Demo LWSS', on_demo_lwss)
 
-button_start = frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Start</span><span class="delimiter">'</span></span>, on_start)
-button_clear = frame.add_button(<span class="string"><span class="delimiter">'</span><span class="content">Clear</span><span class="delimiter">'</span></span>, on_clear)
+button_start = frame.add_button('Start', on_start)
+button_clear = frame.add_button('Clear', on_clear)
 
 frame.set_mouseclick_handler(on_mouse_clicked)
 frame.set_draw_handler(on_draw)
 frame.start()
 
-<span class="comment"># timer to update</span>
-timer = simplegui.create_timer(<span class="integer">500</span>, update_game_of_life)
+# timer to update
+timer = simplegui.create_timer(500, update_game_of_life)
 timer.start()
 
 on_demo_toad()
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

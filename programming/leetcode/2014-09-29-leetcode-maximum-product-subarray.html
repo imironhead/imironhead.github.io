@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -158,46 +162,43 @@
 - a minus product may become positive if is multiplied with a minus number.
 - reset if there is a zero.</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
-<span class="directive">public</span>:
-  <span class="predefined-type">int</span> maxProduct(<span class="predefined-type">int</span> A[], <span class="predefined-type">int</span> n) {
-    <span class="keyword">if</span> (n == <span class="integer">0</span>) {
-      <span class="keyword">return</span> <span class="integer">0</span>;
+<pre><code class="language-cpp">class Solution {
+public:
+  int maxProduct(int A[], int n) {
+    if (n == 0) {
+      return 0;
     }
 
-    <span class="predefined-type">int</span> m = A[<span class="integer">0</span>];
-    <span class="predefined-type">int</span> p = <span class="integer">0</span>;
+    int m = A[0];
+    int p = 0;
 
-    <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; n; ++i) {
-      <span class="keyword">if</span> (p == <span class="integer">0</span>) {
-        <span class="comment">// if the product is 0, reset it.</span>
+    for (int i = 0; i &lt; n; ++i) {
+      if (p == 0) {
+        // if the product is 0, reset it.
         p = A[i];
-      } <span class="keyword">else</span> {
+      } else {
         p *= A[i];
       }
 
       m = max(m, p);
     }
 
-    p = <span class="integer">0</span>;
+    p = 0;
 
-    <span class="keyword">for</span> (<span class="predefined-type">int</span> i = n - <span class="integer">1</span>; i &gt;= <span class="integer">0</span>; --i) {
-      <span class="keyword">if</span> (p == <span class="integer">0</span>) {
+    for (int i = n - 1; i &gt;= 0; --i) {
+      if (p == 0) {
         p = A[i];
-      } <span class="keyword">else</span> {
+      } else {
         p *= A[i];
       }
 
       m = max(m, p);
     }
 
-    <span class="keyword">return</span> m;
+    return m;
   }
 };
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

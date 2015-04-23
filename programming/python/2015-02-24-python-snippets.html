@@ -134,6 +134,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -156,16 +158,13 @@
 
 <h3 id="change-encoding">Change Encoding</h3>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="keyword">def</span> <span class="function">change</span>(path) :
-  source = <span class="string"><span class="delimiter">'</span><span class="delimiter">'</span></span>
-  <span class="keyword">with</span> <span class="predefined">open</span>(path, <span class="string"><span class="delimiter">'</span><span class="content">rb</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> origin :
-    source = origin.read().decode(<span class="string"><span class="delimiter">'</span><span class="content">big5</span><span class="delimiter">'</span></span>)
-  <span class="keyword">with</span> <span class="predefined">open</span>(path, <span class="string"><span class="delimiter">'</span><span class="content">w</span><span class="delimiter">'</span></span>) <span class="keyword">as</span> target :
+<pre><code class="language-python">def change(path) :
+  source = ''
+  with open(path, 'rb') as origin :
+    source = origin.read().decode('big5')
+  with open(path, 'w') as target :
     target.write(source)
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -155,97 +159,88 @@
 <h2 id="generate">Generate</h2>
 <p>In rails, we can find a csrf token in the head of html or a hidden input of forms:</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="tag">&lt;html&gt;</span>
-  <span class="tag">&lt;head&gt;</span>
-    <span class="tag">&lt;meta</span> <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">csrf-token</span><span class="delimiter">&quot;</span></span>
-          <span class="attribute-name">content</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">V6CZMZGA+lnkmonZbw74c81KAGjBAlK6Jk1UEbQkW95zjIMxU/G5ixcbokIG5GIzlG2gwtag4la/eLoTXT6/Dw==</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
-  <span class="tag">&lt;/head&gt;</span>
-  <span class="tag">&lt;body&gt;</span>
-    <span class="tag">&lt;form&gt;</span>
-      <span class="tag">&lt;input</span> <span class="attribute-name">type</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">hidden</span><span class="delimiter">&quot;</span></span>
-             <span class="attribute-name">name</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">authenticity_token</span><span class="delimiter">&quot;</span></span>
-             <span class="attribute-name">value</span>=<span class="string"><span class="delimiter">&quot;</span><span class="content">OFkGlN+ho64ffPlNEJ7P01VPO+dC7yQ96rl13pKNV8McdRyUHdDgfOz90tZ5dFWTDGibTVVNlNFzjJvce5ezEg==</span><span class="delimiter">&quot;</span></span> <span class="tag">/&gt;</span>
-    <span class="tag">&lt;/form&gt;</span>
-  <span class="tag">&lt;/body&gt;</span>
-<span class="tag">&lt;/html&gt;</span>
-</pre></div>
-</div>
-</div>
+<pre><code class="language-html">&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta name="csrf-token"
+          content="V6CZMZGA+lnkmonZbw74c81KAGjBAlK6Jk1UEbQkW95zjIMxU/G5ixcbokIG5GIzlG2gwtag4la/eLoTXT6/Dw==" /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;form&gt;
+      &lt;input type="hidden"
+             name="authenticity_token"
+             value="OFkGlN+ho64ffPlNEJ7P01VPO+dC7yQ96rl13pKNV8McdRyUHdDgfOz90tZ5dFWTDGibTVVNlNFzjJvce5ezEg==" /&gt;
+    &lt;/form&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
 
 <p>Those tokens are generated in <a href="https://github.com/rails/rails/blob/4-2-stable/actionpack/lib/action_controller/metal/request_forgery_protection.rb">ActionController</a>
 and not predictable (that’s what we need for csrf protection).
 In <a href="https://github.com/rails/rails/blob/4-2-stable/actionview/lib/action_view/helpers/csrf_helper.rb">ActionView module</a> we can find how csrf meta tags are generated:</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="keyword">def</span> <span class="function">csrf_meta_tags</span>
-  <span class="keyword">if</span> protect_against_forgery?
+<pre><code class="language-ruby">def csrf_meta_tags
+  if protect_against_forgery?
     [
-      tag(<span class="string"><span class="delimiter">'</span><span class="content">meta</span><span class="delimiter">'</span></span>, <span class="symbol">:name</span> =&gt; <span class="string"><span class="delimiter">'</span><span class="content">csrf-param</span><span class="delimiter">'</span></span>, <span class="symbol">:content</span> =&gt; request_forgery_protection_token),
-      tag(<span class="string"><span class="delimiter">'</span><span class="content">meta</span><span class="delimiter">'</span></span>, <span class="symbol">:name</span> =&gt; <span class="string"><span class="delimiter">'</span><span class="content">csrf-token</span><span class="delimiter">'</span></span>, <span class="symbol">:content</span> =&gt; form_authenticity_token)
-    ].join(<span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>).html_safe
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-</pre></div>
-</div>
-</div>
+      tag('meta', :name =&gt; 'csrf-param', :content =&gt; request_forgery_protection_token),
+      tag('meta', :name =&gt; 'csrf-token', :content =&gt; form_authenticity_token)
+    ].join("\n").html_safe
+  end
+end
+</code></pre>
 
 <p>The methods <strong>form_authenticity_token</strong> is in <a href="https://github.com/rails/rails/blob/4-2-stable/actionpack/lib/action_controller/metal/request_forgery_protection.rb">ActionController</a> :</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="constant">AUTHENTICITY_TOKEN_LENGTH</span> = <span class="integer">32</span>
+<pre><code class="language-ruby">AUTHENTICITY_TOKEN_LENGTH = 32
 
-<span class="keyword">def</span> <span class="function">form_authenticity_token</span>
+def form_authenticity_token
   masked_authenticity_token(session)
-<span class="keyword">end</span>
+end
 
-<span class="keyword">def</span> <span class="function">masked_authenticity_token</span>(session)
-  one_time_pad = <span class="constant">SecureRandom</span>.random_bytes(<span class="constant">AUTHENTICITY_TOKEN_LENGTH</span>)
+def masked_authenticity_token(session)
+  one_time_pad = SecureRandom.random_bytes(AUTHENTICITY_TOKEN_LENGTH)
   encrypted_csrf_token = xor_byte_strings(one_time_pad, real_csrf_token(session))
   masked_token = one_time_pad + encrypted_csrf_token
-  <span class="constant">Base64</span>.strict_encode64(masked_token)
-<span class="keyword">end</span>
+  Base64.strict_encode64(masked_token)
+end
 
-<span class="keyword">def</span> <span class="function">valid_authenticity_token?</span>(session, encoded_masked_token)
-  <span class="keyword">return</span> <span class="predefined-constant">false</span> <span class="keyword">if</span> encoded_masked_token.nil? || encoded_masked_token.empty?
+def valid_authenticity_token?(session, encoded_masked_token)
+  return false if encoded_masked_token.nil? || encoded_masked_token.empty?
 
-  <span class="keyword">begin</span>
-    masked_token = <span class="constant">Base64</span>.strict_decode64(encoded_masked_token)
-  <span class="keyword">rescue</span> <span class="constant">ArgumentError</span> <span class="comment"># encoded_masked_token is invalid Base64</span>
-    <span class="keyword">return</span> <span class="predefined-constant">false</span>
-  <span class="keyword">end</span>
+  begin
+    masked_token = Base64.strict_decode64(encoded_masked_token)
+  rescue ArgumentError # encoded_masked_token is invalid Base64
+    return false
+  end
 
-  <span class="comment"># See if it's actually a masked token or not. In order to</span>
-  <span class="comment"># deploy this code, we should be able to handle any unmasked</span>
-  <span class="comment"># tokens that we've issued without error.</span>
+  # See if it's actually a masked token or not. In order to
+  # deploy this code, we should be able to handle any unmasked
+  # tokens that we've issued without error.
 
-  <span class="keyword">if</span> masked_token.length == <span class="constant">AUTHENTICITY_TOKEN_LENGTH</span>
-    <span class="comment"># This is actually an unmasked token. This is expected if</span>
-    <span class="comment"># you have just upgraded to masked tokens, but should stop</span>
-    <span class="comment"># happening shortly after installing this gem</span>
+  if masked_token.length == AUTHENTICITY_TOKEN_LENGTH
+    # This is actually an unmasked token. This is expected if
+    # you have just upgraded to masked tokens, but should stop
+    # happening shortly after installing this gem
     compare_with_real_token masked_token, session
 
-  <span class="keyword">elsif</span> masked_token.length == <span class="constant">AUTHENTICITY_TOKEN_LENGTH</span> * <span class="integer">2</span>
-    <span class="comment"># Split the token into the one-time pad and the encrypted</span>
-    <span class="comment"># value and decrypt it</span>
-    one_time_pad = masked_token[<span class="integer">0</span>...<span class="constant">AUTHENTICITY_TOKEN_LENGTH</span>]
-    encrypted_csrf_token = masked_token[<span class="constant">AUTHENTICITY_TOKEN_LENGTH</span>..<span class="integer">-1</span>]
+  elsif masked_token.length == AUTHENTICITY_TOKEN_LENGTH * 2
+    # Split the token into the one-time pad and the encrypted
+    # value and decrypt it
+    one_time_pad = masked_token[0...AUTHENTICITY_TOKEN_LENGTH]
+    encrypted_csrf_token = masked_token[AUTHENTICITY_TOKEN_LENGTH..-1]
     csrf_token = xor_byte_strings(one_time_pad, encrypted_csrf_token)
 
     compare_with_real_token csrf_token, session
 
-  <span class="keyword">else</span>
-    <span class="predefined-constant">false</span> <span class="comment"># Token is malformed</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
+  else
+    false # Token is malformed
+  end
+end
 
-<span class="keyword">def</span> <span class="function">real_csrf_token</span>(session)
-  session[<span class="symbol">:_csrf_token</span>] ||= <span class="constant">SecureRandom</span>.base64(<span class="constant">AUTHENTICITY_TOKEN_LENGTH</span>)
-  <span class="constant">Base64</span>.strict_decode64(session[<span class="symbol">:_csrf_token</span>])
-<span class="keyword">end</span>
-</pre></div>
-</div>
-</div>
+def real_csrf_token(session)
+  session[:_csrf_token] ||= SecureRandom.base64(AUTHENTICITY_TOKEN_LENGTH)
+  Base64.strict_decode64(session[:_csrf_token])
+end
+</code></pre>
 
 <p>In brief, a token is generated by this steps:</p>
 
@@ -263,17 +258,14 @@ In <a href="https://github.com/rails/rails/blob/4-2-stable/actionview/lib/action
 <p>Now open a rails site in browser and find the csrf token, refresh the page to get 2 different tokens.
 In rails console def a decode method and pass those tokens to see the result. The result should be the same.</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="comment"># extract from valid_authenticity_token?</span>
-<span class="keyword">def</span> <span class="function">decode</span>(token)
-  token = <span class="constant">Base64</span>.strict_decode64 token
-  t1 = token[<span class="integer">0</span>...<span class="integer">32</span>]
-  t2 = token[<span class="integer">32</span>..<span class="integer">-1</span>]
-  t1.bytes.zip(t2.bytes).map { |(c1,c2)| c1 ^ c2 }.pack(<span class="string"><span class="delimiter">'</span><span class="content">c*</span><span class="delimiter">'</span></span>)
-<span class="keyword">end</span>
-</pre></div>
-</div>
-</div>
+<pre><code class="language-ruby"># extract from valid_authenticity_token?
+def decode(token)
+  token = Base64.strict_decode64 token
+  t1 = token[0...32]
+  t2 = token[32..-1]
+  t1.bytes.zip(t2.bytes).map { |(c1,c2)| c1 ^ c2 }.pack('c*')
+end
+</code></pre>
 
 <p>Then re-launch the browser and decode another token, the result should be changed (bound to session!).</p>
 
@@ -283,61 +275,52 @@ In rails console def a decode method and pass those tokens to see the result. Th
 using secretSync method of <a href="https://github.com/pillarjs/csrf/blob/master/index.js">csrf module</a> which return
 pseudo random bytes.</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="comment">// generate &amp; set new secret</span>
-<span class="keyword">if</span> (sec === <span class="predefined-constant">undefined</span>) {
+<pre><code class="language-javascript">// generate &amp; set new secret
+if (sec === undefined) {
   sec = tokens.secretSync()
   setsecret(req, res, sec, cookie)
 }
-</pre></div>
-</div>
-</div>
+</code></pre>
 
 <p>Then in <a href="https://github.com/pillarjs/csrf/blob/master/index.js">csrf module</a>, use tokenize method to generate
 the final token:</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre>csrfTokens.<span class="function">tokenize</span> = <span class="keyword">function</span> <span class="function">tokenize</span>(secret, salt) {
-  <span class="keyword">var</span> hash = escape(crypto
-    .createHash(<span class="string"><span class="delimiter">'</span><span class="content">sha1</span><span class="delimiter">'</span></span>)
+<pre><code class="language-javascript">csrfTokens.tokenize = function tokenize(secret, salt) {
+  var hash = escape(crypto
+    .createHash('sha1')
     .update(salt)
-    .update(<span class="string"><span class="delimiter">'</span><span class="content">-</span><span class="delimiter">'</span></span>)
+    .update('-')
     .update(secret)
-    .digest(<span class="string"><span class="delimiter">'</span><span class="content">base64</span><span class="delimiter">'</span></span>))
-  <span class="keyword">return</span> salt + <span class="string"><span class="delimiter">'</span><span class="content">-</span><span class="delimiter">'</span></span> + hash
+    .digest('base64'))
+  return salt + '-' + hash
 }
-</pre></div>
-</div>
-</div>
+</code></pre>
 
 <p>To verify the token, re-generate the token with salt and secret and compare the result. As in the
 tokenize method, salt is in the beginning of the final token and hash is generated base on salt and
 the pseudo randome secret.</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="function">verify</span>: <span class="keyword">function</span> <span class="function">verify</span>(secret, token) {
-  <span class="keyword">if</span> (!secret || <span class="keyword">typeof</span> secret !== <span class="string"><span class="delimiter">'</span><span class="content">string</span><span class="delimiter">'</span></span>) {
-    <span class="keyword">return</span> <span class="predefined-constant">false</span>
+<pre><code class="language-javascript">verify: function verify(secret, token) {
+  if (!secret || typeof secret !== 'string') {
+    return false
   }
 
-  <span class="keyword">if</span> (!token || <span class="keyword">typeof</span> token !== <span class="string"><span class="delimiter">'</span><span class="content">string</span><span class="delimiter">'</span></span>) {
-    <span class="keyword">return</span> <span class="predefined-constant">false</span>
+  if (!token || typeof token !== 'string') {
+    return false
   }
 
-  <span class="keyword">var</span> index = token.indexOf(<span class="string"><span class="delimiter">'</span><span class="content">-</span><span class="delimiter">'</span></span>)
+  var index = token.indexOf('-')
 
-  <span class="keyword">if</span> (index === -<span class="integer">1</span>) {
-    <span class="keyword">return</span> <span class="predefined-constant">false</span>
+  if (index === -1) {
+    return false
   }
 
-  <span class="keyword">var</span> salt = token.substr(<span class="integer">0</span>, index)
-  <span class="keyword">var</span> expected = tokenize(secret, salt)
+  var salt = token.substr(0, index)
+  var expected = tokenize(secret, salt)
 
-  <span class="keyword">return</span> scmp(token, expected)
+  return scmp(token, expected)
 }
-</pre></div>
-</div>
-</div>
+</code></pre>
 
 <h2 id="code-tracing-verification-1">Code tracing verification</h2>
 

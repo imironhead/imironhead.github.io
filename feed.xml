@@ -6,8 +6,8 @@
 </description>
     <link>http://ironhead.bitbucket.com/</link>
     <atom:link href="http://ironhead.bitbucket.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 04 Mar 2015 13:31:37 +0800</pubDate>
-    <lastBuildDate>Wed, 04 Mar 2015 13:31:37 +0800</lastBuildDate>
+    <pubDate>Thu, 23 Apr 2015 15:23:21 +0800</pubDate>
+    <lastBuildDate>Thu, 23 Apr 2015 15:23:21 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -18,154 +18,153 @@ are almost the same.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/images/arduino_ssd1306.jpg&quot; alt=&quot;arduino + ssd1306&quot; /&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;// SSD1306&lt;/span&gt;
-&lt;span class=&quot;comment&quot;&gt;// https://www.adafruit.com/datasheets/SSD1306.pdf&lt;/span&gt;
-&lt;span class=&quot;comment&quot;&gt;// 5v&lt;/span&gt;
+&lt;pre&gt;&lt;code class=&quot;language-cpp&quot;&gt;// SSD1306
+// https://www.adafruit.com/datasheets/SSD1306.pdf
+// 5v
 
-&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; PIN_DATA_COMMAND  (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;)
-&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; PIN_RESET         (&lt;span class=&quot;integer&quot;&gt;13&lt;/span&gt;)
-&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; PIN_SCL           (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;)
-&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; PIN_SDA           (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;)
+#define PIN_DATA_COMMAND  (11)
+#define PIN_RESET         (13)
+#define PIN_SCL           (10)
+#define PIN_SDA           (9)
 
-&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; led_send(&lt;span class=&quot;predefined-type&quot;&gt;bool&lt;/span&gt; is_data, uint8_t data) {
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (is_data) {
+void led_send(bool is_data, uint8_t data) {
+  if (is_data) {
     digitalWrite(PIN_DATA_COMMAND, HIGH);
-  } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
+  } else {
     digitalWrite(PIN_DATA_COMMAND, LOW);
   }
 
-  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++i) {
+  for (int i = 0; i &amp;lt; 8; ++i) {
     digitalWrite(PIN_SCL, LOW);
 
-    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (data &amp;amp; &lt;span class=&quot;hex&quot;&gt;0x80&lt;/span&gt;) {
-      digitalWrite(PIN_SDA, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;);
-    } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
-      digitalWrite(PIN_SDA, &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;);
+    if (data &amp;amp; 0x80) {
+      digitalWrite(PIN_SDA, 1);
+    } else {
+      digitalWrite(PIN_SDA, 0);
     }
 
     digitalWrite(PIN_SCL, HIGH);
 
-    data &amp;lt;&amp;lt;= &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;;
+    data &amp;lt;&amp;lt;= 1;
   }
 }
 
-&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; led_send_data(uint8_t data) {
-  led_send(&lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;, data);
+void led_send_data(uint8_t data) {
+  led_send(true, data);
 }
 
-&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; led_send_command(uint8_t command) {
-  led_send(&lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;, command);
+void led_send_command(uint8_t command) {
+  led_send(false, command);
 }
 
-&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; led_init() {
+void led_init() {
   digitalWrite(PIN_SCL, HIGH);
   digitalWrite(PIN_RESET, LOW);
-  delay(&lt;span class=&quot;integer&quot;&gt;50&lt;/span&gt;);
+  delay(50);
   digitalWrite(PIN_RESET, HIGH);
   digitalWrite(PIN_SCL, LOW);
 
-  &lt;span class=&quot;comment&quot;&gt;// display off (sleep mode)&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xae&lt;/span&gt;);
+  // display off (sleep mode)
+  led_send_command(0xae);
 
-  &lt;span class=&quot;comment&quot;&gt;// segment remap (?)&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xa1&lt;/span&gt;);
+  // segment remap (?)
+  led_send_command(0xa1);
 
-  &lt;span class=&quot;comment&quot;&gt;// VCOMH deselect level (?)&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xdb&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x40&lt;/span&gt;);
+  // VCOMH deselect level (?)
+  led_send_command(0xdb);
+  led_send_command(0x40);
 
-  &lt;span class=&quot;comment&quot;&gt;// pre-charge period&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// http://en.wikipedia.org/wiki/Pre-charge&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xd9&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xf1&lt;/span&gt;);
+  // pre-charge period
+  // http://en.wikipedia.org/wiki/Pre-charge
+  led_send_command(0xd9);
+  led_send_command(0xf1);
 
-  &lt;span class=&quot;comment&quot;&gt;// COM pins hardware configuration (?)&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xda&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x12&lt;/span&gt;);
+  // COM pins hardware configuration (?)
+  led_send_command(0xda);
+  led_send_command(0x12);
 
-  &lt;span class=&quot;comment&quot;&gt;// memory addressing mode&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// 0x00 : horizontal&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// 0x01 : vertical&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// 0x02 : page&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x20&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x02&lt;/span&gt;);
+  // memory addressing mode
+  // 0x00 : horizontal
+  // 0x01 : vertical
+  // 0x02 : page
+  led_send_command(0x20);
+  led_send_command(0x02);
 
-  &lt;span class=&quot;comment&quot;&gt;// enable charge pump, dc/dc converter&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// http://en.wikipedia.org/wiki/Charge_pump&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x8d&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x14&lt;/span&gt;);
+  // enable charge pump, dc/dc converter
+  // http://en.wikipedia.org/wiki/Charge_pump
+  led_send_command(0x8d);
+  led_send_command(0x14);
 
-  &lt;span class=&quot;comment&quot;&gt;// display start line? (0x40 | (0 ~ 63))&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x40&lt;/span&gt; | &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;);
+  // display start line? (0x40 | (0 ~ 63))
+  led_send_command(0x40 | 0);
 
-  &lt;span class=&quot;comment&quot;&gt;// display offset (vertical shift), 0 ~ 63&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xd3&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x00&lt;/span&gt;);
+  // display offset (vertical shift), 0 ~ 63
+  led_send_command(0xd3);
+  led_send_command(0x00);
 
-  &lt;span class=&quot;comment&quot;&gt;// multiplex ratio&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// http://en.wikipedia.org/wiki/Multiplexed_display&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xa8&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x3f&lt;/span&gt;);
+  // multiplex ratio
+  // http://en.wikipedia.org/wiki/Multiplexed_display
+  led_send_command(0xa8);
+  led_send_command(0x3f);
 
-  &lt;span class=&quot;comment&quot;&gt;// display clock divide ratio / oscillator frequency&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xd5&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x80&lt;/span&gt;);
+  // display clock divide ratio / oscillator frequency
+  led_send_command(0xd5);
+  led_send_command(0x80);
 
-  &lt;span class=&quot;comment&quot;&gt;// contrast&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// double byte, 2nd byte means contrast. Constrast increases as it increses.&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x81&lt;/span&gt;);
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0x00&lt;/span&gt;);
+  // contrast
+  // double byte, 2nd byte means contrast. Constrast increases as it increses.
+  led_send_command(0x81);
+  led_send_command(0x00);
 
-  &lt;span class=&quot;comment&quot;&gt;// entire display off&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// 0xa4 : pixels are on based on datas in RAM&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// 0xa5 : all pixels are on&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xa4&lt;/span&gt;);
+  // entire display off
+  // 0xa4 : pixels are on based on datas in RAM
+  // 0xa5 : all pixels are on
+  led_send_command(0xa4);
 
-  &lt;span class=&quot;comment&quot;&gt;// normal display&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// 0xa6 : bit 0 -&amp;gt; pixel off, bit 1 -&amp;gt; pixel on&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;// 0xa7 : bit 1 -&amp;gt; pixel off, bit 0 -&amp;gt; pixel on&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xa6&lt;/span&gt;);
+  // normal display
+  // 0xa6 : bit 0 -&amp;gt; pixel off, bit 1 -&amp;gt; pixel on
+  // 0xa7 : bit 1 -&amp;gt; pixel off, bit 0 -&amp;gt; pixel on
+  led_send_command(0xa6);
 
-  &lt;span class=&quot;comment&quot;&gt;// display on (normal mode)&lt;/span&gt;
-  led_send_command(&lt;span class=&quot;hex&quot;&gt;0xaf&lt;/span&gt;);
+  // display on (normal mode)
+  led_send_command(0xaf);
 }
 
-&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; led_fill(&lt;span class=&quot;directive&quot;&gt;const&lt;/span&gt; uint8_t* map) {
+void led_fill(const uint8_t* map) {
   uint8_t y;
 
-  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (y = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; y &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++y) {
-    led_send_command(&lt;span class=&quot;hex&quot;&gt;0xb0&lt;/span&gt; + y);
-    led_send_command(&lt;span class=&quot;hex&quot;&gt;0x01&lt;/span&gt;);
-    led_send_command(&lt;span class=&quot;hex&quot;&gt;0x10&lt;/span&gt;);
+  for (y = 0; y &amp;lt; 8; ++y) {
+    led_send_command(0xb0 + y);
+    led_send_command(0x01);
+    led_send_command(0x10);
 
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; x = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; x &amp;lt; &lt;span class=&quot;integer&quot;&gt;128&lt;/span&gt;; ++x) {
+    for (int x = 0; x &amp;lt; 128; ++x) {
       led_send_data(*map++);
     }
   }
 }
 
-uint8_t led_set_pixel(uint8_t* map, &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; x, &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; y, uint8_t c) {
-  &lt;span class=&quot;comment&quot;&gt;// to page&lt;/span&gt;
-  map += &lt;span class=&quot;integer&quot;&gt;128&lt;/span&gt; * (y / &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;);
+uint8_t led_set_pixel(uint8_t* map, int x, int y, uint8_t c) {
+  // to page
+  map += 128 * (y / 8);
 
-  y %= &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;;
+  y %= 8;
 
-  &lt;span class=&quot;comment&quot;&gt;// to row&lt;/span&gt;
+  // to row
   map += x;
 
-  &lt;span class=&quot;comment&quot;&gt;// set col&lt;/span&gt;
-  *map &amp;amp;= ~(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; y);
+  // set col
+  *map &amp;amp;= ~(1 &amp;lt;&amp;lt; y);
   *map |=  (c &amp;lt;&amp;lt; y);
 
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; *map;
+  return *map;
 }
 
-uint8_t display_map[&lt;span class=&quot;integer&quot;&gt;1024&lt;/span&gt;];
+uint8_t display_map[1024];
 
-uint8_t pixel = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;;
+uint8_t pixel = 0;
 
-&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; setup() {
+void setup() {
   pinMode(PIN_SCL,OUTPUT);
   pinMode(PIN_SDA,OUTPUT);
   pinMode(PIN_RESET,OUTPUT);
@@ -175,25 +174,23 @@ uint8_t pixel = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;;
   led_fill(display_map);
 }
 
-&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; loop() {
-  pixel ^= &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;;
+void loop() {
+  pixel ^= 1;
 
-  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; y = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; ; y &amp;lt; &lt;span class=&quot;integer&quot;&gt;64&lt;/span&gt;; ++y) {
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; x = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; x &amp;lt; &lt;span class=&quot;integer&quot;&gt;128&lt;/span&gt;; ++x) {
-      led_send_command(&lt;span class=&quot;hex&quot;&gt;0xb0&lt;/span&gt; + y / &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;);
-      led_send_command(&lt;span class=&quot;hex&quot;&gt;0x00&lt;/span&gt; + x % &lt;span class=&quot;integer&quot;&gt;16&lt;/span&gt;);
-      led_send_command(&lt;span class=&quot;hex&quot;&gt;0x10&lt;/span&gt; + x / &lt;span class=&quot;integer&quot;&gt;16&lt;/span&gt;);
+  for (int y = 0 ; y &amp;lt; 64; ++y) {
+    for (int x = 0; x &amp;lt; 128; ++x) {
+      led_send_command(0xb0 + y / 8);
+      led_send_command(0x00 + x % 16);
+      led_send_command(0x10 + x / 16);
 
       led_send_data(led_set_pixel(display_map, x, y, pixel));
 
-      delay(&lt;span class=&quot;integer&quot;&gt;100&lt;/span&gt;);
+      delay(100);
     }
   }
 }
 
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 04 Mar 2015 00:00:00 +0800</pubDate>
         <link>http://ironhead.bitbucket.com/2015/03/04/arduino-33d1306.html</link>
@@ -211,97 +208,88 @@ uint8_t pixel = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;;
 &lt;h2 id=&quot;generate&quot;&gt;Generate&lt;/h2&gt;
 &lt;p&gt;In rails, we can find a csrf token in the head of html or a hidden input of forms:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;tag&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;tag&quot;&gt;&amp;lt;meta&lt;/span&gt; &lt;span class=&quot;attribute-name&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
-          &lt;span class=&quot;attribute-name&quot;&gt;content&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;V6CZMZGA+lnkmonZbw74c81KAGjBAlK6Jk1UEbQkW95zjIMxU/G5ixcbokIG5GIzlG2gwtag4la/eLoTXT6/Dw==&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;tag&quot;&gt;/&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;tag&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;tag&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;tag&quot;&gt;&amp;lt;form&amp;gt;&lt;/span&gt;
-      &lt;span class=&quot;tag&quot;&gt;&amp;lt;input&lt;/span&gt; &lt;span class=&quot;attribute-name&quot;&gt;type&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;hidden&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
-             &lt;span class=&quot;attribute-name&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;authenticity_token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
-             &lt;span class=&quot;attribute-name&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;OFkGlN+ho64ffPlNEJ7P01VPO+dC7yQ96rl13pKNV8McdRyUHdDgfOz90tZ5dFWTDGibTVVNlNFzjJvce5ezEg==&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;tag&quot;&gt;/&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;tag&quot;&gt;&amp;lt;/form&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;tag&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;tag&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;html&amp;gt;
+  &amp;lt;head&amp;gt;
+    &amp;lt;meta name=&quot;csrf-token&quot;
+          content=&quot;V6CZMZGA+lnkmonZbw74c81KAGjBAlK6Jk1UEbQkW95zjIMxU/G5ixcbokIG5GIzlG2gwtag4la/eLoTXT6/Dw==&quot; /&amp;gt;
+  &amp;lt;/head&amp;gt;
+  &amp;lt;body&amp;gt;
+    &amp;lt;form&amp;gt;
+      &amp;lt;input type=&quot;hidden&quot;
+             name=&quot;authenticity_token&quot;
+             value=&quot;OFkGlN+ho64ffPlNEJ7P01VPO+dC7yQ96rl13pKNV8McdRyUHdDgfOz90tZ5dFWTDGibTVVNlNFzjJvce5ezEg==&quot; /&amp;gt;
+    &amp;lt;/form&amp;gt;
+  &amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Those tokens are generated in &lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionpack/lib/action_controller/metal/request_forgery_protection.rb&quot;&gt;ActionController&lt;/a&gt;
 and not predictable (that’s what we need for csrf protection).
 In &lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionview/lib/action_view/helpers/csrf_helper.rb&quot;&gt;ActionView module&lt;/a&gt; we can find how csrf meta tags are generated:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;csrf_meta_tags&lt;/span&gt;
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; protect_against_forgery?
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def csrf_meta_tags
+  if protect_against_forgery?
     [
-      tag(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;meta&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:name&lt;/span&gt; =&amp;gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-param&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:content&lt;/span&gt; =&amp;gt; request_forgery_protection_token),
-      tag(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;meta&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:name&lt;/span&gt; =&amp;gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;symbol&quot;&gt;:content&lt;/span&gt; =&amp;gt; form_authenticity_token)
-    ].join(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;char&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;).html_safe
-  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+      tag(&#39;meta&#39;, :name =&amp;gt; &#39;csrf-param&#39;, :content =&amp;gt; request_forgery_protection_token),
+      tag(&#39;meta&#39;, :name =&amp;gt; &#39;csrf-token&#39;, :content =&amp;gt; form_authenticity_token)
+    ].join(&quot;\n&quot;).html_safe
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;The methods &lt;strong&gt;form_authenticity_token&lt;/strong&gt; is in &lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionpack/lib/action_controller/metal/request_forgery_protection.rb&quot;&gt;ActionController&lt;/a&gt; :&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt; = &lt;span class=&quot;integer&quot;&gt;32&lt;/span&gt;
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;AUTHENTICITY_TOKEN_LENGTH = 32
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;form_authenticity_token&lt;/span&gt;
+def form_authenticity_token
   masked_authenticity_token(session)
-&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+end
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;masked_authenticity_token&lt;/span&gt;(session)
-  one_time_pad = &lt;span class=&quot;constant&quot;&gt;SecureRandom&lt;/span&gt;.random_bytes(&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;)
+def masked_authenticity_token(session)
+  one_time_pad = SecureRandom.random_bytes(AUTHENTICITY_TOKEN_LENGTH)
   encrypted_csrf_token = xor_byte_strings(one_time_pad, real_csrf_token(session))
   masked_token = one_time_pad + encrypted_csrf_token
-  &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_encode64(masked_token)
-&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  Base64.strict_encode64(masked_token)
+end
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;valid_authenticity_token?&lt;/span&gt;(session, encoded_masked_token)
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; encoded_masked_token.nil? || encoded_masked_token.empty?
+def valid_authenticity_token?(session, encoded_masked_token)
+  return false if encoded_masked_token.nil? || encoded_masked_token.empty?
 
-  &lt;span class=&quot;keyword&quot;&gt;begin&lt;/span&gt;
-    masked_token = &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_decode64(encoded_masked_token)
-  &lt;span class=&quot;keyword&quot;&gt;rescue&lt;/span&gt; &lt;span class=&quot;constant&quot;&gt;ArgumentError&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;# encoded_masked_token is invalid Base64&lt;/span&gt;
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
-  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  begin
+    masked_token = Base64.strict_decode64(encoded_masked_token)
+  rescue ArgumentError # encoded_masked_token is invalid Base64
+    return false
+  end
 
-  &lt;span class=&quot;comment&quot;&gt;# See if it&#39;s actually a masked token or not. In order to&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;# deploy this code, we should be able to handle any unmasked&lt;/span&gt;
-  &lt;span class=&quot;comment&quot;&gt;# tokens that we&#39;ve issued without error.&lt;/span&gt;
+  # See if it&#39;s actually a masked token or not. In order to
+  # deploy this code, we should be able to handle any unmasked
+  # tokens that we&#39;ve issued without error.
 
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; masked_token.length == &lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;
-    &lt;span class=&quot;comment&quot;&gt;# This is actually an unmasked token. This is expected if&lt;/span&gt;
-    &lt;span class=&quot;comment&quot;&gt;# you have just upgraded to masked tokens, but should stop&lt;/span&gt;
-    &lt;span class=&quot;comment&quot;&gt;# happening shortly after installing this gem&lt;/span&gt;
+  if masked_token.length == AUTHENTICITY_TOKEN_LENGTH
+    # This is actually an unmasked token. This is expected if
+    # you have just upgraded to masked tokens, but should stop
+    # happening shortly after installing this gem
     compare_with_real_token masked_token, session
 
-  &lt;span class=&quot;keyword&quot;&gt;elsif&lt;/span&gt; masked_token.length == &lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt; * &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
-    &lt;span class=&quot;comment&quot;&gt;# Split the token into the one-time pad and the encrypted&lt;/span&gt;
-    &lt;span class=&quot;comment&quot;&gt;# value and decrypt it&lt;/span&gt;
-    one_time_pad = masked_token[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;]
-    encrypted_csrf_token = masked_token[&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;..&lt;span class=&quot;integer&quot;&gt;-1&lt;/span&gt;]
+  elsif masked_token.length == AUTHENTICITY_TOKEN_LENGTH * 2
+    # Split the token into the one-time pad and the encrypted
+    # value and decrypt it
+    one_time_pad = masked_token[0...AUTHENTICITY_TOKEN_LENGTH]
+    encrypted_csrf_token = masked_token[AUTHENTICITY_TOKEN_LENGTH..-1]
     csrf_token = xor_byte_strings(one_time_pad, encrypted_csrf_token)
 
     compare_with_real_token csrf_token, session
 
-  &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;
-    &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;# Token is malformed&lt;/span&gt;
-  &lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
+  else
+    false # Token is malformed
+  end
+end
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;real_csrf_token&lt;/span&gt;(session)
-  session[&lt;span class=&quot;symbol&quot;&gt;:_csrf_token&lt;/span&gt;] ||= &lt;span class=&quot;constant&quot;&gt;SecureRandom&lt;/span&gt;.base64(&lt;span class=&quot;constant&quot;&gt;AUTHENTICITY_TOKEN_LENGTH&lt;/span&gt;)
-  &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_decode64(session[&lt;span class=&quot;symbol&quot;&gt;:_csrf_token&lt;/span&gt;])
-&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+def real_csrf_token(session)
+  session[:_csrf_token] ||= SecureRandom.base64(AUTHENTICITY_TOKEN_LENGTH)
+  Base64.strict_decode64(session[:_csrf_token])
+end
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;In brief, a token is generated by this steps:&lt;/p&gt;
 
@@ -319,17 +307,14 @@ In &lt;a href=&quot;https://github.com/rails/rails/blob/4-2-stable/actionview/li
 &lt;p&gt;Now open a rails site in browser and find the csrf token, refresh the page to get 2 different tokens.
 In rails console def a decode method and pass those tokens to see the result. The result should be the same.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;# extract from valid_authenticity_token?&lt;/span&gt;
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;decode&lt;/span&gt;(token)
-  token = &lt;span class=&quot;constant&quot;&gt;Base64&lt;/span&gt;.strict_decode64 token
-  t1 = token[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;...&lt;span class=&quot;integer&quot;&gt;32&lt;/span&gt;]
-  t2 = token[&lt;span class=&quot;integer&quot;&gt;32&lt;/span&gt;..&lt;span class=&quot;integer&quot;&gt;-1&lt;/span&gt;]
-  t1.bytes.zip(t2.bytes).map { |(c1,c2)| c1 ^ c2 }.pack(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;c*&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
-&lt;span class=&quot;keyword&quot;&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;# extract from valid_authenticity_token?
+def decode(token)
+  token = Base64.strict_decode64 token
+  t1 = token[0...32]
+  t2 = token[32..-1]
+  t1.bytes.zip(t2.bytes).map { |(c1,c2)| c1 ^ c2 }.pack(&#39;c*&#39;)
+end
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Then re-launch the browser and decode another token, the result should be changed (bound to session!).&lt;/p&gt;
 
@@ -339,61 +324,52 @@ In rails console def a decode method and pass those tokens to see the result. Th
 using secretSync method of &lt;a href=&quot;https://github.com/pillarjs/csrf/blob/master/index.js&quot;&gt;csrf module&lt;/a&gt; which return
 pseudo random bytes.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;// generate &amp;amp; set new secret&lt;/span&gt;
-&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (sec === &lt;span class=&quot;predefined-constant&quot;&gt;undefined&lt;/span&gt;) {
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// generate &amp;amp; set new secret
+if (sec === undefined) {
   sec = tokens.secretSync()
   setsecret(req, res, sec, cookie)
 }
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Then in &lt;a href=&quot;https://github.com/pillarjs/csrf/blob/master/index.js&quot;&gt;csrf module&lt;/a&gt;, use tokenize method to generate
 the final token:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;csrfTokens.&lt;span class=&quot;function&quot;&gt;tokenize&lt;/span&gt; = &lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;tokenize&lt;/span&gt;(secret, salt) {
-  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; hash = escape(crypto
-    .createHash(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;sha1&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;csrfTokens.tokenize = function tokenize(secret, salt) {
+  var hash = escape(crypto
+    .createHash(&#39;sha1&#39;)
     .update(salt)
-    .update(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+    .update(&#39;-&#39;)
     .update(secret)
-    .digest(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;base64&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;))
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; salt + &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt; + hash
+    .digest(&#39;base64&#39;))
+  return salt + &#39;-&#39; + hash
 }
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;To verify the token, re-generate the token with salt and secret and compare the result. As in the
 tokenize method, salt is in the beginning of the final token and hash is generated base on salt and
 the pseudo randome secret.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;function&quot;&gt;verify&lt;/span&gt;: &lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;verify&lt;/span&gt;(secret, token) {
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!secret || &lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; secret !== &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;) {
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;verify: function verify(secret, token) {
+  if (!secret || typeof secret !== &#39;string&#39;) {
+    return false
   }
 
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!token || &lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; token !== &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;) {
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+  if (!token || typeof token !== &#39;string&#39;) {
+    return false
   }
 
-  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; index = token.indexOf(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+  var index = token.indexOf(&#39;-&#39;)
 
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (index === -&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;) {
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;false&lt;/span&gt;
+  if (index === -1) {
+    return false
   }
 
-  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; salt = token.substr(&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;, index)
-  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; expected = tokenize(secret, salt)
+  var salt = token.substr(0, index)
+  var expected = tokenize(secret, salt)
 
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; scmp(token, expected)
+  return scmp(token, expected)
 }
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&quot;code-tracing-verification-1&quot;&gt;Code tracing verification&lt;/h2&gt;
 
@@ -424,90 +400,87 @@ the pseudo randome secret.&lt;/p&gt;
         <title>Fibonacci in Go</title>
         <description>&lt;p&gt;Implement fibonacci to evaluate golang.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;package&lt;/span&gt; main
+&lt;pre&gt;&lt;code class=&quot;language-go&quot;&gt;package main
 
-&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; (
-  &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
-  &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;math/big&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+import (
+  &quot;fmt&quot;
+  &quot;math/big&quot;
 )
 
 
-&lt;span class=&quot;keyword&quot;&gt;type&lt;/span&gt; M2 &lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; {
+type M2 struct {
   e00, e01, e10, e11 big.Int
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; NewM2(e00, e01, e10, e11 &lt;span class=&quot;predefined-type&quot;&gt;int64&lt;/span&gt;) *M2 {
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;M2 {
+func NewM2(e00, e01, e10, e11 int64) *M2 {
+  return &amp;amp;M2 {
     *big.NewInt(e00),
     *big.NewInt(e01),
     *big.NewInt(e10),
     *big.NewInt(e11) }
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; (m *M2) String() &lt;span class=&quot;predefined-type&quot;&gt;string&lt;/span&gt; {
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; fmt.Sprintf(
-    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;[[ %v, %v ], [ %v, %v ]]&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, &amp;amp;m.e00, &amp;amp;m.e01, &amp;amp;m.e10, &amp;amp;m.e11)
+func (m *M2) String() string {
+  return fmt.Sprintf(
+    &quot;[[ %v, %v ], [ %v, %v ]]&quot;, &amp;amp;m.e00, &amp;amp;m.e01, &amp;amp;m.e10, &amp;amp;m.e11)
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Add(m, n *M2) *M2 {
-  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; r M2
+func Add(m, n *M2) *M2 {
+  var r M2
 
   (&amp;amp;r.e00).Add(&amp;amp;m.e00, &amp;amp;n.e00)
   (&amp;amp;r.e01).Add(&amp;amp;m.e01, &amp;amp;n.e01)
   (&amp;amp;r.e10).Add(&amp;amp;m.e10, &amp;amp;n.e10)
   (&amp;amp;r.e11).Add(&amp;amp;m.e11, &amp;amp;n.e11)
 
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;r
+  return &amp;amp;r
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Mul(m, n *M2) *M2 {
-  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; r M2
+func Mul(m, n *M2) *M2 {
+  var r M2
 
-  (&amp;amp;r.e00).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e00, &amp;amp;n.e00),
-               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e01, &amp;amp;n.e10))
-  (&amp;amp;r.e01).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e00, &amp;amp;n.e01),
-               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e01, &amp;amp;n.e11))
-  (&amp;amp;r.e10).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e10, &amp;amp;n.e00),
-               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e11, &amp;amp;n.e10))
-  (&amp;amp;r.e11).Add(&lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e10, &amp;amp;n.e01),
-               &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mul(&amp;amp;m.e11, &amp;amp;n.e11))
+  (&amp;amp;r.e00).Add(new(big.Int).Mul(&amp;amp;m.e00, &amp;amp;n.e00),
+               new(big.Int).Mul(&amp;amp;m.e01, &amp;amp;n.e10))
+  (&amp;amp;r.e01).Add(new(big.Int).Mul(&amp;amp;m.e00, &amp;amp;n.e01),
+               new(big.Int).Mul(&amp;amp;m.e01, &amp;amp;n.e11))
+  (&amp;amp;r.e10).Add(new(big.Int).Mul(&amp;amp;m.e10, &amp;amp;n.e00),
+               new(big.Int).Mul(&amp;amp;m.e11, &amp;amp;n.e10))
+  (&amp;amp;r.e11).Add(new(big.Int).Mul(&amp;amp;m.e10, &amp;amp;n.e01),
+               new(big.Int).Mul(&amp;amp;m.e11, &amp;amp;n.e11))
 
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;r
+  return &amp;amp;r
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; IsOdd(i *big.Int) &lt;span class=&quot;predefined-type&quot;&gt;bool&lt;/span&gt; {
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; == &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Mod(i, big.NewInt(&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;)).Cmp(big.NewInt(&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;))
+func IsOdd(i *big.Int) bool {
+  return 1 == new(big.Int).Mod(i, big.NewInt(2)).Cmp(big.NewInt(0))
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Pow(m *M2, p *big.Int) *M2 {
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; p.Cmp(big.NewInt(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; {
-    &lt;span class=&quot;comment&quot;&gt;// should ???&lt;/span&gt;
+func Pow(m *M2, p *big.Int) *M2 {
+  if p.Cmp(big.NewInt(1)) == 0 {
+    // should ???
     t := *m
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;t
-  } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
-    t := Pow(m, &lt;span class=&quot;predefined&quot;&gt;new&lt;/span&gt;(big.Int).Div(p, big.NewInt(&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;)))
+    return &amp;amp;t
+  } else {
+    t := Pow(m, new(big.Int).Div(p, big.NewInt(2)))
 
     t = Mul(t, t)
 
-    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; IsOdd(p) {
+    if IsOdd(p) {
       t = Mul(t, m)
     }
 
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; t
+    return t
   }
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; Fib(i *big.Int) *big.Int {
-  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &amp;amp;Pow(NewM2(&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;), i).e10
+func Fib(i *big.Int) *big.Int {
+  return &amp;amp;Pow(NewM2(0, 1, 1, 1), i).e10
 }
 
-&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; main() {
-  fmt.Println(Fib(big.NewInt(&lt;span class=&quot;integer&quot;&gt;1000&lt;/span&gt;)))
+func main() {
+  fmt.Println(Fib(big.NewInt(1000)))
 }
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Mon, 26 Jan 2015 00:00:00 +0800</pubDate>
         <link>http://ironhead.bitbucket.com/2015/01/26/fibonacci-in-golang.html</link>
@@ -551,71 +524,62 @@ the pseudo randome secret.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/expressjs/csurf&quot;&gt;csurf: Node.js CSRF protection middleware&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;comment&quot;&gt;// dependency&lt;/span&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;// dependency
 {
-  &lt;span class=&quot;key&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;dependencies&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;: {
-    &lt;span class=&quot;key&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csurf&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;^1.6.5&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  &quot;dependencies&quot;: {
+    &quot;csurf&quot;: &quot;^1.6.5&quot;
   }
 }
 
-&lt;span class=&quot;comment&quot;&gt;// routes&lt;/span&gt;
+// routes
 app.use(csrf());
-app.use(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(req, res, next) {
-  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; token = req.csrfToken();
+app.use(function(req, res, next) {
+  var token = req.csrfToken();
 
-  &lt;span class=&quot;comment&quot;&gt;// for jade&lt;/span&gt;
+  // for jade
   res.locals.csrfToken = token;
-  &lt;span class=&quot;comment&quot;&gt;// for Angularjs&lt;/span&gt;
-  res.cookie(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;XSRF-TOKEN&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, token);
+  // for Angularjs
+  res.cookie(&#39;XSRF-TOKEN&#39;, token);
 
   next();
 });
-app.use(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(err, req, res, next) {
-  &lt;span class=&quot;comment&quot;&gt;// called if there are errors.&lt;/span&gt;
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (err.code !== &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;EBADCSRFTOKEN&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;) {
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; next(err);
+app.use(function(err, req, res, next) {
+  // called if there are errors.
+  if (err.code !== &quot;EBADCSRFTOKEN&quot;) {
+    return next(err);
   }
 
-  &lt;span class=&quot;comment&quot;&gt;// handle CSRF token errors here&lt;/span&gt;
-  res.status(&lt;span class=&quot;integer&quot;&gt;403&lt;/span&gt;);
-  res.send(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;leave me alone~~&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;);
+  // handle CSRF token errors here
+  res.status(403);
+  res.send(&quot;leave me alone~~&quot;);
 
-  console.log(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;bad csrf token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;);
+  console.log(&quot;bad csrf token&quot;);
 });
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;In forms with method “POST”, set a hidden field with name “_csrf”:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;form(method=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;post&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, action=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;/csrf&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
-  input(type=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;hidden&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, name=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;_csrf&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, value=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;#{ csrfToken }&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;form(method=&quot;post&quot;, action=&quot;/csrf&quot;)
+  input(type=&quot;hidden&quot;, name=&quot;_csrf&quot;, value=&quot;#{ csrfToken }&quot;)
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Angularjs read cookie ‘XSRF-TOKEN’ and send it back in header. Extra works are needed for jQuery.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;html
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;html
   head
-    meta(name=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;csrf-token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, content=&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;#{ csrfToken }&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+    meta(name=&quot;csrf-token&quot;, content=&quot;#{ csrfToken }&quot;)
 
     script.
-      &lt;span class=&quot;predefined&quot;&gt;$&lt;/span&gt;(document).ready(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; (e) {
-        &lt;span class=&quot;predefined&quot;&gt;$&lt;/span&gt;.ajaxPrefilter(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(options, _, xhr) {
-          &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!xhr.crossDomain) {
-            &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; token = &lt;span class=&quot;predefined&quot;&gt;$&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;meta[name=&amp;quot;csrf-token&amp;quot;]&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;).attr(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;content&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;);
+      $(document).ready(function (e) {
+        $.ajaxPrefilter(function(options, _, xhr) {
+          if (!xhr.crossDomain) {
+            var token = $(&#39;meta[name=&quot;csrf-token&quot;]&#39;).attr(&#39;content&#39;);
 
-            xhr.setRequestHeader(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;X-CSRF-Token&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, token);
+            xhr.setRequestHeader(&quot;X-CSRF-Token&quot;, token);
           }
         });
       });
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;Note: Why setRequestHeader for jQuery&lt;/strong&gt;&lt;/p&gt;
 
@@ -623,25 +587,22 @@ app.use(&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(err, req, re
 
 &lt;h1 id=&quot;expose-less-information-to-attackers&quot;&gt;Expose Less Information to Attackers&lt;/h1&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; app = express();
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var app = express();
 
-&lt;span class=&quot;comment&quot;&gt;// Disable the useless header &amp;quot;x-powered-by&amp;quot; whose value is &amp;quot;Express&amp;quot;.&lt;/span&gt;
-app.disable(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;x-powered-by&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;);
+// Disable the useless header &quot;x-powered-by&quot; whose value is &quot;Express&quot;.
+app.disable(&quot;x-powered-by&quot;);
 
-&lt;span class=&quot;comment&quot;&gt;// The default session cookie key of express is &amp;quot;connect.sid&amp;quot;, change it.&lt;/span&gt;
-&lt;span class=&quot;comment&quot;&gt;// Secure cookie send session via https only.&lt;/span&gt;
-&lt;span class=&quot;comment&quot;&gt;// express session always set session a httponly cookie.&lt;/span&gt;
+// The default session cookie key of express is &quot;connect.sid&quot;, change it.
+// Secure cookie send session via https only.
+// express session always set session a httponly cookie.
 app.use(session({
-  &lt;span class=&quot;key&quot;&gt;secret&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;do not touch me&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;,
-  &lt;span class=&quot;key&quot;&gt;key&lt;/span&gt;: &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;session_id&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;,
-  &lt;span class=&quot;key&quot;&gt;cookie&lt;/span&gt;: {
-    &lt;span class=&quot;key&quot;&gt;secure&lt;/span&gt;: &lt;span class=&quot;predefined-constant&quot;&gt;true&lt;/span&gt;
+  secret: &quot;do not touch me&quot;,
+  key: &quot;session_id&quot;,
+  cookie: {
+    secure: true
   }
 }));
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Sat, 17 Jan 2015 00:00:00 +0800</pubDate>
         <link>http://ironhead.bitbucket.com/2015/01/17/nodejs-security-note.html</link>
@@ -658,219 +619,216 @@ app.use(session({
         <title>Conway&#39;s Game of Life on CodeSkulptor</title>
         <description>&lt;p&gt;&lt;a href=&quot;http://www.codeskulptor.org/#user38_iF5tSbexuT1XG1M_5.py&quot;&gt;CodeSkulptor&lt;/a&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;simplegui&lt;/span&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import simplegui
 
 
-&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;GameOfLife&lt;/span&gt; :
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, col_num, row_num, cell_size, line_size = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;) :
-    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num = col_num
-    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num = row_num
-    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size = cell_size
-    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size = line_size
+class GameOfLife :
+  def __init__(self, col_num, row_num, cell_size, line_size = 1) :
+    self._col_num = col_num
+    self._row_num = row_num
+    self._cell_size = cell_size
+    self._line_size = line_size
 
-    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells = [[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] * col_num &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(row_num)]
+    self._cells = [[0] * col_num for _ in range(row_num)]
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_width&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+  def get_width(self) :
+    return self._col_num * (self._cell_size + self._line_size) + self._line_size
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_height&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+  def get_height(self) :
+    return self._row_num * (self._cell_size + self._line_size) + self._line_size
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_color_of_cell&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, x, y) :
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Black&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Lime&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+  def get_color_of_cell(self, x, y) :
+    return &quot;Black&quot; if self._cells[y][x] == 0 else &quot;Lime&quot;
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;get_position_of_cell&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, x, y) :
-    px = x * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
-    py = y * (&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size) + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
-    ww = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size - &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+  def get_position_of_cell(self, x, y) :
+    px = x * (self._line_size + self._cell_size) + self._line_size + 1
+    py = y * (self._line_size + self._cell_size) + self._line_size + 1
+    ww = self._cell_size - 2
 
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; [(px, py),  (px + ww, py), (px + ww, py + ww), (px, py + ww)]
+    return [(px, py),  (px + ww, py), (px + ww, py + ww), (px, py + ww)]
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;reset&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
-      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
-        &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+  def reset(self) :
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
+        self._cells[y][x] = 0
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;toggle_cell&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, x, y) :
-    &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = (&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x]) % &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+  def toggle_cell(self, x, y) :
+    self._cells[y][x] = (1 + self._cells[y][x]) % 2
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;toggle_position&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, position) :
-    s = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size
-    x = position[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] / s
-    y = position[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;] / s
+  def toggle_position(self, position) :
+    s = self._line_size + self._cell_size
+    x = position[0] / s
+    y = position[1] / s
 
-    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; x &amp;lt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; y &amp;lt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; x &amp;gt;= &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; y &amp;gt;= &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; :
-      &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.toggle_cell(x, y)
+    if x &amp;lt; self._col_num and y &amp;lt; self._row_num and x &amp;gt;= 0 and y &amp;gt;= 0 :
+      self.toggle_cell(x, y)
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;update&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;) :
-    temp = [[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] * &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num)]
+  def update(self) :
+    temp = [[0] * self._col_num for _ in range(self._row_num)]
 
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
-      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
-        z  = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;][x - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;][x]
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x]
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
+        z  = self._cells[y - 1][x - 1]
+        z += self._cells[y - 1][x]
+        z += self._cells[y][x - 1]
+        z += self._cells[y][x]
 
-        xx = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; x + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; == &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; x + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
-        yy = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; y + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; == &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; y + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+        xx = 0 if x + 1 == self._col_num else x + 1
+        yy = 0 if y + 1 == self._row_num else y + 1
 
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;][xx]
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][xx]
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[yy][x - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[yy][x]
-        z += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[yy][xx]
+        z += self._cells[y - 1][xx]
+        z += self._cells[y][xx]
+        z += self._cells[yy][x - 1]
+        z += self._cells[yy][x]
+        z += self._cells[yy][xx]
 
         temp[y][x] = z
 
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
-      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
         z = temp[y][x]
 
-        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] == &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; :
-          z -= &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+        if self._cells[y][x] == 1 :
+          z -= 1
 
-        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; z &amp;lt; &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; :
-          &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
-        &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; z &amp;lt; &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt; :
-          &lt;span class=&quot;keyword&quot;&gt;pass&lt;/span&gt;
-        &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; :
-          &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
-        &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; z == &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt; :
-          &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cells[y][x] = &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+        if z &amp;lt; 2 :
+          self._cells[y][x] = 0
+        elif z &amp;lt; 4 :
+          pass
+        else :
+          self._cells[y][x] = 0
+        elif z == 3 :
+          self._cells[y][x] = 1
 
-  &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;draw&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, canvas) :
-    width = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_width()
+  def draw(self, canvas) :
+    width = self.get_width()
 
-    y = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size / &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+    y = self._line_size / 2
 
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
-      canvas.draw_line((&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;, y), (width, y), &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Teal&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+    for _ in range(1 + self._row_num) :
+      canvas.draw_line((0, y), (width, y), self._line_size, &quot;Teal&quot;)
 
-      y += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+      y += self._cell_size + self._line_size
 
-    height = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_height()
+    height = self.get_height()
 
-    x = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size / &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;
+    x = self._line_size / 2
 
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
-      canvas.draw_line((x, &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;), (x, height), &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Teal&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+    for _ in range(1 + self._col_num) :
+      canvas.draw_line((x, 0), (x, height), self._line_size, &quot;Teal&quot;)
 
-      x += &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._cell_size + &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._line_size
+      x += self._cell_size + self._line_size
 
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; y &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._row_num) :
-      &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;._col_num) :
-        color = &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_color_of_cell(x, y)
+    for y in range(self._row_num) :
+      for x in range(self._col_num) :
+        color = self.get_color_of_cell(x, y)
 
-        canvas.draw_polygon(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;.get_position_of_cell(x, y), &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, color, color)
+        canvas.draw_polygon(self.get_position_of_cell(x, y), 2, color, color)
 
-button_start = &lt;span class=&quot;predefined-constant&quot;&gt;None&lt;/span&gt;
-button_clear = &lt;span class=&quot;predefined-constant&quot;&gt;None&lt;/span&gt;
-running = &lt;span class=&quot;predefined-constant&quot;&gt;False&lt;/span&gt;
+button_start = None
+button_clear = None
+running = False
 
-gol = GameOfLife(&lt;span class=&quot;integer&quot;&gt;20&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;20&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;38&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;)
+gol = GameOfLife(20, 20, 38, 2)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;demo&lt;/span&gt;(name) :
-  &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; running
+def demo(name) :
+  global running
 
-  running = &lt;span class=&quot;predefined-constant&quot;&gt;True&lt;/span&gt;
+  running = True
 
   gol.reset()
 
-  button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Pause&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+  button_start.set_text(&quot;Pause&quot;)
 
   patterns = {
-    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;toad&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;)],
-    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;blinker&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;)],
-    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;beacon&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;)],
-    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;pulsar&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), \
-    (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), \
-    (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), \
-    (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), \
-    (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;), \
-    (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), \
-    (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;), \
-    (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;11&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;14&lt;/span&gt;)],
-    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;glider&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;)],
-    &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;lwss&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt; : [(&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;), (&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;)]
+    &quot;toad&quot; : [(3, 2), (4, 2), (5, 2), (2, 3), (3, 3), (4, 3)],
+    &quot;blinker&quot; : [(4, 3), (4, 4), (4, 5)],
+    &quot;beacon&quot; : [(1, 1), (2, 1), (1, 2), (4, 4), (4, 3), (3, 4)],
+    &quot;pulsar&quot; : [(4, 2), (5, 2), (6, 2), (10, 2), (11, 2), (12, 2), \
+    (2, 4), (2, 5), (2, 6), (7, 4), (7, 5), (7, 6), \
+    (9, 4), (9, 5), (9, 6), (14, 4), (14, 5), (14, 6), \
+    (4, 7), (5, 7), (6, 7), (10, 7), (11, 7), (12, 7), \
+    (4, 9), (5, 9), (6, 9), (10, 9), (11, 9), (12, 9), \
+    (2, 10), (2, 11), (2, 12), (7, 10), (7, 11), (7, 12), \
+    (9, 10), (9, 11), (9, 12), (14, 10), (14, 11), (14, 12), \
+    (4, 14), (5, 14), (6, 14), (10, 14), (11, 14), (12, 14)],
+    &quot;glider&quot; : [(5, 5), (6, 6), (6, 7), (5, 7), (4, 7)],
+    &quot;lwss&quot; : [(2, 2), (2, 4), (5, 2), (6, 3), (6, 4), (6, 5), (3, 5), (4, 5), (5, 5)]
   }
 
-  &lt;span class=&quot;predefined&quot;&gt;map&lt;/span&gt;(&lt;span class=&quot;keyword&quot;&gt;lambda&lt;/span&gt; x : gol.toggle_cell(x[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;], x[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]), patterns[name])
+  map(lambda x : gol.toggle_cell(x[0], x[1]), patterns[name])
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_mouse_clicked&lt;/span&gt;(position) :
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; running :
+def on_mouse_clicked(position) :
+  if not running :
     gol.toggle_position(position)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_toad&lt;/span&gt;() :
-  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;toad&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+def on_demo_toad() :
+  demo(&quot;toad&quot;)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_blinker&lt;/span&gt;() :
-  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;blinker&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+def on_demo_blinker() :
+  demo(&quot;blinker&quot;)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_beacon&lt;/span&gt;() :
-  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;beacon&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+def on_demo_beacon() :
+  demo(&quot;beacon&quot;)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_pulsar&lt;/span&gt;() :
-  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;pulsar&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+def on_demo_pulsar() :
+  demo(&quot;pulsar&quot;)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_glider&lt;/span&gt;() :
-  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;glider&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+def on_demo_glider() :
+  demo(&quot;glider&quot;)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_demo_lwss&lt;/span&gt;() :
-  demo(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;lwss&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+def on_demo_lwss() :
+  demo(&quot;lwss&quot;)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_start&lt;/span&gt;() :
-  &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; running
+def on_start() :
+  global running
 
-  running = &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; running
+  running = not running
 
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; running :
-    button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Pause&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
-  &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; :
-    button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+  if running :
+    button_start.set_text(&quot;Pause&quot;)
+  else :
+    button_start.set_text(&quot;Start&quot;)
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_clear&lt;/span&gt;() :
-  &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; running
+def on_clear() :
+  global running
 
-  running = &lt;span class=&quot;predefined-constant&quot;&gt;False&lt;/span&gt;
+  running = False
 
-  button_start.set_text(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+  button_start.set_text(&quot;Start&quot;)
 
   gol.reset()
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;update_game_of_life&lt;/span&gt;() :
-  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; running :
+def update_game_of_life() :
+  if running :
     gol.update()
 
-&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;on_draw&lt;/span&gt;(canvas) :
+def on_draw(canvas) :
   gol.draw(canvas)
 
-&lt;span class=&quot;comment&quot;&gt;# Create a frame and assign callbacks to event handlers&lt;/span&gt;
-frame = simplegui.create_frame(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Game of Life&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;, gol.get_width(), gol.get_height())
+# Create a frame and assign callbacks to event handlers
+frame = simplegui.create_frame(&quot;Game of Life&quot;, gol.get_width(), gol.get_height())
 
-frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Toad&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_toad)
-frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Blinker&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_blinker)
-frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Beacon&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_beacon)
-frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Pulsar&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_pulsar)
-frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo Glider&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_glider)
-frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Demo LWSS&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_demo_lwss)
+frame.add_button(&#39;Demo Toad&#39;, on_demo_toad)
+frame.add_button(&#39;Demo Blinker&#39;, on_demo_blinker)
+frame.add_button(&#39;Demo Beacon&#39;, on_demo_beacon)
+frame.add_button(&#39;Demo Pulsar&#39;, on_demo_pulsar)
+frame.add_button(&#39;Demo Glider&#39;, on_demo_glider)
+frame.add_button(&#39;Demo LWSS&#39;, on_demo_lwss)
 
-button_start = frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_start)
-button_clear = frame.add_button(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Clear&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, on_clear)
+button_start = frame.add_button(&#39;Start&#39;, on_start)
+button_clear = frame.add_button(&#39;Clear&#39;, on_clear)
 
 frame.set_mouseclick_handler(on_mouse_clicked)
 frame.set_draw_handler(on_draw)
 frame.start()
 
-&lt;span class=&quot;comment&quot;&gt;# timer to update&lt;/span&gt;
-timer = simplegui.create_timer(&lt;span class=&quot;integer&quot;&gt;500&lt;/span&gt;, update_game_of_life)
+# timer to update
+timer = simplegui.create_timer(500, update_game_of_life)
 timer.start()
 
 on_demo_toad()
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Mon, 29 Dec 2014 00:00:00 +0800</pubDate>
         <link>http://ironhead.bitbucket.com/2014/12/29/conways-game-of-life.html</link>
@@ -909,22 +867,21 @@ on_demo_toad()
 
 &lt;h3 id=&quot;create-database-and-add-some-nodes&quot;&gt;Create Database and Add Some Nodes&lt;/h3&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: create a database and name it &amp;quot;tv-shows&amp;quot;. :)
-(: attention: this command cleans the &amp;quot;tv-shows&amp;quot; database if it exist. :)
+&lt;pre&gt;&lt;code class=&quot;language-xquery&quot;&gt;(: create a database and name it &quot;tv-shows&quot;. :)
+(: attention: this command cleans the &quot;tv-shows&quot; database if it exist. :)
 create db tv-shows
 
 (: open the database whose name is tv-shows. :)
 open tv-shows
 
-(: add xml to the currently opened database at the path &amp;quot;shows&amp;quot;. :)
+(: add xml to the currently opened database at the path &quot;shows&quot;. :)
 add to shows &amp;lt;shows&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;/shows&amp;gt;
 
 (: list all database, there should be 1 resource under tv-shows database. :)
 list
 
 (: list all resources of tv-shows, :)
-(: there should be 1 xml whose name is &amp;quot;shows&amp;quot;. :)
+(: there should be 1 xml whose name is &quot;shows&quot;. :)
 list tv-shows
 
 (: get all &amp;lt;show/&amp;gt; node under &amp;lt;shows&amp;gt;&amp;lt;/shows&amp;gt;. :)
@@ -963,16 +920,13 @@ xquery let $s := shows/show[2] return insert node &amp;lt;rating/&amp;gt; into $
 (: &amp;lt;/shows&amp;gt;                         :)
 xquery delete node shows/show[1]
 
-(: destroy the database &amp;quot;tv-shows&amp;quot;. :)
+(: destroy the database &quot;tv-shows&quot;. :)
 drop db tv-shows
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&quot;update-a-node&quot;&gt;Update a Node&lt;/h3&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;create db tv-shows
+&lt;pre&gt;&lt;code class=&quot;language-xquery&quot;&gt;create db tv-shows
 open tv-shows
 add to shows &amp;lt;shows&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;/shows&amp;gt;
 
@@ -987,7 +941,7 @@ xquery insert node attribute{&#39;seasons&#39;}{2} into shows/show[2]
 xquery insert node &amp;lt;name&amp;gt;Game of Thrones&amp;lt;/name&amp;gt; into shows/show[1]
 xquery insert node &amp;lt;name&amp;gt;Penny Dreadful&amp;lt;/name&amp;gt; into shows/show[2]
 
-(: add &amp;lt;star/&amp;gt; to &amp;quot;Game of Thrones&amp;quot; :)
+(: add &amp;lt;star/&amp;gt; to &quot;Game of Thrones&quot; :)
 xquery insert node (&amp;lt;star&amp;gt;Lena Headey&amp;lt;/star&amp;gt;, &amp;lt;star&amp;gt;Peter Dinklage&amp;lt;/star&amp;gt;)
   into shows/show[1]
 
@@ -996,13 +950,13 @@ xquery for $s in shows/show where $s/name=&#39;Penny Dreadful&#39; return insert
   node (&amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt;,&amp;lt;star&amp;gt;ironhead&amp;lt;/star&amp;gt;) into $s
 
 (: current contents                                 :)
-(:  &amp;lt;shows update=&amp;quot;2014-12-11T14:26:04.139+08:00&amp;quot;&amp;gt;  :)
-(:    &amp;lt;show seasons=&amp;quot;5&amp;quot;&amp;gt;                            :)
+(:  &amp;lt;shows update=&quot;2014-12-11T14:26:04.139+08:00&quot;&amp;gt;  :)
+(:    &amp;lt;show seasons=&quot;5&quot;&amp;gt;                            :)
 (:      &amp;lt;name&amp;gt;Game of Thrones&amp;lt;/name&amp;gt;                :)
 (:      &amp;lt;star&amp;gt;Lena Headey&amp;lt;/star&amp;gt;                    :)
 (:      &amp;lt;star&amp;gt;Peter Dinklage&amp;lt;/star&amp;gt;                 :)
 (:    &amp;lt;/show&amp;gt;                                       :)
-(:    &amp;lt;show seasons=&amp;quot;2&amp;quot;&amp;gt;                            :)
+(:    &amp;lt;show seasons=&quot;2&quot;&amp;gt;                            :)
 (:      &amp;lt;name&amp;gt;Penny Dreadful&amp;lt;/name&amp;gt;                 :)
 (:      &amp;lt;star&amp;gt;Eva Green&amp;lt;/star&amp;gt;                      :)
 (:      &amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt;                  :)
@@ -1017,7 +971,7 @@ xquery for $x in shows/show where $x/name=&#39;Penny Dreadful&#39;
   return delete node $x/star[.=&#39;ironhead&#39;]
 
 (: replace a &amp;lt;star/&amp;gt; node. :)
-xquery for $s in shows/show where $s/name=&amp;quot;Penny Dreadful&amp;quot;
+xquery for $s in shows/show where $s/name=&quot;Penny Dreadful&quot;
   return (replace node $s/star[.=&#39;Josh Hartnett&#39;] with
   &amp;lt;star&amp;gt;Timothy Dalton&amp;lt;/star&amp;gt;)
 
@@ -1033,16 +987,13 @@ xquery copy $temp := shows/show[2] modify (insert node
 xquery *
 
 drop db tv-shows
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&quot;write-function---functional-programming&quot;&gt;Write Function - Functional Programming&lt;/h3&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: In test database, shows resource.
+&lt;pre&gt;&lt;code class=&quot;language-xquery&quot;&gt;(: In test database, shows resource.
   &amp;lt;shows&amp;gt;
-    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
+    &amp;lt;show name=&quot;Game of Thrones&quot;/&amp;gt;
   &amp;lt;/shows&amp;gt; :)
 
 (: To declare function in this way, namespace must be local.
@@ -1051,7 +1002,7 @@ drop db tv-shows
   $n/@* returns all attributes of $n.
   element { node-name($n) }{ $n/@* } clone $n :)
 
-(: result: &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt; :)
+(: result: &amp;lt;show name=&quot;Game of Thrones&quot;/&amp;gt; :)
 
 xquery declare function local:clone($n as node()*) as node()* {
   element { node-name($n) }{ $n/@* }
@@ -1059,26 +1010,23 @@ xquery declare function local:clone($n as node()*) as node()* {
 let $x := doc(&#39;test/shows&#39;)/shows/show[1]
 return local:clone($x)
 
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&quot;get-elements-childlessly&quot;&gt;Get Elements Childlessly&lt;/h3&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: In test database, shows resource.
+&lt;pre&gt;&lt;code class=&quot;language-xquery&quot;&gt;(: In test database, shows resource.
   &amp;lt;shows&amp;gt;
-    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
-    &amp;lt;show name=&amp;quot;Penny Dreadful&amp;quot;/&amp;gt;
-    &amp;lt;movie name=&amp;quot;The Maze Runner&amp;quot;/&amp;gt;
+    &amp;lt;show name=&quot;Game of Thrones&quot;/&amp;gt;
+    &amp;lt;show name=&quot;Penny Dreadful&quot;/&amp;gt;
+    &amp;lt;movie name=&quot;The Maze Runner&quot;/&amp;gt;
   &amp;lt;/shows&amp;gt;
 :)
 
 (: Result:
   &amp;lt;root&amp;gt;
-    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
-    &amp;lt;show name=&amp;quot;Penny Dreadful&amp;quot;/&amp;gt;
-    &amp;lt;movie name=&amp;quot;The Maze Runner&amp;quot;/&amp;gt;
+    &amp;lt;show name=&quot;Game of Thrones&quot;/&amp;gt;
+    &amp;lt;show name=&quot;Penny Dreadful&quot;/&amp;gt;
+    &amp;lt;movie name=&quot;The Maze Runner&quot;/&amp;gt;
   &amp;lt;/root&amp;gt;
 :)
 
@@ -1089,9 +1037,7 @@ let $x := doc(&#39;test/shows&#39;)/shows/*
 return &amp;lt;root&amp;gt;{
   for $c in $x return local:clone($c)
 }&amp;lt;/root&amp;gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 10 Dec 2014 00:00:00 +0800</pubDate>
         <link>http://ironhead.bitbucket.com/2014/12/10/basex-quick-start.html</link>
@@ -1152,20 +1098,19 @@ return &amp;lt;root&amp;gt;{
 
 &lt;p&gt;The Refresh method is used to display the game on the LED matrix. In order to make the display stable, we need a stable refresh rate in this method. In other words, to display a pattern stablely, we must spend the same time period on each loop and LED. That’s why I turn off some LEDs twice (set a pin to HIGH twice).&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; Refresh() {
-  &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; row, col, msk;
+&lt;pre&gt;&lt;code class=&quot;language-cpp&quot;&gt;void Refresh() {
+  int row, col, msk;
 
-  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (row = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; row &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++row) {
-    msk = &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;masks[row];
+  for (row = 0; row &amp;lt; 8; ++row) {
+    msk = this-&amp;gt;masks[row];
 
     digitalWrite(SnakeBoard::ROW[row], HIGH);
 
-    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (col = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; col &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++col) {
-      &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (msk &amp;amp; (&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; &amp;lt;&amp;lt; col)) {
+    for (col = 0; col &amp;lt; 8; ++col) {
+      if (msk &amp;amp; (1 &amp;lt;&amp;lt; col)) {
         digitalWrite(SnakeBoard::COL[col], LOW);
         digitalWrite(SnakeBoard::COL[col], HIGH);
-      } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
+      } else {
         digitalWrite(SnakeBoard::COL[col], HIGH);
         digitalWrite(SnakeBoard::COL[col], HIGH);
       }
@@ -1174,9 +1119,7 @@ return &amp;lt;root&amp;gt;{
     digitalWrite(ROW[row], LOW);
   }
 }
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&quot;the-final-result&quot;&gt;The Final Result&lt;/h3&gt;
 
@@ -1184,14 +1127,11 @@ return &amp;lt;root&amp;gt;{
 
 &lt;p&gt;Now we can combine a circuit from ‘IRremote’ and ‘Row Column Scanning’ example. Remember to change the data pin of infrared sensor from 11 to A0. Then upload the snake to Arduino and start to play!&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_UP               (&lt;span class=&quot;hex&quot;&gt;0x85AEFD19&lt;/span&gt;)
-&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_DOWN             (&lt;span class=&quot;hex&quot;&gt;0xB66D73CD&lt;/span&gt;)
-&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_RIGHT            (&lt;span class=&quot;hex&quot;&gt;0x5C5C901D&lt;/span&gt;)
-&lt;span class=&quot;preprocessor&quot;&gt;#define&lt;/span&gt; REMOTE_LEFT             (&lt;span class=&quot;hex&quot;&gt;0x8F890759&lt;/span&gt;)
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;pre&gt;&lt;code class=&quot;language-cpp&quot;&gt;#define REMOTE_UP               (0x85AEFD19)
+#define REMOTE_DOWN             (0xB66D73CD)
+#define REMOTE_RIGHT            (0x5C5C901D)
+#define REMOTE_LEFT             (0x8F890759)
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&quot;update-20141127&quot;&gt;Update 20141127&lt;/h3&gt;
 
@@ -1204,9 +1144,8 @@ return &amp;lt;root&amp;gt;{
 
 &lt;p&gt;Reconnect all column pins of the LED matrix to a 74HC595 chip (because I have only one in hand :)). Refresh method become:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;directive&quot;&gt;void&lt;/span&gt; Refresh() {
-  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; row = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; row &amp;lt; &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;; ++row) {
+&lt;pre&gt;&lt;code class=&quot;language-cpp&quot;&gt;void Refresh() {
+  for (int row = 0; row &amp;lt; 8; ++row) {
     digitalWrite(SnakeBoard::ROW[row], HIGH);
 
     digitalWrite(PIN_SIFTING_OUT_LATCH, LOW);
@@ -1214,19 +1153,17 @@ return &amp;lt;root&amp;gt;{
       PIN_SIFTING_DATA,
       PIN_SIFTING_CLOCK,
       LSBFIRST,
-      ~(&lt;span class=&quot;predefined-type&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;predefined-type&quot;&gt;char&lt;/span&gt;)&lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;masks[row]);
+      ~(unsigned char)this-&amp;gt;masks[row]);
     digitalWrite(PIN_SIFTING_OUT_LATCH, HIGH);
 
     digitalWrite(PIN_SIFTING_OUT_LATCH, LOW);
-    shiftOut(PIN_SIFTING_DATA, PIN_SIFTING_CLOCK, MSBFIRST, &lt;span class=&quot;integer&quot;&gt;255&lt;/span&gt;);
+    shiftOut(PIN_SIFTING_DATA, PIN_SIFTING_CLOCK, MSBFIRST, 255);
     digitalWrite(PIN_SIFTING_OUT_LATCH, HIGH);
 
     digitalWrite(ROW[row], LOW);
   }
 }
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Tue, 25 Nov 2014 00:00:00 +0800</pubDate>
         <link>http://ironhead.bitbucket.com/2014/11/25/arduino-snake.html</link>
@@ -1243,10 +1180,10 @@ return &amp;lt;root&amp;gt;{
 
 &lt;p&gt;Prime factors of those numbers are 2, 3 or 5.&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt; Ugly = 2^a * 3^b * 5^c &lt;/script&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Ugly = 2^a * 3^b * 5^c&lt;/script&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
- 0 &lt;= a, b, c  %]]&gt;&lt;/script&gt;
+0 &lt;= a, b, c %]]&gt;&lt;/script&gt;
 
 &lt;p&gt;How to implement?&lt;/p&gt;
 
@@ -1259,51 +1196,48 @@ return &amp;lt;root&amp;gt;{
   &lt;li&gt;To illustrate the idea, build a tree with root node 1 (the first ugly number). All node values in this tree are their parent values multiple 2, 3, or 5 (e.g. children of 1 are 2, 3 and 5. children of 2 are 2&lt;em&gt;2, 2&lt;/em&gt;3 and 2*5. etc.). Remove the duplicated numbers and selected remains in ascending order.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;queue&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;vector&amp;gt;&lt;/span&gt;
+&lt;pre&gt;&lt;code class=&quot;language-cpp&quot;&gt;#include &amp;lt;iostream&amp;gt;
+#include &amp;lt;queue&amp;gt;
+#include &amp;lt;vector&amp;gt;
 
-&lt;span class=&quot;directive&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;namespace&lt;/span&gt; std;
+using namespace std;
 
 
-&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; Generator {
-  priority_queue&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;, vector&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;&amp;gt;, greater&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;&amp;gt;&amp;gt;  pool;
+struct Generator {
+  priority_queue&amp;lt;int, vector&amp;lt;int&amp;gt;, greater&amp;lt;int&amp;gt;&amp;gt;  pool;
 
   Generator() {
-    &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;);
+    this-&amp;gt;pool.push(1);
   }
 
-  &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; Next() {
-    &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; number = &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.top();
+  int Next() {
+    int number = this-&amp;gt;pool.top();
 
-    &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.pop();
+    this-&amp;gt;pool.pop();
 
-    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (number % &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt; == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;) {
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
-    } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (number % &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt; == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;) {
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;);
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
-    } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;);
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;);
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
+    if (number % 5 == 0) {
+      this-&amp;gt;pool.push(number * 5);
+    } else if (number % 3 == 0) {
+      this-&amp;gt;pool.push(number * 3);
+      this-&amp;gt;pool.push(number * 5);
+    } else {
+      this-&amp;gt;pool.push(number * 2);
+      this-&amp;gt;pool.push(number * 3);
+      this-&amp;gt;pool.push(number * 5);
     }
 
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; number;
+    return number;
   }
 };
 
-&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; main() {
+int main() {
   Generator g;
 
-  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&quot;integer&quot;&gt;100&lt;/span&gt;; ++i) {
+  for (int i = 0; i &amp;lt; 100; ++i) {
     cout &amp;lt;&amp;lt; g.Next() &amp;lt;&amp;lt; endl;
   }
 }
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 12 Nov 2014 00:00:00 +0800</pubDate>
         <link>http://ironhead.bitbucket.com/2014/11/12/regular-number-generator.html</link>

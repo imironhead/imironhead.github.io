@@ -134,6 +134,8 @@
         
           
         
+          
+        
       </div>
     </nav>
 
@@ -158,154 +160,153 @@ are almost the same.</p>
 
 <p><img src="/assets/images/arduino_ssd1306.jpg" alt="arduino + ssd1306" /></p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="comment">// SSD1306</span>
-<span class="comment">// https://www.adafruit.com/datasheets/SSD1306.pdf</span>
-<span class="comment">// 5v</span>
+<pre><code class="language-cpp">// SSD1306
+// https://www.adafruit.com/datasheets/SSD1306.pdf
+// 5v
 
-<span class="preprocessor">#define</span> PIN_DATA_COMMAND  (<span class="integer">11</span>)
-<span class="preprocessor">#define</span> PIN_RESET         (<span class="integer">13</span>)
-<span class="preprocessor">#define</span> PIN_SCL           (<span class="integer">10</span>)
-<span class="preprocessor">#define</span> PIN_SDA           (<span class="integer">9</span>)
+#define PIN_DATA_COMMAND  (11)
+#define PIN_RESET         (13)
+#define PIN_SCL           (10)
+#define PIN_SDA           (9)
 
-<span class="directive">void</span> led_send(<span class="predefined-type">bool</span> is_data, uint8_t data) {
-  <span class="keyword">if</span> (is_data) {
+void led_send(bool is_data, uint8_t data) {
+  if (is_data) {
     digitalWrite(PIN_DATA_COMMAND, HIGH);
-  } <span class="keyword">else</span> {
+  } else {
     digitalWrite(PIN_DATA_COMMAND, LOW);
   }
 
-  <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; <span class="integer">8</span>; ++i) {
+  for (int i = 0; i &lt; 8; ++i) {
     digitalWrite(PIN_SCL, LOW);
 
-    <span class="keyword">if</span> (data &amp; <span class="hex">0x80</span>) {
-      digitalWrite(PIN_SDA, <span class="integer">1</span>);
-    } <span class="keyword">else</span> {
-      digitalWrite(PIN_SDA, <span class="integer">0</span>);
+    if (data &amp; 0x80) {
+      digitalWrite(PIN_SDA, 1);
+    } else {
+      digitalWrite(PIN_SDA, 0);
     }
 
     digitalWrite(PIN_SCL, HIGH);
 
-    data &lt;&lt;= <span class="integer">1</span>;
+    data &lt;&lt;= 1;
   }
 }
 
-<span class="directive">void</span> led_send_data(uint8_t data) {
-  led_send(<span class="predefined-constant">true</span>, data);
+void led_send_data(uint8_t data) {
+  led_send(true, data);
 }
 
-<span class="directive">void</span> led_send_command(uint8_t command) {
-  led_send(<span class="predefined-constant">false</span>, command);
+void led_send_command(uint8_t command) {
+  led_send(false, command);
 }
 
-<span class="directive">void</span> led_init() {
+void led_init() {
   digitalWrite(PIN_SCL, HIGH);
   digitalWrite(PIN_RESET, LOW);
-  delay(<span class="integer">50</span>);
+  delay(50);
   digitalWrite(PIN_RESET, HIGH);
   digitalWrite(PIN_SCL, LOW);
 
-  <span class="comment">// display off (sleep mode)</span>
-  led_send_command(<span class="hex">0xae</span>);
+  // display off (sleep mode)
+  led_send_command(0xae);
 
-  <span class="comment">// segment remap (?)</span>
-  led_send_command(<span class="hex">0xa1</span>);
+  // segment remap (?)
+  led_send_command(0xa1);
 
-  <span class="comment">// VCOMH deselect level (?)</span>
-  led_send_command(<span class="hex">0xdb</span>);
-  led_send_command(<span class="hex">0x40</span>);
+  // VCOMH deselect level (?)
+  led_send_command(0xdb);
+  led_send_command(0x40);
 
-  <span class="comment">// pre-charge period</span>
-  <span class="comment">// http://en.wikipedia.org/wiki/Pre-charge</span>
-  led_send_command(<span class="hex">0xd9</span>);
-  led_send_command(<span class="hex">0xf1</span>);
+  // pre-charge period
+  // http://en.wikipedia.org/wiki/Pre-charge
+  led_send_command(0xd9);
+  led_send_command(0xf1);
 
-  <span class="comment">// COM pins hardware configuration (?)</span>
-  led_send_command(<span class="hex">0xda</span>);
-  led_send_command(<span class="hex">0x12</span>);
+  // COM pins hardware configuration (?)
+  led_send_command(0xda);
+  led_send_command(0x12);
 
-  <span class="comment">// memory addressing mode</span>
-  <span class="comment">// 0x00 : horizontal</span>
-  <span class="comment">// 0x01 : vertical</span>
-  <span class="comment">// 0x02 : page</span>
-  led_send_command(<span class="hex">0x20</span>);
-  led_send_command(<span class="hex">0x02</span>);
+  // memory addressing mode
+  // 0x00 : horizontal
+  // 0x01 : vertical
+  // 0x02 : page
+  led_send_command(0x20);
+  led_send_command(0x02);
 
-  <span class="comment">// enable charge pump, dc/dc converter</span>
-  <span class="comment">// http://en.wikipedia.org/wiki/Charge_pump</span>
-  led_send_command(<span class="hex">0x8d</span>);
-  led_send_command(<span class="hex">0x14</span>);
+  // enable charge pump, dc/dc converter
+  // http://en.wikipedia.org/wiki/Charge_pump
+  led_send_command(0x8d);
+  led_send_command(0x14);
 
-  <span class="comment">// display start line? (0x40 | (0 ~ 63))</span>
-  led_send_command(<span class="hex">0x40</span> | <span class="integer">0</span>);
+  // display start line? (0x40 | (0 ~ 63))
+  led_send_command(0x40 | 0);
 
-  <span class="comment">// display offset (vertical shift), 0 ~ 63</span>
-  led_send_command(<span class="hex">0xd3</span>);
-  led_send_command(<span class="hex">0x00</span>);
+  // display offset (vertical shift), 0 ~ 63
+  led_send_command(0xd3);
+  led_send_command(0x00);
 
-  <span class="comment">// multiplex ratio</span>
-  <span class="comment">// http://en.wikipedia.org/wiki/Multiplexed_display</span>
-  led_send_command(<span class="hex">0xa8</span>);
-  led_send_command(<span class="hex">0x3f</span>);
+  // multiplex ratio
+  // http://en.wikipedia.org/wiki/Multiplexed_display
+  led_send_command(0xa8);
+  led_send_command(0x3f);
 
-  <span class="comment">// display clock divide ratio / oscillator frequency</span>
-  led_send_command(<span class="hex">0xd5</span>);
-  led_send_command(<span class="hex">0x80</span>);
+  // display clock divide ratio / oscillator frequency
+  led_send_command(0xd5);
+  led_send_command(0x80);
 
-  <span class="comment">// contrast</span>
-  <span class="comment">// double byte, 2nd byte means contrast. Constrast increases as it increses.</span>
-  led_send_command(<span class="hex">0x81</span>);
-  led_send_command(<span class="hex">0x00</span>);
+  // contrast
+  // double byte, 2nd byte means contrast. Constrast increases as it increses.
+  led_send_command(0x81);
+  led_send_command(0x00);
 
-  <span class="comment">// entire display off</span>
-  <span class="comment">// 0xa4 : pixels are on based on datas in RAM</span>
-  <span class="comment">// 0xa5 : all pixels are on</span>
-  led_send_command(<span class="hex">0xa4</span>);
+  // entire display off
+  // 0xa4 : pixels are on based on datas in RAM
+  // 0xa5 : all pixels are on
+  led_send_command(0xa4);
 
-  <span class="comment">// normal display</span>
-  <span class="comment">// 0xa6 : bit 0 -&gt; pixel off, bit 1 -&gt; pixel on</span>
-  <span class="comment">// 0xa7 : bit 1 -&gt; pixel off, bit 0 -&gt; pixel on</span>
-  led_send_command(<span class="hex">0xa6</span>);
+  // normal display
+  // 0xa6 : bit 0 -&gt; pixel off, bit 1 -&gt; pixel on
+  // 0xa7 : bit 1 -&gt; pixel off, bit 0 -&gt; pixel on
+  led_send_command(0xa6);
 
-  <span class="comment">// display on (normal mode)</span>
-  led_send_command(<span class="hex">0xaf</span>);
+  // display on (normal mode)
+  led_send_command(0xaf);
 }
 
-<span class="directive">void</span> led_fill(<span class="directive">const</span> uint8_t* map) {
+void led_fill(const uint8_t* map) {
   uint8_t y;
 
-  <span class="keyword">for</span> (y = <span class="integer">0</span>; y &lt; <span class="integer">8</span>; ++y) {
-    led_send_command(<span class="hex">0xb0</span> + y);
-    led_send_command(<span class="hex">0x01</span>);
-    led_send_command(<span class="hex">0x10</span>);
+  for (y = 0; y &lt; 8; ++y) {
+    led_send_command(0xb0 + y);
+    led_send_command(0x01);
+    led_send_command(0x10);
 
-    <span class="keyword">for</span> (<span class="predefined-type">int</span> x = <span class="integer">0</span>; x &lt; <span class="integer">128</span>; ++x) {
+    for (int x = 0; x &lt; 128; ++x) {
       led_send_data(*map++);
     }
   }
 }
 
-uint8_t led_set_pixel(uint8_t* map, <span class="predefined-type">int</span> x, <span class="predefined-type">int</span> y, uint8_t c) {
-  <span class="comment">// to page</span>
-  map += <span class="integer">128</span> * (y / <span class="integer">8</span>);
+uint8_t led_set_pixel(uint8_t* map, int x, int y, uint8_t c) {
+  // to page
+  map += 128 * (y / 8);
 
-  y %= <span class="integer">8</span>;
+  y %= 8;
 
-  <span class="comment">// to row</span>
+  // to row
   map += x;
 
-  <span class="comment">// set col</span>
-  *map &amp;= ~(<span class="integer">1</span> &lt;&lt; y);
+  // set col
+  *map &amp;= ~(1 &lt;&lt; y);
   *map |=  (c &lt;&lt; y);
 
-  <span class="keyword">return</span> *map;
+  return *map;
 }
 
-uint8_t display_map[<span class="integer">1024</span>];
+uint8_t display_map[1024];
 
-uint8_t pixel = <span class="integer">0</span>;
+uint8_t pixel = 0;
 
-<span class="directive">void</span> setup() {
+void setup() {
   pinMode(PIN_SCL,OUTPUT);
   pinMode(PIN_SDA,OUTPUT);
   pinMode(PIN_RESET,OUTPUT);
@@ -315,25 +316,23 @@ uint8_t pixel = <span class="integer">0</span>;
   led_fill(display_map);
 }
 
-<span class="directive">void</span> loop() {
-  pixel ^= <span class="integer">1</span>;
+void loop() {
+  pixel ^= 1;
 
-  <span class="keyword">for</span> (<span class="predefined-type">int</span> y = <span class="integer">0</span> ; y &lt; <span class="integer">64</span>; ++y) {
-    <span class="keyword">for</span> (<span class="predefined-type">int</span> x = <span class="integer">0</span>; x &lt; <span class="integer">128</span>; ++x) {
-      led_send_command(<span class="hex">0xb0</span> + y / <span class="integer">8</span>);
-      led_send_command(<span class="hex">0x00</span> + x % <span class="integer">16</span>);
-      led_send_command(<span class="hex">0x10</span> + x / <span class="integer">16</span>);
+  for (int y = 0 ; y &lt; 64; ++y) {
+    for (int x = 0; x &lt; 128; ++x) {
+      led_send_command(0xb0 + y / 8);
+      led_send_command(0x00 + x % 16);
+      led_send_command(0x10 + x / 16);
 
       led_send_data(led_set_pixel(display_map, x, y, pixel));
 
-      delay(<span class="integer">100</span>);
+      delay(100);
     }
   }
 }
 
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

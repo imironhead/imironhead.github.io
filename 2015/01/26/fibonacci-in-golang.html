@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -152,90 +156,87 @@
   <article class="post-content">
     <p>Implement fibonacci to evaluate golang.</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="keyword">package</span> main
+<pre><code class="language-go">package main
 
-<span class="keyword">import</span> (
-  <span class="string"><span class="delimiter">&quot;</span><span class="content">fmt</span><span class="delimiter">&quot;</span></span>
-  <span class="string"><span class="delimiter">&quot;</span><span class="content">math/big</span><span class="delimiter">&quot;</span></span>
+import (
+  "fmt"
+  "math/big"
 )
 
 
-<span class="keyword">type</span> M2 <span class="keyword">struct</span> {
+type M2 struct {
   e00, e01, e10, e11 big.Int
 }
 
-<span class="keyword">func</span> NewM2(e00, e01, e10, e11 <span class="predefined-type">int64</span>) *M2 {
-  <span class="keyword">return</span> &amp;M2 {
+func NewM2(e00, e01, e10, e11 int64) *M2 {
+  return &amp;M2 {
     *big.NewInt(e00),
     *big.NewInt(e01),
     *big.NewInt(e10),
     *big.NewInt(e11) }
 }
 
-<span class="keyword">func</span> (m *M2) String() <span class="predefined-type">string</span> {
-  <span class="keyword">return</span> fmt.Sprintf(
-    <span class="string"><span class="delimiter">&quot;</span><span class="content">[[ %v, %v ], [ %v, %v ]]</span><span class="delimiter">&quot;</span></span>, &amp;m.e00, &amp;m.e01, &amp;m.e10, &amp;m.e11)
+func (m *M2) String() string {
+  return fmt.Sprintf(
+    "[[ %v, %v ], [ %v, %v ]]", &amp;m.e00, &amp;m.e01, &amp;m.e10, &amp;m.e11)
 }
 
-<span class="keyword">func</span> Add(m, n *M2) *M2 {
-  <span class="keyword">var</span> r M2
+func Add(m, n *M2) *M2 {
+  var r M2
 
   (&amp;r.e00).Add(&amp;m.e00, &amp;n.e00)
   (&amp;r.e01).Add(&amp;m.e01, &amp;n.e01)
   (&amp;r.e10).Add(&amp;m.e10, &amp;n.e10)
   (&amp;r.e11).Add(&amp;m.e11, &amp;n.e11)
 
-  <span class="keyword">return</span> &amp;r
+  return &amp;r
 }
 
-<span class="keyword">func</span> Mul(m, n *M2) *M2 {
-  <span class="keyword">var</span> r M2
+func Mul(m, n *M2) *M2 {
+  var r M2
 
-  (&amp;r.e00).Add(<span class="predefined">new</span>(big.Int).Mul(&amp;m.e00, &amp;n.e00),
-               <span class="predefined">new</span>(big.Int).Mul(&amp;m.e01, &amp;n.e10))
-  (&amp;r.e01).Add(<span class="predefined">new</span>(big.Int).Mul(&amp;m.e00, &amp;n.e01),
-               <span class="predefined">new</span>(big.Int).Mul(&amp;m.e01, &amp;n.e11))
-  (&amp;r.e10).Add(<span class="predefined">new</span>(big.Int).Mul(&amp;m.e10, &amp;n.e00),
-               <span class="predefined">new</span>(big.Int).Mul(&amp;m.e11, &amp;n.e10))
-  (&amp;r.e11).Add(<span class="predefined">new</span>(big.Int).Mul(&amp;m.e10, &amp;n.e01),
-               <span class="predefined">new</span>(big.Int).Mul(&amp;m.e11, &amp;n.e11))
+  (&amp;r.e00).Add(new(big.Int).Mul(&amp;m.e00, &amp;n.e00),
+               new(big.Int).Mul(&amp;m.e01, &amp;n.e10))
+  (&amp;r.e01).Add(new(big.Int).Mul(&amp;m.e00, &amp;n.e01),
+               new(big.Int).Mul(&amp;m.e01, &amp;n.e11))
+  (&amp;r.e10).Add(new(big.Int).Mul(&amp;m.e10, &amp;n.e00),
+               new(big.Int).Mul(&amp;m.e11, &amp;n.e10))
+  (&amp;r.e11).Add(new(big.Int).Mul(&amp;m.e10, &amp;n.e01),
+               new(big.Int).Mul(&amp;m.e11, &amp;n.e11))
 
-  <span class="keyword">return</span> &amp;r
+  return &amp;r
 }
 
-<span class="keyword">func</span> IsOdd(i *big.Int) <span class="predefined-type">bool</span> {
-  <span class="keyword">return</span> <span class="integer">1</span> == <span class="predefined">new</span>(big.Int).Mod(i, big.NewInt(<span class="integer">2</span>)).Cmp(big.NewInt(<span class="integer">0</span>))
+func IsOdd(i *big.Int) bool {
+  return 1 == new(big.Int).Mod(i, big.NewInt(2)).Cmp(big.NewInt(0))
 }
 
-<span class="keyword">func</span> Pow(m *M2, p *big.Int) *M2 {
-  <span class="keyword">if</span> p.Cmp(big.NewInt(<span class="integer">1</span>)) == <span class="integer">0</span> {
-    <span class="comment">// should ???</span>
+func Pow(m *M2, p *big.Int) *M2 {
+  if p.Cmp(big.NewInt(1)) == 0 {
+    // should ???
     t := *m
-    <span class="keyword">return</span> &amp;t
-  } <span class="keyword">else</span> {
-    t := Pow(m, <span class="predefined">new</span>(big.Int).Div(p, big.NewInt(<span class="integer">2</span>)))
+    return &amp;t
+  } else {
+    t := Pow(m, new(big.Int).Div(p, big.NewInt(2)))
 
     t = Mul(t, t)
 
-    <span class="keyword">if</span> IsOdd(p) {
+    if IsOdd(p) {
       t = Mul(t, m)
     }
 
-    <span class="keyword">return</span> t
+    return t
   }
 }
 
-<span class="keyword">func</span> Fib(i *big.Int) *big.Int {
-  <span class="keyword">return</span> &amp;Pow(NewM2(<span class="integer">0</span>, <span class="integer">1</span>, <span class="integer">1</span>, <span class="integer">1</span>), i).e10
+func Fib(i *big.Int) *big.Int {
+  return &amp;Pow(NewM2(0, 1, 1, 1), i).e10
 }
 
-<span class="keyword">func</span> main() {
-  fmt.Println(Fib(big.NewInt(<span class="integer">1000</span>)))
+func main() {
+  fmt.Println(Fib(big.NewInt(1000)))
 }
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

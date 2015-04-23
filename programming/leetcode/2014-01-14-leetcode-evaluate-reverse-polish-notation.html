@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -152,53 +156,50 @@
   <article class="post-content">
     <p>Idea: Use stack.</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
-<span class="directive">public</span>:
-  <span class="predefined-type">int</span> evalRPN(vector&lt;<span class="predefined-type">string</span>&gt; &amp;tokens) {
-    stack&lt;<span class="predefined-type">int</span>&gt; s;
+<pre><code class="language-cpp">class Solution {
+public:
+  int evalRPN(vector&lt;string&gt; &amp;tokens) {
+    stack&lt;int&gt; s;
 
-    <span class="predefined-type">int</span> tmp = <span class="integer">0</span>;
+    int tmp = 0;
 
-    <span class="keyword">for</span> (<span class="directive">auto</span>&amp; t : tokens) {
-      <span class="keyword">if</span> (t == <span class="string"><span class="delimiter">&quot;</span><span class="content">+</span><span class="delimiter">&quot;</span></span>) {
-        <span class="comment">// an operator, compute the top most two integers and</span>
-        <span class="comment">// put it on the top of the stack</span>
+    for (auto&amp; t : tokens) {
+      if (t == "+") {
+        // an operator, compute the top most two integers and
+        // put it on the top of the stack
         tmp = s.top();
 
         s.pop();
 
         s.top() += tmp;
-      } <span class="keyword">else</span> <span class="keyword">if</span> (t == <span class="string"><span class="delimiter">&quot;</span><span class="content">-</span><span class="delimiter">&quot;</span></span>) {
+      } else if (t == "-") {
         tmp = s.top();
 
         s.pop();
 
         s.top() -= tmp;
-      } <span class="keyword">else</span> <span class="keyword">if</span> (t == <span class="string"><span class="delimiter">&quot;</span><span class="content">*</span><span class="delimiter">&quot;</span></span>) {
+      } else if (t == "*") {
         tmp = s.top();
 
         s.pop();
 
         s.top() *= tmp;
-      } <span class="keyword">else</span> <span class="keyword">if</span> (t == <span class="string"><span class="delimiter">&quot;</span><span class="content">/</span><span class="delimiter">&quot;</span></span>) {
+      } else if (t == "/") {
         tmp = s.top();
 
         s.pop();
 
         s.top() /= tmp;
-      } <span class="keyword">else</span> {
-        <span class="comment">// an integer, push it into stack</span>
+      } else {
+        // an integer, push it into stack
         s.push(atoi(t.c_str()));
       }
     }
 
-    <span class="keyword">return</span> s.top();
+    return s.top();
   }
 };
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

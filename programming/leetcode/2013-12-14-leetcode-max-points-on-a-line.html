@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -152,8 +156,7 @@
   <article class="post-content">
     <p>:)</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="comment">/**
+<pre><code class="language-cpp">/**
  * Definition for a point.
  * struct Point {
  *     int x;
@@ -161,37 +164,37 @@
  *     Point() : x(0), y(0) {}
  *     Point(int a, int b) : x(a), y(b) {}
  * };
- */</span>
+ */
 
-<span class="preprocessor">#include</span> <span class="include">&lt;cstdlib&gt;</span>
-<span class="preprocessor">#include</span> <span class="include">&lt;string&gt;</span>
-<span class="preprocessor">#include</span> <span class="include">&lt;vector&gt;</span>
-<span class="preprocessor">#include</span> <span class="include">&lt;unordered_set&gt;</span>
+#include &lt;cstdlib&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_set&gt;
 
-<span class="directive">using</span> <span class="keyword">namespace</span> std;
+using namespace std;
 
-<span class="comment">//------------------------------------------------------------------------------</span>
-<span class="predefined-type">int</span> gcd(<span class="predefined-type">int</span> a, <span class="predefined-type">int</span> b) {
-  <span class="predefined-type">int</span> c;
+//------------------------------------------------------------------------------
+int gcd(int a, int b) {
+  int c;
 
-  <span class="keyword">while</span> (<span class="predefined-constant">true</span>) {
-    <span class="keyword">if</span> (a == b) {
-      <span class="keyword">return</span> a;
+  while (true) {
+    if (a == b) {
+      return a;
     }
 
-    <span class="keyword">if</span> (a &gt; b) {
+    if (a &gt; b) {
       c = a % b;
 
-      <span class="keyword">if</span> (c == <span class="integer">0</span>) {
-        <span class="keyword">return</span> b;
+      if (c == 0) {
+        return b;
       }
 
       a = c;
-    } <span class="keyword">else</span> {
+    } else {
       c = b % a;
 
-      <span class="keyword">if</span> (c == <span class="integer">0</span>) {
-        <span class="keyword">return</span> a;
+      if (c == 0) {
+        return a;
       }
 
       b = c;
@@ -199,90 +202,90 @@
   }
 }
 
-<span class="comment">//------------------------------------------------------------------------------</span>
-<span class="keyword">struct</span> Line {
-  <span class="comment">//--ax + by = c</span>
-  <span class="predefined-type">int</span>    a;
-  <span class="predefined-type">int</span>    b;
-  <span class="predefined-type">int</span>    c;
-  <span class="predefined-type">bool</span>  s;
+//------------------------------------------------------------------------------
+struct Line {
+  //--ax + by = c
+  int    a;
+  int    b;
+  int    c;
+  bool  s;
 
   Line() {
   }
 
-  Line(<span class="directive">const</span> Point&amp; p1, <span class="directive">const</span> Point&amp; p2) {
-    <span class="local-variable">this</span>-&gt;Set(p1, p2);
+  Line(const Point&amp; p1, const Point&amp; p2) {
+    this-&gt;Set(p1, p2);
   }
 
-  <span class="directive">void</span> Set(<span class="directive">const</span> Point&amp; p1, <span class="directive">const</span> Point&amp; p2) {
-    <span class="keyword">if</span> (p1.x == p2.x) {
-      <span class="keyword">if</span> (p1.y == p2.y) {
-        <span class="local-variable">this</span>-&gt;s = <span class="predefined-constant">true</span>;
+  void Set(const Point&amp; p1, const Point&amp; p2) {
+    if (p1.x == p2.x) {
+      if (p1.y == p2.y) {
+        this-&gt;s = true;
 
-        <span class="local-variable">this</span>-&gt;a = p1.x;
-        <span class="local-variable">this</span>-&gt;b = p1.y;
-      } <span class="keyword">else</span> {
-        <span class="local-variable">this</span>-&gt;s = <span class="predefined-constant">false</span>;
+        this-&gt;a = p1.x;
+        this-&gt;b = p1.y;
+      } else {
+        this-&gt;s = false;
 
-        <span class="local-variable">this</span>-&gt;a = <span class="integer">1</span>;
-        <span class="local-variable">this</span>-&gt;b = <span class="integer">0</span>;
-        <span class="local-variable">this</span>-&gt;c = p1.x;
+        this-&gt;a = 1;
+        this-&gt;b = 0;
+        this-&gt;c = p1.x;
       }
-    } <span class="keyword">else</span> <span class="keyword">if</span> (p1.y == p2.y) {
-      <span class="local-variable">this</span>-&gt;s = <span class="predefined-constant">false</span>;
+    } else if (p1.y == p2.y) {
+      this-&gt;s = false;
 
-      <span class="local-variable">this</span>-&gt;a = <span class="integer">0</span>;
-      <span class="local-variable">this</span>-&gt;b = <span class="integer">1</span>;
-      <span class="local-variable">this</span>-&gt;c = p1.y;
-    } <span class="keyword">else</span> {
-      <span class="local-variable">this</span>-&gt;s = <span class="predefined-constant">false</span>;
+      this-&gt;a = 0;
+      this-&gt;b = 1;
+      this-&gt;c = p1.y;
+    } else {
+      this-&gt;s = false;
 
-      <span class="local-variable">this</span>-&gt;a = p1.y - p2.y;
-      <span class="local-variable">this</span>-&gt;b = p2.x - p1.x;
+      this-&gt;a = p1.y - p2.y;
+      this-&gt;b = p2.x - p1.x;
 
-      <span class="predefined-type">int</span> g = gcd(abs(<span class="local-variable">this</span>-&gt;a), abs(<span class="local-variable">this</span>-&gt;b));
+      int g = gcd(abs(this-&gt;a), abs(this-&gt;b));
 
-      <span class="keyword">if</span> (<span class="local-variable">this</span>-&gt;a &lt; <span class="integer">0</span>) {
+      if (this-&gt;a &lt; 0) {
         g = -g;
       }
 
-      <span class="local-variable">this</span>-&gt;a /= g;
-      <span class="local-variable">this</span>-&gt;b /= g;
+      this-&gt;a /= g;
+      this-&gt;b /= g;
 
-      <span class="local-variable">this</span>-&gt;c = <span class="local-variable">this</span>-&gt;a * p1.x + <span class="local-variable">this</span>-&gt;b * p1.y;
+      this-&gt;c = this-&gt;a * p1.x + this-&gt;b * p1.y;
     }
   }
 
-  <span class="predefined-type">string</span> Key() {
-    <span class="predefined-type">string</span> key = <span class="local-variable">this</span>-&gt;s ? <span class="string"><span class="delimiter">&quot;</span><span class="content">*+</span><span class="delimiter">&quot;</span></span> : to_string(<span class="local-variable">this</span>-&gt;c) + <span class="string"><span class="delimiter">&quot;</span><span class="content">+</span><span class="delimiter">&quot;</span></span>;
+  string Key() {
+    string key = this-&gt;s ? "*+" : to_string(this-&gt;c) + "+";
 
-    key += to_string(<span class="local-variable">this</span>-&gt;a);
+    key += to_string(this-&gt;a);
 
-    <span class="keyword">if</span> (<span class="local-variable">this</span>-&gt;b &gt;= <span class="integer">0</span>) {
-      key += <span class="string"><span class="delimiter">&quot;</span><span class="content">+</span><span class="delimiter">&quot;</span></span> + to_string(<span class="local-variable">this</span>-&gt;b);
-    } <span class="keyword">else</span> {
-      key += to_string(<span class="local-variable">this</span>-&gt;b);
+    if (this-&gt;b &gt;= 0) {
+      key += "+" + to_string(this-&gt;b);
+    } else {
+      key += to_string(this-&gt;b);
     }
 
-    <span class="keyword">return</span> key;
+    return key;
   }
 
-  <span class="predefined-type">bool</span> Intersect(<span class="directive">const</span> Point&amp; pt) <span class="directive">const</span> {
-    <span class="keyword">if</span> (<span class="local-variable">this</span>-&gt;s) {
-      <span class="keyword">return</span> (<span class="local-variable">this</span>-&gt;a == pt.x) &amp;&amp; (<span class="local-variable">this</span>-&gt;b == pt.y);
-    } <span class="keyword">else</span> {
-      <span class="keyword">return</span> <span class="local-variable">this</span>-&gt;a * pt.x + <span class="local-variable">this</span>-&gt;b * pt.y == <span class="local-variable">this</span>-&gt;c;
+  bool Intersect(const Point&amp; pt) const {
+    if (this-&gt;s) {
+      return (this-&gt;a == pt.x) &amp;&amp; (this-&gt;b == pt.y);
+    } else {
+      return this-&gt;a * pt.x + this-&gt;b * pt.y == this-&gt;c;
     }
   }
 };
 
-<span class="keyword">class</span> <span class="class">Solution</span> {
-<span class="directive">public</span>:
-  <span class="predefined-type">int</span> maxPoints(vector&lt;Point&gt; &amp;points) {
-    unordered_set&lt;<span class="predefined-type">string</span>&gt; lines;
+class Solution {
+public:
+  int maxPoints(vector&lt;Point&gt; &amp;points) {
+    unordered_set&lt;string&gt; lines;
 
-    <span class="predefined-type">int</span> m(<span class="integer">0</span>);
-    <span class="predefined-type">int</span> n;
+    int m(0);
+    int n;
 
     vector&lt;Point&gt;::size_type i;
     vector&lt;Point&gt;::size_type j;
@@ -290,38 +293,36 @@
 
     Line line;
 
-    <span class="predefined-type">string</span> key;
+    string key;
 
-    <span class="keyword">for</span> (i = <span class="integer">0</span>; i &lt; points.size(); ++i) {
-      <span class="keyword">for</span> (j = i; j &lt; points.size(); ++j) {
+    for (i = 0; i &lt; points.size(); ++i) {
+      for (j = i; j &lt; points.size(); ++j) {
         line.Set(points[i], points[j]);
 
         key = line.Key();
 
-        <span class="keyword">if</span> (lines.find(key) == lines.end()) {
+        if (lines.find(key) == lines.end()) {
           lines.insert(key);
 
-          n = <span class="integer">0</span>;
+          n = 0;
 
-          <span class="keyword">for</span> (k = <span class="integer">0</span>; k &lt; points.size(); ++k) {
-            <span class="keyword">if</span> (line.Intersect(points[k])) {
-              n += <span class="integer">1</span>;
+          for (k = 0; k &lt; points.size(); ++k) {
+            if (line.Intersect(points[k])) {
+              n += 1;
             }
           }
 
-          <span class="keyword">if</span> (m &lt; n) {
+          if (m &lt; n) {
             m = n;
           }
         }
       }
     }
 
-    <span class="keyword">return</span> m;
+    return m;
   }
 };
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

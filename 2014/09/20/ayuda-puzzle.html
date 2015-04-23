@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -157,33 +161,30 @@
 <p>The second one is interesting. Looks like base64 encoding but it’s not. It’s still
 easy it you know how to conquer it with brute force. Here is the hint:</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="comment"># A =&gt; jw==</span>
-<span class="comment"># AA =&gt; j5A=</span>
-<span class="comment"># AAA =&gt; j5CR</span>
-<span class="comment"># AAAAAA =&gt; j5CRkpOU</span>
-<span class="comment"># B =&gt; kA==</span>
-<span class="comment"># BB =&gt; kJE=</span>
-<span class="comment"># BBB =&gt; kJGS</span>
-<span class="comment"># C =&gt; kQ==</span>
-<span class="comment"># CC =&gt; kZI=</span>
-<span class="comment"># CCC =&gt; kZKT</span>
+<pre><code class="language-python"># A =&gt; jw==
+# AA =&gt; j5A=
+# AAA =&gt; j5CR
+# AAAAAA =&gt; j5CRkpOU
+# B =&gt; kA==
+# BB =&gt; kJE=
+# BBB =&gt; kJGS
+# C =&gt; kQ==
+# CC =&gt; kZI=
+# CCC =&gt; kZKT
 
-<span class="comment"># looks like base64</span>
-<span class="comment"># 3 characters message =&gt; 4 characters cipher</span>
-<span class="comment"># if:</span>
-<span class="comment">#   message[0 .. 3n    ] is correct =&gt; cipher[0 .. 4m    ] will match</span>
-<span class="comment">#   message[0 .. 3n + 1] is correct =&gt; cipher[0 .. 4m + 1] will match</span>
-<span class="comment">#   message[0 .. 3n + 2] is correct =&gt; cipher[0 .. 4m + 2] will match</span>
+# looks like base64
+# 3 characters message =&gt; 4 characters cipher
+# if:
+#   message[0 .. 3n    ] is correct =&gt; cipher[0 .. 4m    ] will match
+#   message[0 .. 3n + 1] is correct =&gt; cipher[0 .. 4m + 1] will match
+#   message[0 .. 3n + 2] is correct =&gt; cipher[0 .. 4m + 2] will match
 
-cipher_text = <span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
-</span><span class="content">  lcG1ssZzvsS4eHitwsB8ysPS08LJyITO2aGIi77ajNLg4ZDa5ZPc6uPY5pmnm93r4p/08KLl8Obz7K</span><span class="content">
-</span><span class="content">  jy/qv7+67wsPQBAAQKCvwKuQMOvAIUBA7BDxIWCsYaF9fMy/8OIiQiFRMs1B4p1xnZISorId4jITri</span><span class="content">
-</span><span class="content">  NzPlOTY0Py/rPEJISTw2RQECAw==</span><span class="content">
-</span><span class="delimiter">&quot;&quot;&quot;</span></span>
-</pre></div>
-</div>
-</div>
+cipher_text = """
+  lcG1ssZzvsS4eHitwsB8ysPS08LJyITO2aGIi77ajNLg4ZDa5ZPc6uPY5pmnm93r4p/08KLl8Obz7K
+  jy/qv7+67wsPQBAAQKCvwKuQMOvAIUBA7BDxIWCsYaF9fMy/8OIiQiFRMs1B4p1xnZISorId4jITri
+  NzPlOTY0Py/rPEJISTw2RQECAw==
+"""
+</code></pre>
 
 <p>Their VP contacted me after I sending the answer.
 But they are focusing their recruitment efforts on local candidates.

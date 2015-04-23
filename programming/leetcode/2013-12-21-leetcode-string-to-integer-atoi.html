@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -155,52 +159,49 @@
 he should has a spec in hand.</li>
 </ul>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
-<span class="directive">public</span>:
-  <span class="predefined-type">int</span> atoi(<span class="directive">const</span> <span class="predefined-type">char</span> *str) {
-    <span class="keyword">if</span> (!str || !str[<span class="integer">0</span>]) {
-      <span class="keyword">return</span> <span class="integer">0</span>;
+<pre><code class="language-cpp">class Solution {
+public:
+  int atoi(const char *str) {
+    if (!str || !str[0]) {
+      return 0;
     }
 
-    <span class="keyword">while</span> (*str == <span class="char">' '</span>) {
-      str += <span class="integer">1</span>;
+    while (*str == ' ') {
+      str += 1;
     }
 
-    <span class="predefined-type">bool</span> minus = (str[<span class="integer">0</span>] == <span class="char">'-'</span>);
+    bool minus = (str[0] == '-');
 
-    <span class="predefined-type">long</span> <span class="predefined-type">long</span> num = <span class="integer">0</span>;
+    long long num = 0;
 
-    <span class="keyword">if</span> ((str[<span class="integer">0</span>] &lt; <span class="char">'0'</span>) || (str[<span class="integer">0</span>] &gt; <span class="char">'9'</span>)) {
-      <span class="keyword">if</span> ((*str != <span class="char">'+'</span>) &amp;&amp; (*str != <span class="char">'-'</span>)) {
-        <span class="keyword">return</span> <span class="integer">0</span>;
+    if ((str[0] &lt; '0') || (str[0] &gt; '9')) {
+      if ((*str != '+') &amp;&amp; (*str != '-')) {
+        return 0;
       }
 
-      str += <span class="integer">1</span>;
+      str += 1;
     }
 
-    <span class="keyword">if</span> (!(*str &gt;= <span class="char">'0'</span> &amp;&amp; *str &lt;= <span class="char">'9'</span>)) {
-      <span class="keyword">return</span> <span class="integer">0</span>;
+    if (!(*str &gt;= '0' &amp;&amp; *str &lt;= '9')) {
+      return 0;
     }
 
-    <span class="keyword">while</span> (*str &amp;&amp; ((*str &gt;= <span class="char">'0'</span>) &amp;&amp; (*str &lt;= <span class="char">'9'</span>))) {
-      num = num * <span class="integer">10</span> + *str - <span class="char">'0'</span>;
+    while (*str &amp;&amp; ((*str &gt;= '0') &amp;&amp; (*str &lt;= '9'))) {
+      num = num * 10 + *str - '0';
 
-      str += <span class="integer">1</span>;
+      str += 1;
 
-      <span class="keyword">if</span> (num &gt;= <span class="integer">2147483648</span>) {
-        num = minus ? <span class="integer">2147483648</span> : <span class="integer">2147483647</span>;
+      if (num &gt;= 2147483648) {
+        num = minus ? 2147483648 : 2147483647;
 
-        <span class="keyword">break</span>;
+        break;
       }
     }
 
-    <span class="keyword">return</span> minus ? -<span class="keyword">static_cast</span>&lt;<span class="predefined-type">int</span>&gt;(num) : <span class="keyword">static_cast</span>&lt;<span class="predefined-type">int</span>&gt;(num);
+    return minus ? -static_cast&lt;int&gt;(num) : static_cast&lt;int&gt;(num);
   }
 };
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 

@@ -132,6 +132,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -157,45 +161,44 @@
   <li>I don’t like this kind of method which alloc memories and method name provide no hints.</li>
 </ul>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="comment">/**
+<pre><code class="language-cpp">/**
  * Definition for singly-linked list.
  * struct ListNode {
  *     int val;
  *     ListNode *next;
  *     ListNode(int x) : val(x), next(NULL) {}
  * };
- */</span>
-<span class="keyword">class</span> <span class="class">Solution</span> {
-<span class="directive">public</span>:
+ */
+class Solution {
+public:
   ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
     ListNode* head = nullptr;
     ListNode* tail = nullptr;
 
-    <span class="predefined-type">bool</span> ten = <span class="predefined-constant">false</span>;
+    bool ten = false;
 
-    <span class="keyword">while</span> (l1 &amp;&amp; l2) {
-      <span class="keyword">if</span> (tail) {
-        tail-&gt;next = <span class="keyword">new</span> ListNode(l1-&gt;val + l2-&gt;val);
+    while (l1 &amp;&amp; l2) {
+      if (tail) {
+        tail-&gt;next = new ListNode(l1-&gt;val + l2-&gt;val);
 
         tail = tail-&gt;next;
-      } <span class="keyword">else</span> {
-        head = <span class="keyword">new</span> ListNode(l1-&gt;val + l2-&gt;val);
+      } else {
+        head = new ListNode(l1-&gt;val + l2-&gt;val);
 
         tail = head;
       }
 
-      <span class="comment">// position</span>
-      <span class="keyword">if</span> (ten) {
-        tail-&gt;val += <span class="integer">1</span>;
+      // position
+      if (ten) {
+        tail-&gt;val += 1;
       }
 
-      <span class="keyword">if</span> (tail-&gt;val &gt;= <span class="integer">10</span>) {
-        tail-&gt;val -= <span class="integer">10</span>;
+      if (tail-&gt;val &gt;= 10) {
+        tail-&gt;val -= 10;
 
-        ten = <span class="predefined-constant">true</span>;
-      } <span class="keyword">else</span> {
-        ten = <span class="predefined-constant">false</span>;
+        ten = true;
+      } else {
+        ten = false;
       }
 
       l1 = l1-&gt;next;
@@ -204,42 +207,40 @@
 
     l1 = l1 ? l1 : l2;
 
-    <span class="keyword">while</span> (l1) {
-      <span class="keyword">if</span> (tail) {
-        tail-&gt;next = <span class="keyword">new</span> ListNode(l1-&gt;val);
+    while (l1) {
+      if (tail) {
+        tail-&gt;next = new ListNode(l1-&gt;val);
 
         tail = tail-&gt;next;
-      } <span class="keyword">else</span> {
-        head = <span class="keyword">new</span> ListNode(l1-&gt;val);
+      } else {
+        head = new ListNode(l1-&gt;val);
 
         tail = head;
       }
 
-      <span class="keyword">if</span> (ten) {
-        tail-&gt;val += <span class="integer">1</span>;
+      if (ten) {
+        tail-&gt;val += 1;
       }
 
-      <span class="keyword">if</span> (tail-&gt;val &gt;= <span class="integer">10</span>) {
-        tail-&gt;val -= <span class="integer">10</span>;
+      if (tail-&gt;val &gt;= 10) {
+        tail-&gt;val -= 10;
 
-        ten = <span class="predefined-constant">true</span>;
-      } <span class="keyword">else</span> {
-        ten = <span class="predefined-constant">false</span>;
+        ten = true;
+      } else {
+        ten = false;
       }
 
       l1 = l1-&gt;next;
     }
 
-    <span class="keyword">if</span> (ten) {
-      tail-&gt;next = <span class="keyword">new</span> ListNode(<span class="integer">1</span>);
+    if (ten) {
+      tail-&gt;next = new ListNode(1);
     }
 
-    <span class="keyword">return</span> head;
+    return head;
   }
 };
-</pre></div>
-</div>
-</div>
+</code></pre>
 
   </article>
 
