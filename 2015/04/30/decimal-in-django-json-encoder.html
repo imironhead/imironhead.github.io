@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Decimal in Django JSON Encoder</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/2015/04/30/decimal-in-django-json-encoder.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Decimal in Django JSON Encoder</h1>
+    <p class="post-meta">Apr 30, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p>I am developing a “desktop” application running on “browser” using “django”. When
+I need json response, I use django’s JsonResponse class. JsonResponse encode a dictionary
+into json format and it handle datetime and decimal types. The problem is JsonResponse
+encodes decimal to strings. I found some posts said this issue began after django stoped
+using simplejson. What makes django translate decimals into strings? What if I
+want numbers, not strings in json? I finally managed to solve it in a not-that-smart
+way and here it is.</p>
+
+<h1 id="how-does-djangos-jsonresponse-encode-dictionaries">How does django’s JsonResponse encode dictionaries?</h1>
+
+<p><a href="https://github.com/django/django/blob/stable/1.7.x/django/http/response.py">django 1.7 JsonResponse</a></p>
+
+<p>JsonResponse use python’s json library and DjangoJSONEncoder (default).</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">import</span> <span class="include">json</span>
+
+...
+
+<span class="keyword">class</span> <span class="class">JsonResponse</span>(HttpResponse):
+    <span class="docstring"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
+</span><span class="content">    An HTTP response class that consumes data to be serialized to JSON.</span><span class="content">
+</span><span class="content">    :param data: Data to be dumped into json. By default only ``dict`` objects</span><span class="content">
+</span><span class="content">      are allowed to be passed due to a security flaw before EcmaScript 5. See</span><span class="content">
+</span><span class="content">      the ``safe`` parameter for more information.</span><span class="content">
+</span><span class="content">    :param encoder: Should be an json encoder class. Defaults to</span><span class="content">
+</span><span class="content">      ``django.core.serializers.json.DjangoJSONEncoder``.</span><span class="content">
+</span><span class="content">    :param safe: Controls if only ``dict`` objects may be serialized. Defaults</span><span class="content">
+</span><span class="content">      to ``True``.</span><span class="content">
+</span><span class="content">    </span><span class="delimiter">&quot;&quot;&quot;</span></span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="predefined-constant">self</span>, data, encoder=DjangoJSONEncoder, safe=<span class="predefined-constant">True</span>, **kwargs):
+        <span class="keyword">if</span> safe <span class="keyword">and</span> <span class="keyword">not</span> <span class="predefined">isinstance</span>(data, <span class="predefined">dict</span>):
+            <span class="keyword">raise</span> <span class="exception">TypeError</span>(<span class="string"><span class="delimiter">'</span><span class="content">In order to allow non-dict objects to be </span><span class="delimiter">'</span></span>
+                <span class="string"><span class="delimiter">'</span><span class="content">serialized set the safe parameter to False</span><span class="delimiter">'</span></span>)
+        kwargs.setdefault(<span class="string"><span class="delimiter">'</span><span class="content">content_type</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+        data = json.dumps(data, cls=encoder)
+        <span class="predefined">super</span>(JsonResponse, <span class="predefined-constant">self</span>).__init__(content=data, **kwargs)
+</pre></div>
+</div>
+</div>
+
+<p>What DjangoJSONEncoder does is checking the variables which can not be encoded into
+json by python’s json library. Its’ “default” method is a fallback. In my case, it
+changes a decimal to a string.</p>
+
+<p><a href="https://github.com/django/django/blob/stable/1.7.x/django/core/serializers/json.py">django 1.7 DjangoJSONEncoder</a></p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">DjangoJSONEncoder</span>(json.JSONEncoder):
+    <span class="docstring"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
+</span><span class="content">    JSONEncoder subclass that knows how to encode date/time and decimal types.</span><span class="content">
+</span><span class="content">    </span><span class="delimiter">&quot;&quot;&quot;</span></span>
+    <span class="keyword">def</span> <span class="function">default</span>(<span class="predefined-constant">self</span>, o):
+        <span class="comment"># See &quot;Date Time String Format&quot; in the ECMA-262 specification.</span>
+        <span class="keyword">if</span> <span class="predefined">isinstance</span>(o, datetime.datetime):
+            r = o.isoformat()
+            <span class="keyword">if</span> o.microsecond:
+                r = r[:<span class="integer">23</span>] + r[<span class="integer">26</span>:]
+            <span class="keyword">if</span> r.endswith(<span class="string"><span class="delimiter">'</span><span class="content">+00:00</span><span class="delimiter">'</span></span>):
+                r = r[:-<span class="integer">6</span>] + <span class="string"><span class="delimiter">'</span><span class="content">Z</span><span class="delimiter">'</span></span>
+            <span class="keyword">return</span> r
+        <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, datetime.date):
+            <span class="keyword">return</span> o.isoformat()
+        <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, datetime.time):
+            <span class="keyword">if</span> is_aware(o):
+                <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">JSON can't represent timezone-aware times.</span><span class="delimiter">&quot;</span></span>)
+            r = o.isoformat()
+            <span class="keyword">if</span> o.microsecond:
+                r = r[:<span class="integer">12</span>]
+            <span class="keyword">return</span> r
+        <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, decimal.Decimal):
+            <span class="keyword">return</span> <span class="predefined">str</span>(o)
+        <span class="keyword">else</span>:
+            <span class="keyword">return</span> <span class="predefined">super</span>(DjangoJSONEncoder, <span class="predefined-constant">self</span>).default(o)
+</pre></div>
+</div>
+</div>
+
+<p>In python’s json encoder, _iterencode do not encode decimal so it ask the default
+function to change it into another iteratable type, then encode it again (recursively).
+DjangoJSONEncoder’s default then give it a string and the decimals finally become strings.</p>
+
+<p><a href="https://github.com/python/cpython/blob/2.7/Lib/json/encoder.py">python 2.7 cpython/Lib/json/encoder.py</a></p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">def</span> <span class="function">_iterencode</span>(o, _current_indent_level):
+    <span class="keyword">if</span> <span class="predefined">isinstance</span>(o, <span class="predefined">basestring</span>):
+        <span class="keyword">yield</span> _encoder(o)
+    <span class="keyword">elif</span> o <span class="keyword">is</span> <span class="predefined-constant">None</span>:
+        <span class="keyword">yield</span> <span class="string"><span class="delimiter">'</span><span class="content">null</span><span class="delimiter">'</span></span>
+    <span class="keyword">elif</span> o <span class="keyword">is</span> <span class="predefined-constant">True</span>:
+        <span class="keyword">yield</span> <span class="string"><span class="delimiter">'</span><span class="content">true</span><span class="delimiter">'</span></span>
+    <span class="keyword">elif</span> o <span class="keyword">is</span> <span class="predefined-constant">False</span>:
+        <span class="keyword">yield</span> <span class="string"><span class="delimiter">'</span><span class="content">false</span><span class="delimiter">'</span></span>
+    <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, (<span class="predefined">int</span>, <span class="predefined">long</span>)):
+        <span class="keyword">yield</span> <span class="predefined">str</span>(o)
+    <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, <span class="predefined">float</span>):
+        <span class="keyword">yield</span> _floatstr(o)
+    <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, (<span class="predefined">list</span>, <span class="predefined">tuple</span>)):
+        <span class="keyword">for</span> chunk <span class="keyword">in</span> _iterencode_list(o, _current_indent_level):
+            <span class="keyword">yield</span> chunk
+    <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, <span class="predefined">dict</span>):
+        <span class="keyword">for</span> chunk <span class="keyword">in</span> _iterencode_dict(o, _current_indent_level):
+            <span class="keyword">yield</span> chunk
+    <span class="keyword">else</span>:
+        <span class="keyword">if</span> markers <span class="keyword">is</span> <span class="keyword">not</span> <span class="predefined-constant">None</span>:
+            markerid = <span class="predefined">id</span>(o)
+            <span class="keyword">if</span> markerid <span class="keyword">in</span> markers:
+                <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">Circular reference detected</span><span class="delimiter">&quot;</span></span>)
+            markers[markerid] = o
+        o = _default(o)
+        <span class="keyword">for</span> chunk <span class="keyword">in</span> _iterencode(o, _current_indent_level):
+            <span class="keyword">yield</span> chunk
+        <span class="keyword">if</span> markers <span class="keyword">is</span> <span class="keyword">not</span> <span class="predefined-constant">None</span>:
+            <span class="keyword">del</span> markers[markerid]
+</pre></div>
+</div>
+</div>
+
+<h1 id="quick-solution-float">Quick solution: float</h1>
+
+<p>The first solution I found in stackoverflow is making a new class which inherit from DjangoJSONEncoder and return decimal’s float version. This works if I do not need the fixed point number.</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre>&gt;&gt;&gt; str(Decimal(1.1))
+'1.100000000000000088817841970012523233890533447265625'
+</pre></div>
+</div>
+</div>
+
+<h1 id="final-solution-simplejson">Final solution: simplejson</h1>
+
+<p>Install simplejson (easy_install simplejson). Then write a new encoder (modified
+version of django’s). Now the simplejson take care of decimals while I can still
+encode the other objects (for example, datetime) in prefered formats if I need to.</p>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">import</span> <span class="include">simplejson</span>
+
+<span class="keyword">def</span> <span class="function">default_json_encoder</span>(o) :
+    <span class="keyword">if</span> <span class="predefined">isinstance</span>(o, datetime.datetime):
+        r = o.isoformat()
+        <span class="keyword">if</span> o.microsecond:
+            r = r[:<span class="integer">23</span>] + r[<span class="integer">26</span>:]
+        <span class="keyword">if</span> r.endswith(<span class="string"><span class="delimiter">'</span><span class="content">+00:00</span><span class="delimiter">'</span></span>):
+            r = r[:-<span class="integer">6</span>] + <span class="string"><span class="delimiter">'</span><span class="content">Z</span><span class="delimiter">'</span></span>
+        <span class="keyword">return</span> r
+    <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, datetime.date):
+        <span class="keyword">return</span> o.isoformat()
+    <span class="keyword">elif</span> <span class="predefined">isinstance</span>(o, datetime.time):
+        <span class="keyword">if</span> is_aware(o):
+            <span class="keyword">raise</span> <span class="exception">ValueError</span>(<span class="string"><span class="delimiter">&quot;</span><span class="content">JSON can't represent timezone-aware times.</span><span class="delimiter">&quot;</span></span>)
+        r = o.isoformat()
+        <span class="keyword">if</span> o.microsecond:
+            r = r[:<span class="integer">12</span>]
+        <span class="keyword">return</span> r
+    <span class="keyword">else</span>:
+        <span class="keyword">raise</span> <span class="exception">TypeError</span>(<span class="predefined">repr</span>(o) + <span class="string"><span class="delimiter">'</span><span class="content"> is not JSON serializable</span><span class="delimiter">'</span></span>)
+
+<span class="keyword">class</span> <span class="class">JsonResponse</span>(HttpResponse):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="predefined-constant">self</span>, data, safe=<span class="predefined-constant">True</span>, **kwargs):
+        <span class="keyword">if</span> safe <span class="keyword">and</span> <span class="keyword">not</span> <span class="predefined">isinstance</span>(data, <span class="predefined">dict</span>):
+            <span class="keyword">raise</span> <span class="exception">TypeError</span>(<span class="string"><span class="delimiter">'</span><span class="content">In order to allow non-dict objects to be </span><span class="delimiter">'</span></span>
+                <span class="string"><span class="delimiter">'</span><span class="content">serialized set the safe parameter to False</span><span class="delimiter">'</span></span>)
+        kwargs.setdefault(<span class="string"><span class="delimiter">'</span><span class="content">content_type</span><span class="delimiter">'</span></span>, <span class="string"><span class="delimiter">'</span><span class="content">application/json</span><span class="delimiter">'</span></span>)
+        data = simplejson.dumps(data, default=default_json_encoder)
+        <span class="predefined">super</span>(JsonResponse, <span class="predefined-constant">self</span>).__init__(content=data, **kwargs)
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

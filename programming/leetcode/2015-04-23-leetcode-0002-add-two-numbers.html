@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>LeetCode 0002: Add Two Numbers</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/programming/leetcode/2015-04-23-leetcode-0002-add-two-numbers.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">LeetCode 0002: Add Two Numbers</h1>
+    <p class="post-meta"></p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="https://leetcode.com/problems/add-two-numbers/">Add Two Numbers</a></p>
+
+<p>A pencil-and-paper algorithm.</p>
+
+<ul>
+  <li>Implement a push_back method would be better.</li>
+  <li>I don’t like this kind of method which alloc memories and method name provide no hints.</li>
+</ul>
+
+<h1 id="cpp">CPP</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */</span>
+<span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode dummy(<span class="integer">0</span>);
+        ListNode* pTail = &amp;dummy;
+
+        <span class="keyword">while</span> (l1 &amp;&amp; l2) {
+            pTail-&gt;next = <span class="keyword">new</span> ListNode(l1-&gt;val + l2-&gt;val);
+
+            <span class="keyword">if</span> (pTail-&gt;val &gt;= <span class="integer">10</span>) {
+                pTail-&gt;val -= <span class="integer">10</span>;
+                pTail-&gt;next-&gt;val += <span class="integer">1</span>;
+            }
+
+            pTail = pTail-&gt;next;
+
+            l1 = l1-&gt;next;
+            l2 = l2-&gt;next;
+        }
+
+        <span class="keyword">if</span> (l1 == nullptr) {
+            l1 = l2;
+        }
+
+        <span class="keyword">while</span> (l1) {
+            pTail-&gt;next = <span class="keyword">new</span> ListNode(l1-&gt;val);
+
+            <span class="keyword">if</span> (pTail-&gt;val &gt;= <span class="integer">10</span>) {
+                pTail-&gt;val -= <span class="integer">10</span>;
+                pTail-&gt;next-&gt;val += <span class="integer">1</span>;
+            }
+
+            pTail = pTail-&gt;next;
+
+            l1 = l1-&gt;next;
+        }
+
+        <span class="keyword">if</span> (pTail-&gt;val &gt;= <span class="integer">10</span>) {
+            pTail-&gt;val -= <span class="integer">10</span>;
+            pTail-&gt;next = <span class="keyword">new</span> ListNode(<span class="integer">1</span>);
+        }
+
+        <span class="keyword">return</span> dummy.next;
+    }
+};
+</pre></div>
+</div>
+</div>
+
+<h1 id="python">Python</h1>
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment"># Definition for singly-linked list.</span>
+<span class="comment"># class ListNode:</span>
+<span class="comment">#     def __init__(self, x):</span>
+<span class="comment">#         self.val = x</span>
+<span class="comment">#         self.next = None</span>
+
+<span class="keyword">class</span> <span class="class">Solution</span>:
+    <span class="comment"># @param {ListNode} l1</span>
+    <span class="comment"># @param {ListNode} l2</span>
+    <span class="comment"># @return {ListNode}</span>
+    <span class="keyword">def</span> <span class="function">addTwoNumbers</span>(<span class="predefined-constant">self</span>, l1, l2):
+        dummy = ListNode(<span class="integer">0</span>)
+        tail = dummy
+
+        <span class="keyword">while</span> l1 <span class="keyword">and</span> l2 :
+            tail.next = ListNode(l1.val + l2.val)
+
+            <span class="keyword">if</span> tail.val &gt;= <span class="integer">10</span> :
+                tail.val -= <span class="integer">10</span>
+                tail.next.val += <span class="integer">1</span>
+
+            tail = tail.next
+
+            l1 = l1.next
+            l2 = l2.next
+
+        <span class="keyword">if</span> l1 <span class="keyword">is</span> <span class="predefined-constant">None</span> :
+            l1 = l2
+
+        <span class="keyword">while</span> l1 :
+            tail.next = ListNode(l1.val)
+
+            <span class="keyword">if</span> tail.val &gt;= <span class="integer">10</span> :
+                tail.val -= <span class="integer">10</span>
+                tail.next.val += <span class="integer">1</span>
+
+            tail = tail.next
+
+            l1 = l1.next
+
+        <span class="keyword">if</span> tail.val &gt;= <span class="integer">10</span> :
+            tail.val -= <span class="integer">10</span>
+            tail.next = ListNode(<span class="integer">1</span>)
+
+        <span class="keyword">return</span> dummy.next
+</pre></div>
+</div>
+</div>
+
+<h1 id="javascript">Javascript</h1>
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */</span>
+<span class="comment">/**
+ * @param {ListNode} l1
+ * @param {ListNode} l2
+ * @return {ListNode}
+ */</span>
+<span class="keyword">var</span> <span class="function">addTwoNumbers</span> = <span class="keyword">function</span>(l1, l2) {
+    <span class="keyword">var</span> head = <span class="keyword">new</span> ListNode(<span class="integer">0</span>);
+    <span class="keyword">var</span> tail = head;
+
+    <span class="keyword">while</span> (l1 &amp;&amp; l2) {
+        tail.next = <span class="keyword">new</span> ListNode(l1.val + l2.val);
+
+        <span class="keyword">if</span> (tail.val &gt;= <span class="integer">10</span>) {
+            tail.val -= <span class="integer">10</span>;
+            tail.next.val += <span class="integer">1</span>;
+        }
+
+        tail = tail.next;
+
+        l1 = l1.next;
+        l2 = l2.next;
+    }
+
+    <span class="keyword">if</span> (!l1) {
+        l1 = l2;
+    }
+
+    <span class="keyword">while</span> (l1) {
+        tail.next = <span class="keyword">new</span> ListNode(l1.val);
+
+        <span class="keyword">if</span> (tail.val &gt;= <span class="integer">10</span>) {
+            tail.val -= <span class="integer">10</span>;
+            tail.next.val += <span class="integer">1</span>;
+        }
+
+        tail = tail.next;
+
+        l1 = l1.next;
+    }
+
+    <span class="keyword">if</span> (tail.val &gt;= <span class="integer">10</span>) {
+        tail.val -= <span class="integer">10</span>;
+        tail.next = <span class="keyword">new</span> ListNode(<span class="integer">1</span>);
+    }
+
+    <span class="keyword">return</span> head.next;
+};
+</pre></div>
+</div>
+</div>
+
+<h1 id="ruby">Ruby</h1>
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment"># Definition for singly-linked list.</span>
+<span class="comment"># class ListNode</span>
+<span class="comment">#     attr_accessor :val, :next</span>
+<span class="comment">#     def initialize(val)</span>
+<span class="comment">#         @val = val</span>
+<span class="comment">#         @next = nil</span>
+<span class="comment">#     end</span>
+<span class="comment"># end</span>
+
+<span class="comment"># @param {ListNode} l1</span>
+<span class="comment"># @param {ListNode} l2</span>
+<span class="comment"># @return {ListNode}</span>
+<span class="keyword">def</span> <span class="function">add_two_numbers</span>(l1, l2)
+    ans_head = <span class="constant">ListNode</span>.new(<span class="integer">0</span>)
+    ans_tail = ans_head
+
+    <span class="keyword">until</span> l1.nil? || l2.nil? <span class="keyword">do</span>
+        ans_tail.next = <span class="constant">ListNode</span>.new(l1.val + l2.val)
+
+        <span class="keyword">if</span> ans_tail.val &gt;= <span class="integer">10</span>
+            ans_tail.val -= <span class="integer">10</span>
+            ans_tail.next.val += <span class="integer">1</span>
+        <span class="keyword">end</span>
+
+        ans_tail = ans_tail.next
+
+        l1 = l1.next
+        l2 = l2.next
+    <span class="keyword">end</span>
+
+    l1 = l2 <span class="keyword">if</span> l1.nil?
+
+    <span class="keyword">until</span> l1.nil? <span class="keyword">do</span>
+        ans_tail.next = <span class="constant">ListNode</span>.new(l1.val)
+
+        <span class="keyword">if</span> ans_tail.val &gt;= <span class="integer">10</span>
+            ans_tail.val -= <span class="integer">10</span>
+            ans_tail.next.val += <span class="integer">1</span>
+        <span class="keyword">end</span>
+
+        ans_tail = ans_tail.next
+
+        l1 = l1.next
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span> ans_tail.val &gt;= <span class="integer">10</span>
+        ans_tail.val -= <span class="integer">10</span>
+        ans_tail.next = <span class="constant">ListNode</span>.new(<span class="integer">1</span>)
+    <span class="keyword">end</span>
+
+    ans_head.next
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

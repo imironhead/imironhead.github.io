@@ -6,9 +6,194 @@
 </description>
     <link>http://ironhead.bitbucket.com/</link>
     <atom:link href="http://ironhead.bitbucket.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 23 Apr 2015 16:32:31 +0800</pubDate>
-    <lastBuildDate>Thu, 23 Apr 2015 16:32:31 +0800</lastBuildDate>
+    <pubDate>Thu, 30 Apr 2015 23:41:16 +0800</pubDate>
+    <lastBuildDate>Thu, 30 Apr 2015 23:41:16 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Decimal in Django JSON Encoder</title>
+        <description>&lt;p&gt;I am developing a “desktop” application running on “browser” using “django”. When
+I need json response, I use django’s JsonResponse class. JsonResponse encode a dictionary
+into json format and it handle datetime and decimal types. The problem is JsonResponse
+encodes decimal to strings. I found some posts said this issue began after django stoped
+using simplejson. What makes django translate decimals into strings? What if I
+want numbers, not strings in json? I finally managed to solve it in a not-that-smart
+way and here it is.&lt;/p&gt;
+
+&lt;h1 id=&quot;how-does-djangos-jsonresponse-encode-dictionaries&quot;&gt;How does django’s JsonResponse encode dictionaries?&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/django/django/blob/stable/1.7.x/django/http/response.py&quot;&gt;django 1.7 JsonResponse&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;JsonResponse use python’s json library and DjangoJSONEncoder (default).&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;json&lt;/span&gt;
+
+...
+
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;JsonResponse&lt;/span&gt;(HttpResponse):
+    &lt;span class=&quot;docstring&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;    An HTTP response class that consumes data to be serialized to JSON.&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;    :param data: Data to be dumped into json. By default only ``dict`` objects&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;      are allowed to be passed due to a security flaw before EcmaScript 5. See&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;      the ``safe`` parameter for more information.&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;    :param encoder: Should be an json encoder class. Defaults to&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;      ``django.core.serializers.json.DjangoJSONEncoder``.&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;    :param safe: Controls if only ``dict`` objects may be serialized. Defaults&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;      to ``True``.&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+
+    &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, data, encoder=DjangoJSONEncoder, safe=&lt;span class=&quot;predefined-constant&quot;&gt;True&lt;/span&gt;, **kwargs):
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; safe &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(data, &lt;span class=&quot;predefined&quot;&gt;dict&lt;/span&gt;):
+            &lt;span class=&quot;keyword&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;exception&quot;&gt;TypeError&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;In order to allow non-dict objects to be &lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+                &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;serialized set the safe parameter to False&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+        kwargs.setdefault(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;content_type&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;application/json&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+        data = json.dumps(data, cls=encoder)
+        &lt;span class=&quot;predefined&quot;&gt;super&lt;/span&gt;(JsonResponse, &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;).__init__(content=data, **kwargs)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;What DjangoJSONEncoder does is checking the variables which can not be encoded into
+json by python’s json library. Its’ “default” method is a fallback. In my case, it
+changes a decimal to a string.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/django/django/blob/stable/1.7.x/django/core/serializers/json.py&quot;&gt;django 1.7 DjangoJSONEncoder&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;DjangoJSONEncoder&lt;/span&gt;(json.JSONEncoder):
+    &lt;span class=&quot;docstring&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;    JSONEncoder subclass that knows how to encode date/time and decimal types.&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;default&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, o):
+        &lt;span class=&quot;comment&quot;&gt;# See &amp;quot;Date Time String Format&amp;quot; in the ECMA-262 specification.&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, datetime.datetime):
+            r = o.isoformat()
+            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; o.microsecond:
+                r = r[:&lt;span class=&quot;integer&quot;&gt;23&lt;/span&gt;] + r[&lt;span class=&quot;integer&quot;&gt;26&lt;/span&gt;:]
+            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; r.endswith(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;+00:00&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;):
+                r = r[:-&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;] + &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; r
+        &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, datetime.date):
+            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; o.isoformat()
+        &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, datetime.time):
+            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; is_aware(o):
+                &lt;span class=&quot;keyword&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;exception&quot;&gt;ValueError&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;JSON can&#39;t represent timezone-aware times.&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+            r = o.isoformat()
+            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; o.microsecond:
+                r = r[:&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;]
+            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; r
+        &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, decimal.Decimal):
+            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;str&lt;/span&gt;(o)
+        &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;:
+            &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;super&lt;/span&gt;(DjangoJSONEncoder, &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;).default(o)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In python’s json encoder, _iterencode do not encode decimal so it ask the default
+function to change it into another iteratable type, then encode it again (recursively).
+DjangoJSONEncoder’s default then give it a string and the decimals finally become strings.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/python/cpython/blob/2.7/Lib/json/encoder.py&quot;&gt;python 2.7 cpython/Lib/json/encoder.py&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;_iterencode&lt;/span&gt;(o, _current_indent_level):
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, &lt;span class=&quot;predefined&quot;&gt;basestring&lt;/span&gt;):
+        &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; _encoder(o)
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; o &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;None&lt;/span&gt;:
+        &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; o &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;True&lt;/span&gt;:
+        &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; o &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;False&lt;/span&gt;:
+        &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, (&lt;span class=&quot;predefined&quot;&gt;int&lt;/span&gt;, &lt;span class=&quot;predefined&quot;&gt;long&lt;/span&gt;)):
+        &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;str&lt;/span&gt;(o)
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, &lt;span class=&quot;predefined&quot;&gt;float&lt;/span&gt;):
+        &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; _floatstr(o)
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, (&lt;span class=&quot;predefined&quot;&gt;list&lt;/span&gt;, &lt;span class=&quot;predefined&quot;&gt;tuple&lt;/span&gt;)):
+        &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; chunk &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; _iterencode_list(o, _current_indent_level):
+            &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; chunk
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, &lt;span class=&quot;predefined&quot;&gt;dict&lt;/span&gt;):
+        &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; chunk &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; _iterencode_dict(o, _current_indent_level):
+            &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; chunk
+    &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;:
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; markers &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;None&lt;/span&gt;:
+            markerid = &lt;span class=&quot;predefined&quot;&gt;id&lt;/span&gt;(o)
+            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; markerid &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; markers:
+                &lt;span class=&quot;keyword&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;exception&quot;&gt;ValueError&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Circular reference detected&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+            markers[markerid] = o
+        o = _default(o)
+        &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; chunk &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; _iterencode(o, _current_indent_level):
+            &lt;span class=&quot;keyword&quot;&gt;yield&lt;/span&gt; chunk
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; markers &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;predefined-constant&quot;&gt;None&lt;/span&gt;:
+            &lt;span class=&quot;keyword&quot;&gt;del&lt;/span&gt; markers[markerid]
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;quick-solution-float&quot;&gt;Quick solution: float&lt;/h1&gt;
+
+&lt;p&gt;The first solution I found in stackoverflow is making a new class which inherit from DjangoJSONEncoder and return decimal’s float version. This works if I do not need the fixed point number.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&amp;gt;&amp;gt;&amp;gt; str(Decimal(1.1))
+&#39;1.100000000000000088817841970012523233890533447265625&#39;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;final-solution-simplejson&quot;&gt;Final solution: simplejson&lt;/h1&gt;
+
+&lt;p&gt;Install simplejson (easy_install simplejson). Then write a new encoder (modified
+version of django’s). Now the simplejson take care of decimals while I can still
+encode the other objects (for example, datetime) in prefered formats if I need to.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;simplejson&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;default_json_encoder&lt;/span&gt;(o) :
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, datetime.datetime):
+        r = o.isoformat()
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; o.microsecond:
+            r = r[:&lt;span class=&quot;integer&quot;&gt;23&lt;/span&gt;] + r[&lt;span class=&quot;integer&quot;&gt;26&lt;/span&gt;:]
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; r.endswith(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;+00:00&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;):
+            r = r[:-&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;] + &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;Z&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; r
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, datetime.date):
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; o.isoformat()
+    &lt;span class=&quot;keyword&quot;&gt;elif&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(o, datetime.time):
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; is_aware(o):
+            &lt;span class=&quot;keyword&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;exception&quot;&gt;ValueError&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;JSON can&#39;t represent timezone-aware times.&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;)
+        r = o.isoformat()
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; o.microsecond:
+            r = r[:&lt;span class=&quot;integer&quot;&gt;12&lt;/span&gt;]
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; r
+    &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt;:
+        &lt;span class=&quot;keyword&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;exception&quot;&gt;TypeError&lt;/span&gt;(&lt;span class=&quot;predefined&quot;&gt;repr&lt;/span&gt;(o) + &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt; is not JSON serializable&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+
+&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;JsonResponse&lt;/span&gt;(HttpResponse):
+    &lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;__init__&lt;/span&gt;(&lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;, data, safe=&lt;span class=&quot;predefined-constant&quot;&gt;True&lt;/span&gt;, **kwargs):
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; safe &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;isinstance&lt;/span&gt;(data, &lt;span class=&quot;predefined&quot;&gt;dict&lt;/span&gt;):
+            &lt;span class=&quot;keyword&quot;&gt;raise&lt;/span&gt; &lt;span class=&quot;exception&quot;&gt;TypeError&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;In order to allow non-dict objects to be &lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;
+                &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;serialized set the safe parameter to False&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+        kwargs.setdefault(&lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;content_type&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;application/json&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;)
+        data = simplejson.dumps(data, default=default_json_encoder)
+        &lt;span class=&quot;predefined&quot;&gt;super&lt;/span&gt;(JsonResponse, &lt;span class=&quot;predefined-constant&quot;&gt;self&lt;/span&gt;).__init__(content=data, **kwargs)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Thu, 30 Apr 2015 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2015/04/30/decimal-in-django-json-encoder.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2015/04/30/decimal-in-django-json-encoder.html</guid>
+        
+        <category>python</category>
+        
+        <category>django</category>
+        
+        
+      </item>
     
       <item>
         <title>Arduino SSD1306 LED</title>
@@ -1233,85 +1418,6 @@ return &amp;lt;root&amp;gt;{
         <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/11/25/arduino-snake.html</guid>
         
         <category>arduinno</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Regular Number Generator</title>
-        <description>&lt;p&gt;aka “Hamming numbers”, “ugly numbers”.&lt;/p&gt;
-
-&lt;p&gt;Prime factors of those numbers are 2, 3 or 5.&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt; Ugly = 2^a * 3^b * 5^c &lt;/script&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
- 0 &lt;= a, b, c  %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;How to implement?&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;1 is the first ugly number.&lt;/li&gt;
-  &lt;li&gt;If R is an ugly number, then 2&lt;em&gt;R, 3&lt;/em&gt;R and 5*R are all ugly numbers as well.&lt;/li&gt;
-  &lt;li&gt;There are many ugly numbers so we need a priority queue to select them in ascending order.&lt;/li&gt;
-  &lt;li&gt;Suppose R equals to 2^a * 3^b, should 2&lt;em&gt;R be pushed into the priority queue? Considering another number R’ which equals to 2^(a+1) * 3^(b-1), we known that R’ &amp;lt; R. So even if both of R’ &amp;amp; R are in the priority queue, R’ would be selected before R. When R’ is selected, 3&lt;/em&gt;R’ should be pushed into priority queue at the same time. Which means 3&lt;em&gt;R’ is pushed into queue before 2&lt;/em&gt;R, so we do not have to push 2&lt;em&gt;R again (3&lt;/em&gt;R’ = 2^(a+1) * 3^b = 2*R).&lt;/li&gt;
-  &lt;li&gt;So every time when a number R is selected, new ugly number should be generated by multiply the selected number with a new factor P, and P must greater or equal to the largest prime factor of R.&lt;/li&gt;
-  &lt;li&gt;To illustrate the idea, build a tree with root node 1 (the first ugly number). All node values in this tree are their parent values multiple 2, 3, or 5 (e.g. children of 1 are 2, 3 and 5. children of 2 are 2&lt;em&gt;2, 2&lt;/em&gt;3 and 2*5. etc.). Remove the duplicated numbers and selected remains in ascending order.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;queue&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;preprocessor&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;&amp;lt;vector&amp;gt;&lt;/span&gt;
-
-&lt;span class=&quot;directive&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;namespace&lt;/span&gt; std;
-
-
-&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; Generator {
-  priority_queue&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;, vector&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;&amp;gt;, greater&amp;lt;&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt;&amp;gt;&amp;gt;  pool;
-
-  Generator() {
-    &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;);
-  }
-
-  &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; Next() {
-    &lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; number = &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.top();
-
-    &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.pop();
-
-    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (number % &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt; == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;) {
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
-    } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (number % &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt; == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;) {
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;);
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
-    } &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; {
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;);
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;);
-      &lt;span class=&quot;local-variable&quot;&gt;this&lt;/span&gt;-&amp;gt;pool.push(number * &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;);
-    }
-
-    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; number;
-  }
-};
-
-&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; main() {
-  Generator g;
-
-  &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (&lt;span class=&quot;predefined-type&quot;&gt;int&lt;/span&gt; i = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&quot;integer&quot;&gt;100&lt;/span&gt;; ++i) {
-    cout &amp;lt;&amp;lt; g.Next() &amp;lt;&amp;lt; endl;
-  }
-}
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Wed, 12 Nov 2014 00:00:00 +0800</pubDate>
-        <link>http://ironhead.bitbucket.com/2014/11/12/regular-number-generator.html</link>
-        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/11/12/regular-number-generator.html</guid>
-        
-        <category>c++</category>
-        
-        <category>programming</category>
         
         
       </item>

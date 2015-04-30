@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>LeetCode 0205: Isomorphic Strings</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/programming/leetcode/2015-04-23-leetcode-0205-isomorphic-strings.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">LeetCode 0205: Isomorphic Strings</h1>
+    <p class="post-meta"></p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="https://leetcode.com/problems/isomorphic-strings/">Isomorphic Strings</a></p>
+
+<h1 id="cpp">cpp</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
+<span class="directive">public</span>:
+    <span class="predefined-type">bool</span> isIsomorphic(<span class="predefined-type">string</span> s, <span class="predefined-type">string</span> t) {
+        <span class="predefined-type">char</span> table_s_t[<span class="integer">256</span>] = {<span class="integer">0</span>};
+        <span class="predefined-type">char</span> table_t_s[<span class="integer">256</span>] = {<span class="integer">0</span>};
+
+        <span class="keyword">for</span> (<span class="directive">auto</span> i = <span class="integer">0</span>; i &lt; s.length(); ++i) {
+            <span class="keyword">if</span> ((table_s_t[s[i]] == <span class="integer">0</span>) &amp;&amp; (table_t_s[t[i]] == <span class="integer">0</span>)) {
+                table_s_t[s[i]] = t[i];
+                table_t_s[t[i]] = s[i];
+            } <span class="keyword">else</span> <span class="keyword">if</span> ((table_s_t[s[i]] != t[i]) || (table_t_s[t[i]] != s[i])) {
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>;
+            }
+        }
+
+        <span class="keyword">return</span> <span class="predefined-constant">true</span>;
+    }
+};
+</pre></div>
+</div>
+</div>
+
+<h1 id="python">python</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span>:
+    <span class="comment"># @param {string} s</span>
+    <span class="comment"># @param {string} t</span>
+    <span class="comment"># @return {boolean}</span>
+    <span class="keyword">def</span> <span class="function">isIsomorphic</span>(<span class="predefined-constant">self</span>, s, t):
+        table_s_t = {}
+        table_t_s = {}
+
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="predefined">xrange</span>(<span class="predefined">len</span>(s)) :
+            <span class="keyword">if</span> s[i] <span class="keyword">not</span> <span class="keyword">in</span> table_s_t <span class="keyword">and</span> t[i] <span class="keyword">not</span> <span class="keyword">in</span> table_t_s :
+                table_s_t[s[i]] = t[i]
+                table_t_s[t[i]] = s[i]
+            <span class="keyword">elif</span> table_s_t.get(s[i], <span class="integer">0</span>) != t[i] <span class="keyword">or</span> table_t_s.get(t[i], <span class="integer">0</span>) != s[i] :
+                <span class="keyword">return</span> <span class="predefined-constant">False</span>
+
+        <span class="keyword">return</span> <span class="predefined-constant">True</span>
+</pre></div>
+</div>
+</div>
+
+<h1 id="javascript">javascript</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */</span>
+<span class="keyword">var</span> <span class="function">isIsomorphic</span> = <span class="keyword">function</span>(s, t) {
+    <span class="keyword">var</span> table_s_t = {};
+    <span class="keyword">var</span> table_t_s = {};
+
+    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="integer">0</span>; i &lt; s.length; ++i) {
+        <span class="keyword">if</span> (!(s[i] <span class="keyword">in</span> table_s_t) &amp;&amp; !(t[i] <span class="keyword">in</span> table_t_s)) {
+            table_s_t[s[i]] = t[i];
+            table_t_s[t[i]] = s[i];
+        } <span class="keyword">else</span> <span class="keyword">if</span> ((table_s_t[s[i]] != t[i]) || (table_t_s[t[i]] != s[i])) {
+            <span class="keyword">return</span> <span class="predefined-constant">false</span>;
+        }
+    }
+
+    <span class="keyword">return</span> <span class="predefined-constant">true</span>;
+};
+</pre></div>
+</div>
+</div>
+
+<h1 id="ruby">ruby</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment"># @param {String} s</span>
+<span class="comment"># @param {String} t</span>
+<span class="comment"># @return {Boolean}</span>
+<span class="keyword">def</span> <span class="function">is_isomorphic</span>(s, t)
+    table_s_t = <span class="constant">Array</span>.new(<span class="integer">256</span>, <span class="integer">0</span>)
+    table_t_s = <span class="constant">Array</span>.new(<span class="integer">256</span>, <span class="integer">0</span>)
+
+    (<span class="integer">0</span>...t.length).each <span class="keyword">do</span> | i |
+        <span class="keyword">if</span> (table_s_t[s[i].ord] == <span class="integer">0</span>) <span class="keyword">and</span> (table_t_s[t[i].ord] == <span class="integer">0</span>)
+            table_s_t[s[i].ord] = t[i]
+            table_t_s[t[i].ord] = s[i]
+        <span class="keyword">elsif</span> table_s_t[s[i].ord] != t[i] <span class="keyword">or</span> table_t_s[t[i].ord] != s[i]
+            <span class="keyword">return</span> <span class="predefined-constant">false</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    <span class="predefined-constant">true</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
