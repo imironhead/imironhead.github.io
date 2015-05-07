@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>LeetCode 0207: Course Schedule</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/programming/leetcode/2015-04-23-leetcode-0207-course-schedule.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">LeetCode 0207: Course Schedule</h1>
+    <p class="post-meta"></p>
+  </header>
+
+  <article class="post-content">
+    <p><a href="https://leetcode.com/problems/course-schedule/">Course Schedule</a></p>
+
+<h1 id="cpp">cpp</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span> {
+  <span class="keyword">struct</span> Course {
+    <span class="predefined-type">int</span>         fVisited;
+    vector&lt;<span class="predefined-type">int</span>&gt; rPrerequisites;
+
+    Course() : fVisited(<span class="integer">0</span>) {}
+  };
+
+<span class="directive">public</span>:
+  <span class="predefined-type">bool</span> canFinish(<span class="predefined-type">int</span> numCourses, vector&lt;vector&lt;<span class="predefined-type">int</span>&gt;&gt;&amp; prerequisites) {
+    <span class="comment">// rebuild the graph</span>
+    vector&lt;Course&gt; courses(numCourses);
+
+    <span class="keyword">for</span> (<span class="directive">auto</span>&amp; prerequisite : prerequisites) {
+      courses[prerequisite[<span class="integer">0</span>]].rPrerequisites.push_back(prerequisite[<span class="integer">1</span>]);
+    }
+
+    <span class="comment">// BFS</span>
+    queue&lt;vector&lt;Course&gt;::size_type&gt; qPrerequisites;
+
+    <span class="predefined-type">int</span> fVisited(<span class="integer">0</span>);
+
+    <span class="keyword">for</span> (<span class="directive">auto</span> iChecked = <span class="integer">0</span>; iChecked &lt; courses.size(); ++iChecked) {
+      <span class="keyword">if</span> (courses[iChecked].fVisited) {
+        <span class="comment">// this course was checked and can be finished</span>
+        <span class="keyword">continue</span>;
+      }
+
+      <span class="comment">// flag of current cycle (to mark separated graph)</span>
+      <span class="comment">// course flag is 0 =&gt; course was not checked</span>
+      <span class="comment">// course flag is flag =&gt; course was checked and can not be finished</span>
+      <span class="comment">// course flag is not 0 or flag =&gt; course was checked and can be finished</span>
+      fVisited += <span class="integer">1</span>;
+
+      courses[iChecked].fVisited = fVisited;
+
+      <span class="comment">// start to check from iChecked'th course</span>
+      qPrerequisites.push(iChecked);
+
+      <span class="comment">// do BFS</span>
+      <span class="keyword">while</span> (!qPrerequisites.empty()) {
+        <span class="directive">auto</span> iTemp = qPrerequisites.front();
+
+        qPrerequisites.pop();
+
+        <span class="comment">// the course was not checked, mark it as checked</span>
+        courses[iTemp].fVisited = fVisited;
+
+        <span class="keyword">for</span> (<span class="directive">auto</span>&amp; p : courses[iTemp].rPrerequisites) {
+          <span class="keyword">if</span> (courses[p].fVisited) {
+            <span class="keyword">if</span> (courses[p].fVisited == fVisited) {
+              <span class="comment">// in cycle</span>
+              <span class="keyword">return</span> <span class="predefined-constant">false</span>;
+            }
+            <span class="comment">// p was visited and not in cycle =&gt; will not be in a cycle with iTemp</span>
+          } <span class="keyword">else</span> {
+            <span class="comment">// p may be in a cycle, push to queue and check it later</span>
+            qPrerequisites.push(p);
+          }
+        }
+      }
+    }
+
+    <span class="keyword">return</span> <span class="predefined-constant">true</span>;
+  }
+};
+</pre></div>
+</div>
+</div>
+
+<h1 id="javascript">javascript</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment">/**
+ * @param {number} numCourses
+ * @param {number[][]} prerequisites
+ * @return {boolean}
+ */</span>
+<span class="keyword">var</span> <span class="function">canFinish</span> = <span class="keyword">function</span>(numCourses, prerequisites) {
+  <span class="keyword">var</span> courses = <span class="keyword">new</span> Array(numCourses);
+
+  <span class="keyword">for</span> (<span class="keyword">var</span> c = <span class="integer">0</span>; c &lt; numCourses; ++c) {
+    courses[c] = {<span class="key">visit</span>: <span class="integer">0</span>, <span class="key">prerequisites</span>: []};
+  }
+
+  <span class="keyword">for</span> (<span class="keyword">var</span> p = <span class="integer">0</span>; p &lt; prerequisites.length; ++p) {
+    courses[prerequisites[p][<span class="integer">0</span>]].prerequisites.push(prerequisites[p][<span class="integer">1</span>]);
+  }
+
+  <span class="keyword">var</span> queue = [];
+  <span class="keyword">var</span> flag = <span class="integer">0</span>;
+
+  <span class="keyword">for</span> (<span class="keyword">var</span> checked = <span class="integer">0</span>; checked &lt; numCourses; ++checked) {
+    <span class="keyword">if</span> (courses[checked].visit !== <span class="integer">0</span>) {
+      <span class="keyword">continue</span>;
+    }
+
+    flag += <span class="integer">1</span>;
+
+    queue.push(checked);
+
+    <span class="keyword">while</span> (queue.length &gt; <span class="integer">0</span>) {
+      <span class="keyword">var</span> t = queue[queue.length - <span class="integer">1</span>];
+
+      queue.pop();
+
+      courses[t].visit = flag;
+
+      <span class="keyword">for</span> (<span class="keyword">var</span> q = <span class="integer">0</span>; q &lt; courses[t].prerequisites.length; ++q) {
+        <span class="keyword">var</span> k = courses[t].prerequisites[q];
+
+        <span class="keyword">if</span> (courses[k].visit &gt; <span class="integer">0</span>) {
+          <span class="keyword">if</span> (courses[k].visit === flag) {
+            <span class="keyword">return</span> <span class="predefined-constant">false</span>;
+          }
+        } <span class="keyword">else</span> {
+          queue.push(k);
+        }
+      }
+    }
+  }
+
+  <span class="keyword">return</span> <span class="predefined-constant">true</span>;
+};
+</pre></div>
+</div>
+</div>
+
+<h1 id="python">python</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">class</span> <span class="class">Solution</span>:
+  <span class="comment"># @param {integer} numCourses</span>
+  <span class="comment"># @param {integer[][]} prerequisites</span>
+  <span class="comment"># @return {boolean}</span>
+  <span class="keyword">def</span> <span class="function">canFinish</span>(<span class="predefined-constant">self</span>, num_courses, prerequisites):
+    courses = [[<span class="integer">0</span>, []] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="predefined">xrange</span>(num_courses)]
+
+    <span class="keyword">for</span> prerequisite <span class="keyword">in</span> prerequisites :
+      courses[prerequisite[<span class="integer">0</span>]][<span class="integer">1</span>].append(prerequisite[<span class="integer">1</span>])
+
+    queue = []
+    flag = <span class="integer">0</span>
+
+    <span class="keyword">for</span> c <span class="keyword">in</span> <span class="predefined">xrange</span>(num_courses) :
+      <span class="keyword">if</span> courses[c][<span class="integer">0</span>] &gt; <span class="integer">0</span> :
+        <span class="keyword">continue</span>
+
+      flag += <span class="integer">1</span>
+
+      queue.append(c)
+
+      <span class="keyword">while</span> <span class="predefined">len</span>(queue) &gt; <span class="integer">0</span> :
+        t = queue[<span class="integer">0</span>]
+
+        <span class="keyword">del</span> queue[<span class="integer">0</span>]
+
+        courses[t][<span class="integer">0</span>] = flag
+
+        <span class="keyword">for</span> p <span class="keyword">in</span> courses[t][<span class="integer">1</span>] :
+          <span class="keyword">if</span> courses[p][<span class="integer">0</span>] &gt; <span class="integer">0</span> :
+            <span class="keyword">if</span> courses[p][<span class="integer">0</span>] == flag :
+              <span class="keyword">return</span> <span class="predefined-constant">False</span>
+          <span class="keyword">else</span> :
+            queue.append(p)
+
+    <span class="keyword">return</span> <span class="predefined-constant">True</span>
+</pre></div>
+</div>
+</div>
+
+<h1 id="ruby">ruby</h1>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="comment"># @param {Integer} num_courses</span>
+<span class="comment"># @param {Integer[][]} prerequisites</span>
+<span class="comment"># @return {Boolean}</span>
+<span class="keyword">def</span> <span class="function">can_finish</span>(num_courses, prerequisites)
+  courses = (<span class="integer">0</span>...num_courses).map { |_| [<span class="integer">-1</span>, []] }
+
+  prerequisites.each { |p| courses[p[<span class="integer">0</span>]][<span class="integer">1</span>] &lt;&lt; p[<span class="integer">1</span>] }
+
+  queue = <span class="constant">Queue</span>.new
+
+  courses.each_with_index <span class="keyword">do</span> | course, flag |
+    <span class="keyword">next</span> <span class="keyword">if</span> course[<span class="integer">0</span>] &gt;= <span class="integer">0</span>
+
+    queue &lt;&lt; flag
+
+    <span class="keyword">until</span> queue.empty?
+      t = queue.pop
+
+      courses[t][<span class="integer">0</span>] = flag
+
+      courses[t][<span class="integer">1</span>].each <span class="keyword">do</span> | c |
+        <span class="keyword">if</span> courses[c][<span class="integer">0</span>] &lt; <span class="integer">0</span>
+          queue &lt;&lt; c
+        <span class="keyword">elsif</span> courses[c][<span class="integer">0</span>] == flag
+          <span class="keyword">return</span> <span class="predefined-constant">false</span>
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="predefined-constant">true</span>
+<span class="keyword">end</span>
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
