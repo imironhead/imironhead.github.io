@@ -22,6 +22,12 @@ permalink: /readings/
 
 ---
 
+### python
+
+* [o] [Python 慣用語](http://seanlin.logdown.com/posts/239883-python-idioms)
+
+---
+
 ### Node.js
 
 * [o] [Writing secure express.js apps](https://blog.liftsecurity.io/2012/12/07/writing-secure-express-js-apps)
@@ -45,6 +51,11 @@ permalink: /readings/
 ### Linux
 
 * [x] [Learn Linux, 101: Manage file permissions and ownership](http://www.ibm.com/developerworks/library/l-lpic1-v3-104-5/)
+
+---
+
+### Course
+* [x] [From Nand to Tetris / Part I](https://www.coursera.org/course/nand2tetris1)
 
 ---
 
