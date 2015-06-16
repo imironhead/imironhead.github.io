@@ -16,4 +16,4 @@ kramdown:
   coderay:
     coderay_line_numbers: nil
     coderay_css: 'class'
-notes: ['courses', 'programming']
+notes: ['courses', 'math', 'programming']
