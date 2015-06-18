@@ -6,9 +6,99 @@
 </description>
     <link>http://ironhead.bitbucket.com/</link>
     <atom:link href="http://ironhead.bitbucket.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 16 Jun 2015 13:47:59 +0800</pubDate>
-    <lastBuildDate>Tue, 16 Jun 2015 13:47:59 +0800</lastBuildDate>
+    <pubDate>Fri, 19 Jun 2015 00:26:11 +0800</pubDate>
+    <lastBuildDate>Fri, 19 Jun 2015 00:26:11 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Project Euler: Harshad Numbers</title>
+        <description>&lt;h1 id=&quot;go-to-problemhttpsprojecteulernetproblem387&quot;&gt;&lt;a href=&quot;https://projecteuler.net/problem=387&quot;&gt;Go to Problem&lt;/a&gt;&lt;/h1&gt;
+
+&lt;p&gt;It’s easy since I spent only &lt;strong&gt;30+&lt;/strong&gt; minutes. So try it before read my thought and you’ll have some fun.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;I ‘guess’ it would be very slow to check all primes one by one.&lt;/li&gt;
+  &lt;li&gt;[1..9] are all Harshad numbers (seeds).&lt;/li&gt;
+  &lt;li&gt;Take one seed, add one digit to it and check if it’s valid. For example, take 2, check [20..29]. All valid numbers are new seeds.&lt;/li&gt;
+  &lt;li&gt;Check if a new seed is also a strong Harshad number.&lt;/li&gt;
+  &lt;li&gt;If a seed is a strong Harshad number, append one digit to it and check if it’s a ‘strong, right truncatable Harshad primes’. For example, 201 is a strong Harshad number, check if [2010..2019] are primes.&lt;/li&gt;
+  &lt;li&gt;Sum all valid primes, done.&lt;/li&gt;
+  &lt;li&gt;This is actually a &lt;strong&gt;tree&lt;/strong&gt; structure, solve it with &lt;strong&gt;BFS&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;sympy&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;isprime&lt;/span&gt;
+
+K = &lt;span class=&quot;integer&quot;&gt;100000000000000&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;add_digit&lt;/span&gt;(seed) :
+    res = []
+
+    k = seed[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] * &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;
+    p = seed[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;) :
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (k + i) % (p + i) == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; :
+            res.append([k + i, p + i])
+
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; res
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;check_primes&lt;/span&gt;(seed) :
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;not&lt;/span&gt; isprime(seed[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] // seed[&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]) :
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+
+    k = &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt; * seed[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;]
+
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; k &amp;gt;= K :
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+
+    s = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;10&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;) :
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; isprime(k + i) :
+            s += k + i
+
+    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; s
+
+seeds_0 = [
+    [&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;], [&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt;], [&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;], [&lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;4&lt;/span&gt;], [&lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;5&lt;/span&gt;],
+    [&lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;6&lt;/span&gt;], [&lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;7&lt;/span&gt;], [&lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;8&lt;/span&gt;], [&lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;9&lt;/span&gt;]
+]
+
+seeds_1 = []
+
+SSRTHP = &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;len&lt;/span&gt;(seeds_0) &amp;gt; &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; :
+    seeds_0, seeds_1 = [], seeds_0
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; seed &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; seeds_1 :
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; seed[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] &amp;gt;= K :
+            &lt;span class=&quot;keyword&quot;&gt;continue&lt;/span&gt;
+
+        seeds_0 += add_digit(seed)
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; seed &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; seeds_0 :
+        SSRTHP += check_primes(seed)
+
+
+print(SSRTHP)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Fri, 19 Jun 2015 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2015/06/19/project-euler-0387.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2015/06/19/project-euler-0387.html</guid>
+        
+        <category>python</category>
+        
+        <category>math</category>
+        
+        <category>programming</category>
+        
+        
+      </item>
     
       <item>
         <title>Project Euler: Hexagonal tile differences</title>
@@ -96,7 +186,7 @@ k = &lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt;
 &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;len&lt;/span&gt;(S) &amp;lt; L :
     &lt;span class=&quot;comment&quot;&gt;# first and last&lt;/span&gt;
     &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; isprime(&lt;span class=&quot;predefined&quot;&gt;abs&lt;/span&gt;(b - c + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) :
-        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; isprime(&lt;span class=&quot;predefined&quot;&gt;abs&lt;/span&gt;(b - c - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; isprime(&lt;span class=&quot;predefined&quot;&gt;abs&lt;/span&gt;(b - d + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)):
+        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; isprime(&lt;span class=&quot;predefined&quot;&gt;abs&lt;/span&gt;(b - c - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; isprime(&lt;span class=&quot;predefined&quot;&gt;abs&lt;/span&gt;(b - d + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) :
             S.append(b)
 
         &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; isprime(&lt;span class=&quot;predefined&quot;&gt;abs&lt;/span&gt;(c - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt; - a)) &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; isprime(&lt;span class=&quot;predefined&quot;&gt;abs&lt;/span&gt;(c - d + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) :
@@ -1190,212 +1280,6 @@ on_demo_toad()
         <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/12/21/sketch.html</guid>
         
         <category>sketch</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>BaseX Quick Start</title>
-        <description>&lt;h2 id=&quot;installation&quot;&gt;Installation&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://brewformulas.org/Basex&quot;&gt;brew install basex&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;If you want to change the datebase path, run “basexgui” in terminal and change it in preference.&lt;/li&gt;
-  &lt;li&gt;command to start server: basexserver&lt;/li&gt;
-  &lt;li&gt;command to start client: basexclient, default username and password are admin/admin.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;create-database-and-add-some-nodes&quot;&gt;Create Database and Add Some Nodes&lt;/h3&gt;
-
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: create a database and name it &amp;quot;tv-shows&amp;quot;. :)
-(: attention: this command cleans the &amp;quot;tv-shows&amp;quot; database if it exist. :)
-create db tv-shows
-
-(: open the database whose name is tv-shows. :)
-open tv-shows
-
-(: add xml to the currently opened database at the path &amp;quot;shows&amp;quot;. :)
-add to shows &amp;lt;shows&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;/shows&amp;gt;
-
-(: list all database, there should be 1 resource under tv-shows database. :)
-list
-
-(: list all resources of tv-shows, :)
-(: there should be 1 xml whose name is &amp;quot;shows&amp;quot;. :)
-list tv-shows
-
-(: get all &amp;lt;show/&amp;gt; node under &amp;lt;shows&amp;gt;&amp;lt;/shows&amp;gt;. :)
-(: the result should be &amp;lt;show/&amp;gt;&amp;lt;show/&amp;gt;&amp;lt;show/&amp;gt;. :)
-xquery for $s in shows/show return $s
-
-(: get all &amp;lt;show/&amp;gt; nodes under shows, :)
-(: add a new node &amp;lt;name/&amp;gt; to each one of them. :)
-xquery for $s in shows/show return insert node &amp;lt;name/&amp;gt; into $s
-
-(: watch the content of the currently opened database :)
-(: it should be like this: :)
-(: &amp;lt;shows&amp;gt; :)
-(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;/show&amp;gt; :)
-(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;/show&amp;gt; :)
-(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;/show&amp;gt; :)
-(: &amp;lt;/shows&amp;gt; :)
-xquery *
-
-(: insert a new node &amp;lt;rating/&amp;gt; into the first &amp;lt;show/&amp;gt; node under &amp;lt;shows/&amp;gt;. :)
-(: attention: the first element is [1], not zero based! :)
-xquery insert node &amp;lt;rating/&amp;gt; into shows/show[1]
-
-(: insert a new node &amp;lt;rating/&amp;gt; into the last &amp;lt;show/&amp;gt; node under &amp;lt;shows/&amp;gt;. :)
-xquery insert node &amp;lt;rating/&amp;gt; into shows/show[last()]
-
-(: declare that $s is the second &amp;lt;show/&amp;gt; node under &amp;lt;shows/&amp;gt;, :)
-(: insert a new &amp;lt;rating/&amp;gt; node into it :)
-xquery let $s := shows/show[2] return insert node &amp;lt;rating/&amp;gt; into $s
-
-(: delete the 1st node under &amp;lt;shows/&amp;gt; :)
-(: try xquery * again and you should get: :)
-(: &amp;lt;shows&amp;gt;                          :)
-(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;rating/&amp;gt;&amp;lt;/show&amp;gt;  :)
-(:   &amp;lt;show&amp;gt;&amp;lt;name/&amp;gt;&amp;lt;rating/&amp;gt;&amp;lt;/show&amp;gt;  :)
-(: &amp;lt;/shows&amp;gt;                         :)
-xquery delete node shows/show[1]
-
-(: destroy the database &amp;quot;tv-shows&amp;quot;. :)
-drop db tv-shows
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;update-a-node&quot;&gt;Update a Node&lt;/h3&gt;
-
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;create db tv-shows
-open tv-shows
-add to shows &amp;lt;shows&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;show&amp;gt;&amp;lt;/show&amp;gt;&amp;lt;/shows&amp;gt;
-
-(: add attribute &#39;update&#39; with current datetime to &amp;lt;shows/&amp;gt; :)
-xquery insert node attribute{&#39;update&#39;}{current-dateTime()} into shows
-
-(: add attribute &#39;season&#39; to shows :)
-xquery insert node attribute{&#39;seasons&#39;}{5} into shows/show[1]
-xquery insert node attribute{&#39;seasons&#39;}{2} into shows/show[2]
-
-(: add node &amp;lt;name/&amp;gt; to each show :)
-xquery insert node &amp;lt;name&amp;gt;Game of Thrones&amp;lt;/name&amp;gt; into shows/show[1]
-xquery insert node &amp;lt;name&amp;gt;Penny Dreadful&amp;lt;/name&amp;gt; into shows/show[2]
-
-(: add &amp;lt;star/&amp;gt; to &amp;quot;Game of Thrones&amp;quot; :)
-xquery insert node (&amp;lt;star&amp;gt;Lena Headey&amp;lt;/star&amp;gt;, &amp;lt;star&amp;gt;Peter Dinklage&amp;lt;/star&amp;gt;)
-  into shows/show[1]
-
-(: add &amp;lt;star/&amp;gt; to the node whose &amp;lt;name/&amp;gt; is Penny Dreadful :)
-xquery for $s in shows/show where $s/name=&#39;Penny Dreadful&#39; return insert
-  node (&amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt;,&amp;lt;star&amp;gt;ironhead&amp;lt;/star&amp;gt;) into $s
-
-(: current contents                                 :)
-(:  &amp;lt;shows update=&amp;quot;2014-12-11T14:26:04.139+08:00&amp;quot;&amp;gt;  :)
-(:    &amp;lt;show seasons=&amp;quot;5&amp;quot;&amp;gt;                            :)
-(:      &amp;lt;name&amp;gt;Game of Thrones&amp;lt;/name&amp;gt;                :)
-(:      &amp;lt;star&amp;gt;Lena Headey&amp;lt;/star&amp;gt;                    :)
-(:      &amp;lt;star&amp;gt;Peter Dinklage&amp;lt;/star&amp;gt;                 :)
-(:    &amp;lt;/show&amp;gt;                                       :)
-(:    &amp;lt;show seasons=&amp;quot;2&amp;quot;&amp;gt;                            :)
-(:      &amp;lt;name&amp;gt;Penny Dreadful&amp;lt;/name&amp;gt;                 :)
-(:      &amp;lt;star&amp;gt;Eva Green&amp;lt;/star&amp;gt;                      :)
-(:      &amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt;                  :)
-(:      &amp;lt;star&amp;gt;ironhead&amp;lt;/star&amp;gt;                       :)
-(:    &amp;lt;/show&amp;gt;                                       :)
-(:  &amp;lt;/shows&amp;gt;                                        :)
-xquery *
-
-(: find &amp;lt;show/&amp;gt; whose name is &#39;Penny Dreadful&#39; and delete the incorrect :)
-(: star node &amp;lt;star&amp;gt;ironhead&amp;lt;/star&amp;gt;. :)
-xquery for $x in shows/show where $x/name=&#39;Penny Dreadful&#39;
-  return delete node $x/star[.=&#39;ironhead&#39;]
-
-(: replace a &amp;lt;star/&amp;gt; node. :)
-xquery for $s in shows/show where $s/name=&amp;quot;Penny Dreadful&amp;quot;
-  return (replace node $s/star[.=&#39;Josh Hartnett&#39;] with
-  &amp;lt;star&amp;gt;Timothy Dalton&amp;lt;/star&amp;gt;)
-
-(: rename all &amp;lt;star/&amp;gt; node as &amp;lt;cast/&amp;gt; node :)
-xquery for $s in shows/show/star return rename node $s as &#39;cast&#39;
-
-(: copy the 2nd &amp;lt;show/&amp;gt; node, modify and return it. :)
-(: there is nothing happened in the original node. :)
-xquery copy $temp := shows/show[2] modify (insert node
-  &amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt; into $temp) return $temp
-
-(: should not find &amp;lt;star&amp;gt;Josh Hartnett&amp;lt;/star&amp;gt; in shows/show[2] :)
-xquery *
-
-drop db tv-shows
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;write-function---functional-programming&quot;&gt;Write Function - Functional Programming&lt;/h3&gt;
-
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: In test database, shows resource.
-  &amp;lt;shows&amp;gt;
-    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
-  &amp;lt;/shows&amp;gt; :)
-
-(: To declare function in this way, namespace must be local.
-  node()* is type of node.
-  node-name($n) returns name of $n.
-  $n/@* returns all attributes of $n.
-  element { node-name($n) }{ $n/@* } clone $n :)
-
-(: result: &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt; :)
-
-xquery declare function local:clone($n as node()*) as node()* {
-  element { node-name($n) }{ $n/@* }
-};
-let $x := doc(&#39;test/shows&#39;)/shows/show[1]
-return local:clone($x)
-
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;get-elements-childlessly&quot;&gt;Get Elements Childlessly&lt;/h3&gt;
-
-&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
-  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;(: In test database, shows resource.
-  &amp;lt;shows&amp;gt;
-    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
-    &amp;lt;show name=&amp;quot;Penny Dreadful&amp;quot;/&amp;gt;
-    &amp;lt;movie name=&amp;quot;The Maze Runner&amp;quot;/&amp;gt;
-  &amp;lt;/shows&amp;gt;
-:)
-
-(: Result:
-  &amp;lt;root&amp;gt;
-    &amp;lt;show name=&amp;quot;Game of Thrones&amp;quot;/&amp;gt;
-    &amp;lt;show name=&amp;quot;Penny Dreadful&amp;quot;/&amp;gt;
-    &amp;lt;movie name=&amp;quot;The Maze Runner&amp;quot;/&amp;gt;
-  &amp;lt;/root&amp;gt;
-:)
-
-xquery declare function local:clone($n as node()*) as node()* {
-  element { node-name($n) }{ $n/@* }
-};
-let $x := doc(&#39;test/shows&#39;)/shows/*
-return &amp;lt;root&amp;gt;{
-  for $c in $x return local:clone($c)
-}&amp;lt;/root&amp;gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Wed, 10 Dec 2014 00:00:00 +0800</pubDate>
-        <link>http://ironhead.bitbucket.com/2014/12/10/basex-quick-start.html</link>
-        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/12/10/basex-quick-start.html</guid>
-        
-        <category>database</category>
         
         
       </item>

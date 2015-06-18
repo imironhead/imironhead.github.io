@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Project Euler: Harshad Numbers</title>
+  <meta name="description" content="wait.
+">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ironhead.bitbucket.com/2015/06/19/project-euler-0387.html">
+
+  <script type="text/javascript"
+           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+              <a class="page-link" href="/about/">About</a>
+            
+          
+        
+          
+            
+              <a class="page-link" href="/cv/">CV</a>
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+          
+        
+          
+            
+              <a class="page-link" href="/projects/">Projects</a>
+            
+          
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Project Euler: Harshad Numbers</h1>
+    <p class="post-meta">Jun 19, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <h1 id="go-to-problemhttpsprojecteulernetproblem387"><a href="https://projecteuler.net/problem=387">Go to Problem</a></h1>
+
+<p>It’s easy since I spent only <strong>30+</strong> minutes. So try it before read my thought and you’ll have some fun.</p>
+
+<ul>
+  <li>I ‘guess’ it would be very slow to check all primes one by one.</li>
+  <li>[1..9] are all Harshad numbers (seeds).</li>
+  <li>Take one seed, add one digit to it and check if it’s valid. For example, take 2, check [20..29]. All valid numbers are new seeds.</li>
+  <li>Check if a new seed is also a strong Harshad number.</li>
+  <li>If a seed is a strong Harshad number, append one digit to it and check if it’s a ‘strong, right truncatable Harshad primes’. For example, 201 is a strong Harshad number, check if [2010..2019] are primes.</li>
+  <li>Sum all valid primes, done.</li>
+  <li>This is actually a <strong>tree</strong> structure, solve it with <strong>BFS</strong>.</li>
+</ul>
+
+<div class="highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="keyword">from</span> <span class="include">sympy</span> <span class="keyword">import</span> <span class="include">isprime</span>
+
+K = <span class="integer">100000000000000</span>
+
+<span class="keyword">def</span> <span class="function">add_digit</span>(seed) :
+    res = []
+
+    k = seed[<span class="integer">0</span>] * <span class="integer">10</span>
+    p = seed[<span class="integer">1</span>]
+
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="predefined">range</span>(<span class="integer">10</span>) :
+        <span class="keyword">if</span> (k + i) % (p + i) == <span class="integer">0</span> :
+            res.append([k + i, p + i])
+
+    <span class="keyword">return</span> res
+
+<span class="keyword">def</span> <span class="function">check_primes</span>(seed) :
+    <span class="keyword">if</span> <span class="keyword">not</span> isprime(seed[<span class="integer">0</span>] // seed[<span class="integer">1</span>]) :
+        <span class="keyword">return</span> <span class="integer">0</span>
+
+    k = <span class="integer">10</span> * seed[<span class="integer">0</span>]
+
+    <span class="keyword">if</span> k &gt;= K :
+        <span class="keyword">return</span> <span class="integer">0</span>
+
+    s = <span class="integer">0</span>
+
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="predefined">range</span>(<span class="integer">1</span>, <span class="integer">10</span>, <span class="integer">2</span>) :
+        <span class="keyword">if</span> isprime(k + i) :
+            s += k + i
+
+    <span class="keyword">return</span> s
+
+seeds_0 = [
+    [<span class="integer">1</span>, <span class="integer">1</span>], [<span class="integer">2</span>, <span class="integer">2</span>], [<span class="integer">3</span>, <span class="integer">3</span>], [<span class="integer">4</span>, <span class="integer">4</span>], [<span class="integer">5</span>, <span class="integer">5</span>],
+    [<span class="integer">6</span>, <span class="integer">6</span>], [<span class="integer">7</span>, <span class="integer">7</span>], [<span class="integer">8</span>, <span class="integer">8</span>], [<span class="integer">9</span>, <span class="integer">9</span>]
+]
+
+seeds_1 = []
+
+SSRTHP = <span class="integer">0</span>
+
+<span class="keyword">while</span> <span class="predefined">len</span>(seeds_0) &gt; <span class="integer">0</span> :
+    seeds_0, seeds_1 = [], seeds_0
+
+    <span class="keyword">for</span> seed <span class="keyword">in</span> seeds_1 :
+        <span class="keyword">if</span> seed[<span class="integer">0</span>] &gt;= K :
+            <span class="keyword">continue</span>
+
+        seeds_0 += add_digit(seed)
+
+    <span class="keyword">for</span> seed <span class="keyword">in</span> seeds_0 :
+        SSRTHP += check_primes(seed)
+
+
+print(SSRTHP)
+</pre></div>
+</div>
+</div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">wait.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
