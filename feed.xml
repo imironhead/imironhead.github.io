@@ -6,9 +6,92 @@
 </description>
     <link>http://ironhead.bitbucket.com/</link>
     <atom:link href="http://ironhead.bitbucket.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 19 Jun 2015 00:26:11 +0800</pubDate>
-    <lastBuildDate>Fri, 19 Jun 2015 00:26:11 +0800</lastBuildDate>
+    <pubDate>Mon, 22 Jun 2015 22:53:38 +0800</pubDate>
+    <lastBuildDate>Mon, 22 Jun 2015 22:53:38 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Project Euler: Prime Frog</title>
+        <description>&lt;h1 id=&quot;go-to-the-problemhttpsprojecteulernetproblem329&quot;&gt;&lt;a href=&quot;https://projecteuler.net/problem=329&quot;&gt;Go to the Problem&lt;/a&gt;&lt;/h1&gt;
+
+&lt;p&gt;It’s easy since I spent only &lt;strong&gt;2+&lt;/strong&gt; hours. So try it before read my thought and you’ll have some fun.&lt;/p&gt;
+
+&lt;p&gt;I study Ping-Cheng Yeh’s probability course on Coursera recently and want to try some
+puzzle on project euler, so I pick up this one.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Try to compute the probability from the first to the last croak is difficult since
+there are many overlapped sub-trees.&lt;/li&gt;
+  &lt;li&gt;So try to solve it from the last croak. It turns out can be solved with dynamic programming.&lt;/li&gt;
+  &lt;li&gt;CROAKS[-1] is ‘N’, we known the chance the frog would croak a ‘N’ in every square.&lt;/li&gt;
+  &lt;li&gt;CROAKS[-2] is ‘P’, we known the probability to get CROAKS[-2:] in position X is \(P(CROAKS[-2] \text{ in X}) \cdot 0.5 \cdot (P(CROAKS[-1] \text{ in X - 1}) + P(CROAKS[-1] \text{ in X + 1}))\)&lt;/li&gt;
+  &lt;li&gt;Keep solving the last problems to get final ones.&lt;/li&gt;
+  &lt;li&gt;Sum the final probabilities give the answer.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;sympy&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;include&quot;&gt;isprime&lt;/span&gt;
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;chance&lt;/span&gt;(primes, croak, i) :
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; primes[i] :
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; croak == &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;P&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; :
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; croak == &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;
+
+PRIMES = [isprime(x + &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; x &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;500&lt;/span&gt;)]
+
+CROAKS = &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;PPPPNNPPPNPPNPN&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt;[::-&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
+
+
+
+dp_0 = [&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;500&lt;/span&gt;)]
+dp_1 = [&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; _ &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;500&lt;/span&gt;)]
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;500&lt;/span&gt;) :
+    dp_0[i] = chance(PRIMES, CROAKS[&lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;], i)
+
+&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; i &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;predefined&quot;&gt;len&lt;/span&gt;(CROAKS)) :
+    c = CROAKS[i]
+
+    dp_0, dp_1 = dp_1, dp_0
+
+    dp_0[  &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;] = &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; * chance(PRIMES, c,   &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt;) * dp_1[  &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;]
+    dp_0[&lt;span class=&quot;integer&quot;&gt;499&lt;/span&gt;] = &lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; * chance(PRIMES, c, &lt;span class=&quot;integer&quot;&gt;499&lt;/span&gt;) * dp_1[&lt;span class=&quot;integer&quot;&gt;498&lt;/span&gt;]
+
+    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; j &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;predefined&quot;&gt;range&lt;/span&gt;(&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;, &lt;span class=&quot;integer&quot;&gt;499&lt;/span&gt;) :
+        dp_0[j] = chance(PRIMES, c, j) * (dp_1[j-&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;] + dp_1[j+&lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;])
+
+p = &lt;span class=&quot;predefined&quot;&gt;sum&lt;/span&gt;(dp_0)
+q = &lt;span class=&quot;integer&quot;&gt;500&lt;/span&gt; * (&lt;span class=&quot;integer&quot;&gt;2&lt;/span&gt; ** (&lt;span class=&quot;predefined&quot;&gt;len&lt;/span&gt;(CROAKS) - &lt;span class=&quot;integer&quot;&gt;1&lt;/span&gt;)) * (&lt;span class=&quot;integer&quot;&gt;3&lt;/span&gt; ** &lt;span class=&quot;predefined&quot;&gt;len&lt;/span&gt;(CROAKS))
+
+&lt;span class=&quot;keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;gcd&lt;/span&gt;(a, b) :
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; a &amp;gt; b :
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; gcd(b, a)
+
+    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; b % a == &lt;span class=&quot;integer&quot;&gt;0&lt;/span&gt; :
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; a
+    &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; :
+        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; gcd(a, b % a)
+
+g = gcd(p, q)
+
+print(&lt;span class=&quot;predefined&quot;&gt;str&lt;/span&gt;(p // g) + &lt;span class=&quot;string&quot;&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;content&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;delimiter&quot;&gt;&#39;&lt;/span&gt;&lt;/span&gt; + &lt;span class=&quot;predefined&quot;&gt;str&lt;/span&gt;(q // g))
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 22 Jun 2015 00:00:00 +0800</pubDate>
+        <link>http://ironhead.bitbucket.com/2015/06/22/project-euler-0329.html</link>
+        <guid isPermaLink="true">http://ironhead.bitbucket.com/2015/06/22/project-euler-0329.html</guid>
+        
+        <category>python</category>
+        
+        <category>math</category>
+        
+        <category>programming</category>
+        
+        
+      </item>
     
       <item>
         <title>Project Euler: Harshad Numbers</title>
@@ -1267,19 +1350,6 @@ on_demo_toad()
         <category>python</category>
         
         <category>programming</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>Sketch: Long Hair Girl</title>
-        <description>&lt;p&gt;&lt;img src=&quot;/assets/images/sketch-0000.jpg&quot; alt=&quot;Long Hair Girl&quot; /&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 21 Dec 2014 00:00:00 +0800</pubDate>
-        <link>http://ironhead.bitbucket.com/2014/12/21/sketch.html</link>
-        <guid isPermaLink="true">http://ironhead.bitbucket.com/2014/12/21/sketch.html</guid>
-        
-        <category>sketch</category>
         
         
       </item>
