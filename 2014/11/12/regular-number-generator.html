@@ -3,19 +3,15 @@
 
   <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Regular Number Generator</title>
-  <meta name="description" content="wait.
-">
+  <meta name="description" content="aka “Hamming numbers”, “ugly numbers”.">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://ironhead.bitbucket.com/2014/11/12/regular-number-generator.html">
-
-  <script type="text/javascript"
-           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  </script>
+  <link rel="canonical" href="http://blog.ironhead.ninja/projects//2014/11/12/regular-number-generator.html">
+  <link rel="alternate" type="application/rss+xml" title="iRonhead" href="http://blog.ironhead.ninja/projects//feed.xml">
 </head>
 
 
@@ -39,167 +35,21 @@
       <div class="trigger">
         
           
-            
-              <a class="page-link" href="/about/">About</a>
-            
+          <a class="page-link" href="/about/">About</a>
           
         
           
-            
-              <a class="page-link" href="/cv/">CV</a>
-            
+          <a class="page-link" href="/cv/">CV</a>
           
         
           
-            
-          
-        
-          
-            
-          
-        
-          
-            
-          
-        
-          
-            
-              <a class="page-link" href="/projects/">Projects</a>
-            
-          
-        
-          
-            
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
         
           
         
           
         
           
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
+          <a class="page-link" href="/projects/">Projects</a>
           
         
       </div>
@@ -212,14 +62,14 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="post">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title">Regular Number Generator</h1>
-    <p class="post-meta">Nov 12, 2014</p>
+    <h1 class="post-title" itemprop="name headline">Regular Number Generator</h1>
+    <p class="post-meta"><time datetime="2014-11-12T00:00:00+08:00" itemprop="datePublished">Nov 12, 2014</time></p>
   </header>
 
-  <article class="post-content">
+  <div class="post-content" itemprop="articleBody">
     <p>aka “Hamming numbers”, “ugly numbers”.</p>
 
 <p>Prime factors of those numbers are 2, 3 or 5.</p>
@@ -240,55 +90,53 @@
   <li>To illustrate the idea, build a tree with root node 1 (the first ugly number). All node values in this tree are their parent values multiple 2, 3, or 5 (e.g. children of 1 are 2, 3 and 5. children of 2 are 2<em>2, 2</em>3 and 2*5. etc.). Remove the duplicated numbers and selected remains in ascending order.</li>
 </ul>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
-<span class="preprocessor">#include</span> <span class="include">&lt;queue&gt;</span>
-<span class="preprocessor">#include</span> <span class="include">&lt;vector&gt;</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
 
-<span class="directive">using</span> <span class="keyword">namespace</span> std;
 
+<span class="k">struct</span> <span class="n">Generator</span> <span class="p">{</span>
+  <span class="n">priority_queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">greater</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span>  <span class="n">pool</span><span class="p">;</span>
 
-<span class="keyword">struct</span> Generator {
-  priority_queue&lt;<span class="predefined-type">int</span>, vector&lt;<span class="predefined-type">int</span>&gt;, greater&lt;<span class="predefined-type">int</span>&gt;&gt;  pool;
+  <span class="n">Generator</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="p">}</span>
 
-  Generator() {
-    <span class="local-variable">this</span>-&gt;pool.push(<span class="integer">1</span>);
-  }
+  <span class="kt">int</span> <span class="n">Next</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">number</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">top</span><span class="p">();</span>
 
-  <span class="predefined-type">int</span> Next() {
-    <span class="predefined-type">int</span> number = <span class="local-variable">this</span>-&gt;pool.top();
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
 
-    <span class="local-variable">this</span>-&gt;pool.pop();
+    <span class="k">if</span> <span class="p">(</span><span class="n">number</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">number</span> <span class="o">*</span> <span class="mi">5</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">number</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">number</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+      <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">number</span> <span class="o">*</span> <span class="mi">5</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">number</span> <span class="o">*</span> <span class="mi">2</span><span class="p">);</span>
+      <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">number</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+      <span class="k">this</span><span class="o">-&gt;</span><span class="n">pool</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">number</span> <span class="o">*</span> <span class="mi">5</span><span class="p">);</span>
+    <span class="p">}</span>
 
-    <span class="keyword">if</span> (number % <span class="integer">5</span> == <span class="integer">0</span>) {
-      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">5</span>);
-    } <span class="keyword">else</span> <span class="keyword">if</span> (number % <span class="integer">3</span> == <span class="integer">0</span>) {
-      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">3</span>);
-      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">5</span>);
-    } <span class="keyword">else</span> {
-      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">2</span>);
-      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">3</span>);
-      <span class="local-variable">this</span>-&gt;pool.push(number * <span class="integer">5</span>);
-    }
+    <span class="k">return</span> <span class="n">number</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
 
-    <span class="keyword">return</span> number;
-  }
-};
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">Generator</span> <span class="n">g</span><span class="p">;</span>
 
-<span class="predefined-type">int</span> main() {
-  Generator g;
-
-  <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; <span class="integer">100</span>; ++i) {
-    cout &lt;&lt; g.Next() &lt;&lt; endl;
-  }
-}
-</pre></div>
-</div>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">g</span><span class="p">.</span><span class="n">Next</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
 </div>
 
-  </article>
+  </div>
 
-</div>
+</article>
 
       </div>
     </div>
@@ -300,23 +148,29 @@
     <h2 class="footer-heading">iRonhead</h2>
 
     <div class="footer-col-wrapper">
-      <div class="footer-col  footer-col-1">
+      <div class="footer-col footer-col-1">
         <ul class="contact-list">
           <li>iRonhead</li>
-          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+          <li><a href="mailto:ironhead.chuang at gmail.com">ironhead.chuang at gmail.com</a></li>
         </ul>
       </div>
 
-      <div class="footer-col  footer-col-2">
+      <div class="footer-col footer-col-2">
         <ul class="social-media-list">
           
+          <li>
+            <a href="https://github.com/imironhead"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">imironhead</span></a>
+
+          </li>
+          
 
           
         </ul>
       </div>
 
-      <div class="footer-col  footer-col-3">
-        <p class="text">wait.
+      <div class="footer-col footer-col-3">
+        <p>I love programming.
 </p>
       </div>
     </div>

@@ -11,20 +11,23 @@ dl, dd, ol, ul, figure {
  * Basic styling
  */
 body {
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 300;
+  font: 400 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #111;
   background-color: #fdfdfd;
-  -webkit-text-size-adjust: 100%; }
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-feature-settings: "kern" 1;
+  -moz-font-feature-settings: "kern" 1;
+  -o-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal; }
 
 /**
  * Set `margin-bottom` to maintain vertical rhythm
  */
 h1, h2, h3, h4, h5, h6,
 p, blockquote, pre,
-ul, ol, dl, figure {
+ul, ol, dl, figure,
+.highlight {
   margin-bottom: 15px; }
 
 /**
@@ -57,7 +60,7 @@ li > ol {
  * Headings
  */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 300; }
+  font-weight: 400; }
 
 /**
  * Links
@@ -91,14 +94,15 @@ pre,
 code {
   font-size: 15px;
   border: 1px solid #e8e8e8;
-  border-radius: 3px; }
+  border-radius: 3px;
+  background-color: #eef; }
 
 code {
   padding: 1px 5px; }
 
 pre {
   padding: 8px 12px;
-  overflow-x: scroll; }
+  overflow-x: auto; }
   pre > code {
     border: 0;
     padding-right: 0;
@@ -151,6 +155,7 @@ pre {
 
 .site-title {
   font-size: 26px;
+  font-weight: 300;
   line-height: 56px;
   letter-spacing: -1px;
   margin-bottom: 0;
@@ -166,13 +171,13 @@ pre {
   .site-nav .page-link {
     color: #111;
     line-height: 1.5; }
-    .site-nav .page-link:not(:first-child) {
-      margin-left: 20px; }
+    .site-nav .page-link:not(:last-child) {
+      margin-right: 20px; }
   @media screen and (max-width: 600px) {
     .site-nav {
       position: absolute;
       top: 9px;
-      right: 30px;
+      right: 15px;
       background-color: #fdfdfd;
       border: 1px solid #e8e8e8;
       border-radius: 5px;
@@ -198,7 +203,10 @@ pre {
         padding-bottom: 5px; }
       .site-nav .page-link {
         display: block;
-        padding: 5px 10px; } }
+        padding: 5px 10px;
+        margin-left: 20px; }
+        .site-nav .page-link:not(:last-child) {
+          margin-right: 0; } }
 
 /**
  * Site footer
@@ -307,309 +315,143 @@ pre {
       .post-content h4 {
         font-size: 18px; } }
 
-.CodeRay {
-  font-family: Inconsolata, Monaco, Consolas, "Courier New", Courier, "DejaVu Sans Mono", "Bitstream Vera Sans Mono", monospace;
-  font-size: 10px;
-  color: #C5C8C6;
-  padding: 1em 0px 1em 1em; }
-
-.CodeRay pre {
-  margin: 0px;
-  background-color: #000; }
-
-span.CodeRay {
-  white-space: pre;
-  border: 0px;
-  padding: 2px; }
-
-table.CodeRay {
-  border-collapse: collapse;
-  width: 100%;
-  padding: 2px; }
-
-table.CodeRay td {
-  padding: 1em 0.5em;
-  vertical-align: top; }
-
-.CodeRay .line-numbers, .CodeRay .no {
-  background-color: #ECECEC;
-  color: #AAA;
-  text-align: right; }
-
-.CodeRay .line-numbers a {
-  color: #AAA; }
-
-.CodeRay .line-numbers tt {
-  font-weight: bold; }
-
-.CodeRay .line-numbers .highlighted {
-  color: red; }
-
-.CodeRay .line {
-  display: block;
-  float: left;
-  width: 100%; }
-
-.CodeRay span.line-numbers {
-  padding: 0px 4px; }
-
-.CodeRay .code {
-  width: 100%; }
-
-ol.CodeRay {
-  font-size: 10pt; }
-
-ol.CodeRay li {
-  white-space: pre; }
-
-.CodeRay .code pre {
-  overflow: auto; }
-
-.CodeRay .debug {
-  color: white !important;
-  background: blue !important; }
-
-.CodeRay .annotation {
-  color: #007; }
-
-.CodeRay .attribute-name {
-  color: #f08; }
-
-.CodeRay .attribute-value {
-  color: #700; }
-
-.CodeRay .binary {
-  color: #509;
-  font-weight: bold; }
-
-.CodeRay .comment {
-  color: #7C7C7C; }
-
-.CodeRay .char {
-  color: #a8ff60; }
-
-.CodeRay .char .content {
-  color: #a8ff60; }
-
-.CodeRay .char .delimiter {
-  color: #a8ff60; }
-
-.CodeRay .class {
-  color: #ffffb6;
-  font-weight: bold; }
-
-.CodeRay .complex {
-  color: #A08;
-  font-weight: bold; }
-
-.CodeRay .constant {
-  color: #9B5C2E; }
-
-.CodeRay .color {
-  color: #0A0; }
-
-.CodeRay .class-variable {
-  color: #7587A6; }
-
-.CodeRay .decorator {
-  color: #B0B; }
-
-.CodeRay .definition {
-  color: #099;
-  font-weight: bold; }
-
-.CodeRay .directive {
-  color: #96cbfe; }
-
-.CodeRay .delimiter {
-  color: black; }
-
-.CodeRay .doc {
-  color: #970; }
-
-.CodeRay .doctype {
-  color: #34b; }
-
-.CodeRay .doc-string {
-  color: #D42;
-  font-weight: bold; }
-
-.CodeRay .escape {
-  color: #666;
-  font-weight: bold; }
-
-.CodeRay .entity {
-  color: #800;
-  font-weight: bold; }
-
-.CodeRay .error {
-  color: #F00; }
-
-.CodeRay .exception {
-  color: #C00;
-  font-weight: bold; }
-
-.CodeRay .filename {
-  color: #099; }
-
-.CodeRay .function {
-  color: #ffd2a7; }
-
-.CodeRay .global-variable {
-  color: #9a859c;
-  font-weight: bold; }
-
-.CodeRay .hex {
-  color: #058;
-  font-weight: bold; }
-
-.CodeRay .integer {
-  color: #ff73fd; }
-
-.CodeRay .include {
-  color: #B44;
-  font-weight: bold; }
-
-.CodeRay .inline {
-  color: #DAEFA3; }
-
-.CodeRay .inline .inline-delimiter {
-  color: #DAEFA3; }
-
-.CodeRay .inline-delimiter {
-  color: #D14; }
-
-.CodeRay .important {
-  color: #f00; }
-
-.CodeRay .interpreted {
-  color: #B2B;
-  font-weight: bold; }
-
-.CodeRay .instance-variable {
-  color: #c6c5f1; }
-
-.CodeRay .label {
-  color: #970;
-  font-weight: bold; }
-
-.CodeRay .local-variable {
-  color: #963; }
-
-.CodeRay .octal {
-  color: #40E;
-  font-weight: bold; }
-
-.CodeRay .predefined-constant {
-  font-weight: bold; }
-
-.CodeRay .predefined {
-  color: #369;
-  font-weight: bold; }
-
-.CodeRay .preprocessor {
-  color: #579; }
-
-.CodeRay .pseudo-class {
-  color: #00C;
-  font-weight: bold; }
-
-.CodeRay .predefined-type {
-  color: #ffffb6; }
-
-.CodeRay .reserved, .keyword {
-  color: #96cbfe; }
-
-.CodeRay .key {
-  color: #99cc99; }
-
-.CodeRay .key .delimiter {
-  color: #99cc99; }
-
-.CodeRay .key .char {
-  color: #99cc99; }
-
-.CodeRay .value {
-  color: #088; }
-
-.CodeRay .regexp .content {
-  color: #808; }
-
-.CodeRay .regexp .delimiter {
-  color: #404; }
-
-.CodeRay .regexp .modifier {
-  color: #C2C; }
-
-.CodeRay .regexp .function {
-  color: #404;
-  font-weight: bold; }
-
-.CodeRay .string {
-  color: #8F9D6A; }
-
-.CodeRay .string .content {
-  color: #a8ff60; }
-
-.CodeRay .string .char {
-  color: #8F9D6A; }
-
-.CodeRay .string .delimiter {
-  color: #a8ff60; }
-
-.CodeRay .shell {
-  color: #D14; }
-
-.CodeRay .shell .delimiter {
-  color: #D14; }
-
-.CodeRay .symbol {
-  color: #99cc99; }
-
-.CodeRay .symbol .content {
-  color: #A60; }
-
-.CodeRay .symbol .delimiter {
-  color: #99cc99; }
-
-.CodeRay .tag {
-  color: #070; }
-
-.CodeRay .tag-special {
-  color: #D70;
-  font-weight: bold; }
-
-.CodeRay .type {
-  color: #339;
-  font-weight: bold; }
-
-.CodeRay .variable {
-  color: #036; }
-
-.CodeRay .insert {
-  background: #afa; }
-
-.CodeRay .delete {
-  background: #faa; }
-
-.CodeRay .change {
-  color: #aaf;
-  background: #007; }
-
-.CodeRay .head {
-  color: #f8f;
-  background: #505; }
-
-.CodeRay .insert .insert {
-  color: #080;
-  font-weight: bold; }
-
-.CodeRay .delete .delete {
-  color: #800;
-  font-weight: bold; }
-
-.CodeRay .change .change {
-  color: #66f; }
-
-.CodeRay .head .head {
-  color: #f4f; }
+/**
+ * Syntax highlighting styles
+ */
+.highlight {
+  background: #fff; }
+  .highlighter-rouge .highlight {
+    background: #eef; }
+  .highlight .c {
+    color: #998;
+    font-style: italic; }
+  .highlight .err {
+    color: #a61717;
+    background-color: #e3d2d2; }
+  .highlight .k {
+    font-weight: bold; }
+  .highlight .o {
+    font-weight: bold; }
+  .highlight .cm {
+    color: #998;
+    font-style: italic; }
+  .highlight .cp {
+    color: #999;
+    font-weight: bold; }
+  .highlight .c1 {
+    color: #998;
+    font-style: italic; }
+  .highlight .cs {
+    color: #999;
+    font-weight: bold;
+    font-style: italic; }
+  .highlight .gd {
+    color: #000;
+    background-color: #fdd; }
+  .highlight .gd .x {
+    color: #000;
+    background-color: #faa; }
+  .highlight .ge {
+    font-style: italic; }
+  .highlight .gr {
+    color: #a00; }
+  .highlight .gh {
+    color: #999; }
+  .highlight .gi {
+    color: #000;
+    background-color: #dfd; }
+  .highlight .gi .x {
+    color: #000;
+    background-color: #afa; }
+  .highlight .go {
+    color: #888; }
+  .highlight .gp {
+    color: #555; }
+  .highlight .gs {
+    font-weight: bold; }
+  .highlight .gu {
+    color: #aaa; }
+  .highlight .gt {
+    color: #a00; }
+  .highlight .kc {
+    font-weight: bold; }
+  .highlight .kd {
+    font-weight: bold; }
+  .highlight .kp {
+    font-weight: bold; }
+  .highlight .kr {
+    font-weight: bold; }
+  .highlight .kt {
+    color: #458;
+    font-weight: bold; }
+  .highlight .m {
+    color: #099; }
+  .highlight .s {
+    color: #d14; }
+  .highlight .na {
+    color: #008080; }
+  .highlight .nb {
+    color: #0086B3; }
+  .highlight .nc {
+    color: #458;
+    font-weight: bold; }
+  .highlight .no {
+    color: #008080; }
+  .highlight .ni {
+    color: #800080; }
+  .highlight .ne {
+    color: #900;
+    font-weight: bold; }
+  .highlight .nf {
+    color: #900;
+    font-weight: bold; }
+  .highlight .nn {
+    color: #555; }
+  .highlight .nt {
+    color: #000080; }
+  .highlight .nv {
+    color: #008080; }
+  .highlight .ow {
+    font-weight: bold; }
+  .highlight .w {
+    color: #bbb; }
+  .highlight .mf {
+    color: #099; }
+  .highlight .mh {
+    color: #099; }
+  .highlight .mi {
+    color: #099; }
+  .highlight .mo {
+    color: #099; }
+  .highlight .sb {
+    color: #d14; }
+  .highlight .sc {
+    color: #d14; }
+  .highlight .sd {
+    color: #d14; }
+  .highlight .s2 {
+    color: #d14; }
+  .highlight .se {
+    color: #d14; }
+  .highlight .sh {
+    color: #d14; }
+  .highlight .si {
+    color: #d14; }
+  .highlight .sx {
+    color: #d14; }
+  .highlight .sr {
+    color: #009926; }
+  .highlight .s1 {
+    color: #d14; }
+  .highlight .ss {
+    color: #990073; }
+  .highlight .bp {
+    color: #999; }
+  .highlight .vc {
+    color: #008080; }
+  .highlight .vg {
+    color: #008080; }
+  .highlight .vi {
+    color: #008080; }
+  .highlight .il {
+    color: #099; }

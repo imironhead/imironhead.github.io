@@ -3,19 +3,15 @@
 
   <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Puzzle Challenge from Ayuda</title>
-  <meta name="description" content="wait.
-">
+  <meta name="description" content="Puzzle">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://ironhead.bitbucket.com/2014/09/20/ayuda-puzzle.html">
-
-  <script type="text/javascript"
-           src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  </script>
+  <link rel="canonical" href="http://blog.ironhead.ninja/projects//2014/09/20/ayuda-puzzle.html">
+  <link rel="alternate" type="application/rss+xml" title="iRonhead" href="http://blog.ironhead.ninja/projects//feed.xml">
 </head>
 
 
@@ -39,167 +35,21 @@
       <div class="trigger">
         
           
-            
-              <a class="page-link" href="/about/">About</a>
-            
+          <a class="page-link" href="/about/">About</a>
           
         
           
-            
-              <a class="page-link" href="/cv/">CV</a>
-            
+          <a class="page-link" href="/cv/">CV</a>
           
         
           
-            
-          
-        
-          
-            
-          
-        
-          
-            
-          
-        
-          
-            
-              <a class="page-link" href="/projects/">Projects</a>
-            
-          
-        
-          
-            
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
         
           
         
           
         
           
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
+          <a class="page-link" href="/projects/">Projects</a>
           
         
       </div>
@@ -212,14 +62,14 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="post">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title">Puzzle Challenge from Ayuda</h1>
-    <p class="post-meta">Sep 20, 2014</p>
+    <h1 class="post-title" itemprop="name headline">Puzzle Challenge from Ayuda</h1>
+    <p class="post-meta"><time datetime="2014-09-20T00:00:00+08:00" itemprop="datePublished">Sep 20, 2014</time></p>
   </header>
 
-  <article class="post-content">
+  <div class="post-content" itemprop="articleBody">
     <p><a href="http://www.ayudasystems.com/Jobs">Puzzle</a></p>
 
 <p>The first challenge is super easy since the characters are mapped one-to-one.</p>
@@ -227,41 +77,39 @@
 <p>The second one is interesting. Looks like base64 encoding but it’s not. It’s still
 easy it you know how to conquer it with brute force. Here is the hint:</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="comment"># A =&gt; jw==</span>
-<span class="comment"># AA =&gt; j5A=</span>
-<span class="comment"># AAA =&gt; j5CR</span>
-<span class="comment"># AAAAAA =&gt; j5CRkpOU</span>
-<span class="comment"># B =&gt; kA==</span>
-<span class="comment"># BB =&gt; kJE=</span>
-<span class="comment"># BBB =&gt; kJGS</span>
-<span class="comment"># C =&gt; kQ==</span>
-<span class="comment"># CC =&gt; kZI=</span>
-<span class="comment"># CCC =&gt; kZKT</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># A =&gt; jw==</span>
+<span class="c"># AA =&gt; j5A=</span>
+<span class="c"># AAA =&gt; j5CR</span>
+<span class="c"># AAAAAA =&gt; j5CRkpOU</span>
+<span class="c"># B =&gt; kA==</span>
+<span class="c"># BB =&gt; kJE=</span>
+<span class="c"># BBB =&gt; kJGS</span>
+<span class="c"># C =&gt; kQ==</span>
+<span class="c"># CC =&gt; kZI=</span>
+<span class="c"># CCC =&gt; kZKT</span>
 
-<span class="comment"># looks like base64</span>
-<span class="comment"># 3 characters message =&gt; 4 characters cipher</span>
-<span class="comment"># if:</span>
-<span class="comment">#   message[0 .. 3n    ] is correct =&gt; cipher[0 .. 4m    ] will match</span>
-<span class="comment">#   message[0 .. 3n + 1] is correct =&gt; cipher[0 .. 4m + 1] will match</span>
-<span class="comment">#   message[0 .. 3n + 2] is correct =&gt; cipher[0 .. 4m + 2] will match</span>
+<span class="c"># looks like base64</span>
+<span class="c"># 3 characters message =&gt; 4 characters cipher</span>
+<span class="c"># if:</span>
+<span class="c">#   message[0 .. 3n    ] is correct =&gt; cipher[0 .. 4m    ] will match</span>
+<span class="c">#   message[0 .. 3n + 1] is correct =&gt; cipher[0 .. 4m + 1] will match</span>
+<span class="c">#   message[0 .. 3n + 2] is correct =&gt; cipher[0 .. 4m + 2] will match</span>
 
-cipher_text = <span class="string"><span class="delimiter">&quot;&quot;&quot;</span><span class="content">
-</span><span class="content">  lcG1ssZzvsS4eHitwsB8ysPS08LJyITO2aGIi77ajNLg4ZDa5ZPc6uPY5pmnm93r4p/08KLl8Obz7K</span><span class="content">
-</span><span class="content">  jy/qv7+67wsPQBAAQKCvwKuQMOvAIUBA7BDxIWCsYaF9fMy/8OIiQiFRMs1B4p1xnZISorId4jITri</span><span class="content">
-</span><span class="content">  NzPlOTY0Py/rPEJISTw2RQECAw==</span><span class="content">
-</span><span class="delimiter">&quot;&quot;&quot;</span></span>
-</pre></div>
-</div>
+<span class="n">cipher_text</span> <span class="o">=</span> <span class="s">"""
+  lcG1ssZzvsS4eHitwsB8ysPS08LJyITO2aGIi77ajNLg4ZDa5ZPc6uPY5pmnm93r4p/08KLl8Obz7K
+  jy/qv7+67wsPQBAAQKCvwKuQMOvAIUBA7BDxIWCsYaF9fMy/8OIiQiFRMs1B4p1xnZISorId4jITri
+  NzPlOTY0Py/rPEJISTw2RQECAw==
+"""</span>
+</code></pre>
 </div>
 
 <p>Their VP contacted me after I sending the answer.
 But they are focusing their recruitment efforts on local candidates.
 One more thank you letter, but I really appreciate it.</p>
 
-  </article>
+  </div>
 
-</div>
+</article>
 
       </div>
     </div>
@@ -273,23 +121,29 @@ One more thank you letter, but I really appreciate it.</p>
     <h2 class="footer-heading">iRonhead</h2>
 
     <div class="footer-col-wrapper">
-      <div class="footer-col  footer-col-1">
+      <div class="footer-col footer-col-1">
         <ul class="contact-list">
           <li>iRonhead</li>
-          <li><a href="mailto:ironhead.chuang@gmail.com">ironhead.chuang@gmail.com</a></li>
+          <li><a href="mailto:ironhead.chuang at gmail.com">ironhead.chuang at gmail.com</a></li>
         </ul>
       </div>
 
-      <div class="footer-col  footer-col-2">
+      <div class="footer-col footer-col-2">
         <ul class="social-media-list">
           
+          <li>
+            <a href="https://github.com/imironhead"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">imironhead</span></a>
+
+          </li>
+          
 
           
         </ul>
       </div>
 
-      <div class="footer-col  footer-col-3">
-        <p class="text">wait.
+      <div class="footer-col footer-col-3">
+        <p>I love programming.
 </p>
       </div>
     </div>
