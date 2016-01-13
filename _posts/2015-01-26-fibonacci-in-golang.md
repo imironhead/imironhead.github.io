@@ -8,7 +8,7 @@ tags: ["golang", "programming"]
 
 Implement fibonacci to evaluate golang.
 
-~~~ go
+{% highlight go %}
 package main
 
 import (
@@ -89,4 +89,4 @@ func Fib(i *big.Int) *big.Int {
 func main() {
   fmt.Println(Fib(big.NewInt(1000)))
 }
-~~~
+{% endhighlight %}

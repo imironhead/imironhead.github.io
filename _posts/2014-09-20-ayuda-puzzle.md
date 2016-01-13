@@ -13,7 +13,7 @@ The first challenge is super easy since the characters are mapped one-to-one.
 The second one is interesting. Looks like base64 encoding but it's not. It's still
 easy it you know how to conquer it with brute force. Here is the hint:
 
-~~~ python
+{% highlight python %}
 # A => jw==
 # AA => j5A=
 # AAA => j5CR
@@ -37,7 +37,7 @@ cipher_text = """
   jy/qv7+67wsPQBAAQKCvwKuQMOvAIUBA7BDxIWCsYaF9fMy/8OIiQiFRMs1B4p1xnZISorId4jITri
   NzPlOTY0Py/rPEJISTw2RQECAw==
 """
-~~~
+{% endhighlight %}
 
 Their VP contacted me after I sending the answer.
 But they are focusing their recruitment efforts on local candidates.

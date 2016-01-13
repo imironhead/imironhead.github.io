@@ -20,7 +20,7 @@ way and here it is.
 
 JsonResponse use python's json library and DjangoJSONEncoder (default).
 
-~~~ python
+{% highlight python %}
 import json
 
 ...
@@ -44,7 +44,7 @@ class JsonResponse(HttpResponse):
         kwargs.setdefault('content_type', 'application/json')
         data = json.dumps(data, cls=encoder)
         super(JsonResponse, self).__init__(content=data, **kwargs)
-~~~
+{% endhighlight %}
 
 What DjangoJSONEncoder does is checking the variables which can not be encoded into
 json by python's json library. Its' "default" method is a fallback. In my case, it
@@ -52,7 +52,7 @@ changes a decimal to a string.
 
 [django 1.7 DjangoJSONEncoder](https://github.com/django/django/blob/stable/1.7.x/django/core/serializers/json.py)
 
-~~~ python
+{% highlight python %}
 class DjangoJSONEncoder(json.JSONEncoder):
     """
     JSONEncoder subclass that knows how to encode date/time and decimal types.
@@ -79,7 +79,7 @@ class DjangoJSONEncoder(json.JSONEncoder):
             return str(o)
         else:
             return super(DjangoJSONEncoder, self).default(o)
-~~~
+{% endhighlight %}
 
 In python's json encoder, _iterencode do not encode decimal so it ask the default
 function to change it into another iteratable type, then encode it again (recursively).
@@ -87,7 +87,7 @@ DjangoJSONEncoder's default then give it a string and the decimals finally becom
 
 [python 2.7 cpython/Lib/json/encoder.py](https://github.com/python/cpython/blob/2.7/Lib/json/encoder.py)
 
-~~~ python
+{% highlight python %}
 def _iterencode(o, _current_indent_level):
     if isinstance(o, basestring):
         yield _encoder(o)
@@ -118,16 +118,16 @@ def _iterencode(o, _current_indent_level):
             yield chunk
         if markers is not None:
             del markers[markerid]
-~~~
+{% endhighlight %}
 
 # Quick solution: float
 
 The first solution I found in stackoverflow is making a new class which inherit from DjangoJSONEncoder and return decimal's float version. This works if I do not need the fixed point number.
 
-~~~ console
+{% highlight console %}
 >>> str(Decimal(1.1))
 '1.100000000000000088817841970012523233890533447265625'
-~~~
+{% endhighlight %}
 
 # Final solution: simplejson
 
@@ -135,7 +135,7 @@ Install simplejson (easy_install simplejson). Then write a new encoder (modified
 version of django's). Now the simplejson take care of decimals while I can still
 encode the other objects (for example, datetime) in prefered formats if I need to.
 
-~~~ python
+{% highlight python %}
 import simplejson
 
 def default_json_encoder(o) :
@@ -166,4 +166,4 @@ class JsonResponse(HttpResponse):
         kwargs.setdefault('content_type', 'application/json')
         data = simplejson.dumps(data, default=default_json_encoder)
         super(JsonResponse, self).__init__(content=data, **kwargs)
-~~~
+{% endhighlight %}

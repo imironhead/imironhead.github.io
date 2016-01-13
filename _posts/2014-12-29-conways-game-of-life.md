@@ -8,7 +8,7 @@ tags: ["python", "programming"]
 
 [CodeSkulptor](http://www.codeskulptor.org/#user38_iF5tSbexuT1XG1M_5.py)
 
-~~~ python
+{% highlight python %}
 import simplegui
 
 
@@ -218,4 +218,4 @@ timer = simplegui.create_timer(500, update_game_of_life)
 timer.start()
 
 on_demo_toad()
-~~~
+{% endhighlight %}

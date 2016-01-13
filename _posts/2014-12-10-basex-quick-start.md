@@ -15,7 +15,7 @@ tags: ["database"]
 
 ### Create Database and Add Some Nodes
 
-~~~ xquery
+{% highlight xquery %}
 (: create a database and name it "tv-shows". :)
 (: attention: this command cleans the "tv-shows" database if it exist. :)
 create db tv-shows
@@ -71,12 +71,12 @@ xquery delete node shows/show[1]
 
 (: destroy the database "tv-shows". :)
 drop db tv-shows
-~~~
+{% endhighlight %}
 
 
 ### Update a Node
 
-~~~ xquery
+{% highlight xquery %}
 create db tv-shows
 open tv-shows
 add to shows <shows><show></show><show></show></shows>
@@ -138,11 +138,11 @@ xquery copy $temp := shows/show[2] modify (insert node
 xquery *
 
 drop db tv-shows
-~~~
+{% endhighlight %}
 
 ### Write Function - Functional Programming
 
-~~~ xquery
+{% highlight xquery %}
 (: In test database, shows resource.
   <shows>
     <show name="Game of Thrones"/>
@@ -162,11 +162,11 @@ xquery declare function local:clone($n as node()*) as node()* {
 let $x := doc('test/shows')/shows/show[1]
 return local:clone($x)
 
-~~~
+{% endhighlight %}
 
 ### Get Elements Childlessly
 
-~~~ xquery
+{% highlight xquery %}
 (: In test database, shows resource.
   <shows>
     <show name="Game of Thrones"/>
@@ -190,4 +190,4 @@ let $x := doc('test/shows')/shows/*
 return <root>{
   for $c in $x return local:clone($c)
 }</root>
-~~~
+{% endhighlight %}

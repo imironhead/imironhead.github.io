@@ -21,7 +21,7 @@ In each turn, the input may be:
 (row1, col1) and (row2, col2) (both inclusive).
 * "row, col" which eliminate only 1 stone.
 
-~~~ ruby
+{% highlight ruby %}
 # reference: http://mcts.ai/code/python.html
 
 require 'optparse'
@@ -565,4 +565,4 @@ end
 
 Game.new(Game.parse_args).play if __FILE__ == $0
 
-~~~
+{% endhighlight %}

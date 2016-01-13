@@ -19,7 +19,7 @@ The version of express is 4.10.6. When this note was made, I still found many co
 * [csurf: Node.js CSRF protection middleware](https://github.com/expressjs/csurf)
 
 
-~~~javascript
+{% highlight javascript %}
 // dependency
 {
   "dependencies": {
@@ -51,18 +51,18 @@ app.use(function(err, req, res, next) {
 
   console.log("bad csrf token");
 });
-~~~
+{% endhighlight %}
 
 In forms with method "POST", set a hidden field with name "_csrf":
 
-~~~ javascript
+{% highlight javascript %}
 form(method="post", action="/csrf")
   input(type="hidden", name="_csrf", value="#{ csrfToken }")
-~~~
+{% endhighlight %}
 
 Angularjs read cookie 'XSRF-TOKEN' and send it back in header. Extra works are needed for jQuery.
 
-~~~ javascript
+{% highlight javascript %}
 html
   head
     meta(name="csrf-token", content="#{ csrfToken }")
@@ -77,7 +77,7 @@ html
           }
         });
       });
-~~~
+{% endhighlight %}
 
 **Note: Why setRequestHeader for jQuery**
 
@@ -85,7 +85,7 @@ In most cases, setting _csrf in data field when post via ajax is enough. The pro
 
 # Expose Less Information to Attackers
 
-~~~ javascript
+{% highlight javascript %}
 var app = express();
 
 // Disable the useless header "x-powered-by" whose value is "Express".
@@ -101,4 +101,4 @@ app.use(session({
     secure: true
   }
 }));
-~~~
+{% endhighlight %}

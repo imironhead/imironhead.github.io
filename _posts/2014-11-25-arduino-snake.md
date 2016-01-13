@@ -49,7 +49,7 @@ Play the [Row Column Scanning example](http://arduino.cc/en/Tutorial/RowColumnSc
 
   The Refresh method is used to display the game on the LED matrix. In order to make the display stable, we need a stable refresh rate in this method. In other words, to display a pattern stablely, we must spend the same time period on each loop and LED. That's why I turn off some LEDs twice (set a pin to HIGH twice).
 
-~~~ cpp
+{% highlight cpp %}
 void Refresh() {
   int row, col, msk;
 
@@ -71,7 +71,7 @@ void Refresh() {
     digitalWrite(ROW[row], LOW);
   }
 }
-~~~
+{% endhighlight %}
 
 ### The Final Result
 
@@ -79,12 +79,12 @@ void Refresh() {
 
   Now we can combine a circuit from 'IRremote' and 'Row Column Scanning' example. Remember to change the data pin of infrared sensor from 11 to A0. Then upload the snake to Arduino and start to play!
 
-~~~ cpp
+{% highlight cpp %}
 #define REMOTE_UP               (0x85AEFD19)
 #define REMOTE_DOWN             (0xB66D73CD)
 #define REMOTE_RIGHT            (0x5C5C901D)
 #define REMOTE_LEFT             (0x8F890759)
-~~~
+{% endhighlight %}
 
 ### Update 20141127
 
@@ -95,7 +95,7 @@ void Refresh() {
 
 Reconnect all column pins of the LED matrix to a 74HC595 chip (because I have only one in hand :)). Refresh method become:
 
-~~~ cpp
+{% highlight cpp %}
 void Refresh() {
   for (int row = 0; row < 8; ++row) {
     digitalWrite(SnakeBoard::ROW[row], HIGH);
@@ -115,4 +115,4 @@ void Refresh() {
     digitalWrite(ROW[row], LOW);
   }
 }
-~~~
+{% endhighlight %}
