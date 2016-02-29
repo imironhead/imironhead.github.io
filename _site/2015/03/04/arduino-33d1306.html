@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Arduino SSD1306 LED</title>
+  <meta name="description" content="A more simple version of Instructables example.For me, the most interesting part is the speeds to fill 1 byte ad fill 128 bytes in the same pageare almost th...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.ironhead.ninja/projects//2015/03/04/arduino-33d1306.html">
+  <link rel="alternate" type="application/rss+xml" title="iRonhead" href="http://blog.ironhead.ninja/projects//feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">iRonhead</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+          <a class="page-link" href="/cv/">CV</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <a class="page-link" href="/projects/">Projects</a>
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Arduino SSD1306 LED</h1>
+    <p class="post-meta"><time datetime="2015-03-04T00:00:00+08:00" itemprop="datePublished">Mar 4, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>A more simple version of <a href="http://www.instructables.com/id/How-to-use-OLED-display-arduino-module/">Instructables example</a>.
+For me, the most interesting part is the speeds to fill 1 byte ad fill 128 bytes in the same page
+are almost the same.</p>
+
+<p><img src="/assets/images/misc-004-arduino_ssd1306.jpg" alt="arduino + ssd1306" /></p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="c1">// SSD1306
+// https://www.adafruit.com/datasheets/SSD1306.pdf
+// 5v
+</span>
+<span class="cp">#define PIN_DATA_COMMAND  (11)
+#define PIN_RESET         (13)
+#define PIN_SCL           (10)
+#define PIN_SDA           (9)
+</span>
+<span class="kt">void</span> <span class="nf">led_send</span><span class="p">(</span><span class="n">bool</span> <span class="n">is_data</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">is_data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_DATA_COMMAND</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_DATA_COMMAND</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_SCL</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_SDA</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_SDA</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_SCL</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
+
+    <span class="n">data</span> <span class="o">&lt;&lt;=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">led_send_data</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">led_send</span><span class="p">(</span><span class="nb">true</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">led_send_command</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">command</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">led_send</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="n">command</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">led_init</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_SCL</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
+  <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_RESET</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">50</span><span class="p">);</span>
+  <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_RESET</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
+  <span class="n">digitalWrite</span><span class="p">(</span><span class="n">PIN_SCL</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
+
+  <span class="c1">// display off (sleep mode)
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xae</span><span class="p">);</span>
+
+  <span class="c1">// segment remap (?)
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xa1</span><span class="p">);</span>
+
+  <span class="c1">// VCOMH deselect level (?)
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xdb</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x40</span><span class="p">);</span>
+
+  <span class="c1">// pre-charge period
+</span>  <span class="c1">// http://en.wikipedia.org/wiki/Pre-charge
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xd9</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xf1</span><span class="p">);</span>
+
+  <span class="c1">// COM pins hardware configuration (?)
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xda</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x12</span><span class="p">);</span>
+
+  <span class="c1">// memory addressing mode
+</span>  <span class="c1">// 0x00 : horizontal
+</span>  <span class="c1">// 0x01 : vertical
+</span>  <span class="c1">// 0x02 : page
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x20</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x02</span><span class="p">);</span>
+
+  <span class="c1">// enable charge pump, dc/dc converter
+</span>  <span class="c1">// http://en.wikipedia.org/wiki/Charge_pump
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x8d</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x14</span><span class="p">);</span>
+
+  <span class="c1">// display start line? (0x40 | (0 ~ 63))
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x40</span> <span class="o">|</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="c1">// display offset (vertical shift), 0 ~ 63
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xd3</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x00</span><span class="p">);</span>
+
+  <span class="c1">// multiplex ratio
+</span>  <span class="c1">// http://en.wikipedia.org/wiki/Multiplexed_display
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xa8</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x3f</span><span class="p">);</span>
+
+  <span class="c1">// display clock divide ratio / oscillator frequency
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xd5</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x80</span><span class="p">);</span>
+
+  <span class="c1">// contrast
+</span>  <span class="c1">// double byte, 2nd byte means contrast. Constrast increases as it increses.
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x81</span><span class="p">);</span>
+  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x00</span><span class="p">);</span>
+
+  <span class="c1">// entire display off
+</span>  <span class="c1">// 0xa4 : pixels are on based on datas in RAM
+</span>  <span class="c1">// 0xa5 : all pixels are on
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xa4</span><span class="p">);</span>
+
+  <span class="c1">// normal display
+</span>  <span class="c1">// 0xa6 : bit 0 -&gt; pixel off, bit 1 -&gt; pixel on
+</span>  <span class="c1">// 0xa7 : bit 1 -&gt; pixel off, bit 0 -&gt; pixel on
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xa6</span><span class="p">);</span>
+
+  <span class="c1">// display on (normal mode)
+</span>  <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xaf</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">led_fill</span><span class="p">(</span><span class="k">const</span> <span class="kt">uint8_t</span><span class="o">*</span> <span class="n">map</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">uint8_t</span> <span class="n">y</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span> <span class="o">++</span><span class="n">y</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xb0</span> <span class="o">+</span> <span class="n">y</span><span class="p">);</span>
+    <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x01</span><span class="p">);</span>
+    <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x10</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">;</span> <span class="o">++</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">led_send_data</span><span class="p">(</span><span class="o">*</span><span class="n">map</span><span class="o">++</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">uint8_t</span> <span class="nf">led_set_pixel</span><span class="p">(</span><span class="kt">uint8_t</span><span class="o">*</span> <span class="n">map</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// to page
+</span>  <span class="n">map</span> <span class="o">+=</span> <span class="mi">128</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">/</span> <span class="mi">8</span><span class="p">);</span>
+
+  <span class="n">y</span> <span class="o">%=</span> <span class="mi">8</span><span class="p">;</span>
+
+  <span class="c1">// to row
+</span>  <span class="n">map</span> <span class="o">+=</span> <span class="n">x</span><span class="p">;</span>
+
+  <span class="c1">// set col
+</span>  <span class="o">*</span><span class="n">map</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">y</span><span class="p">);</span>
+  <span class="o">*</span><span class="n">map</span> <span class="o">|=</span>  <span class="p">(</span><span class="n">c</span> <span class="o">&lt;&lt;</span> <span class="n">y</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="o">*</span><span class="n">map</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">uint8_t</span> <span class="n">display_map</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+
+<span class="kt">uint8_t</span> <span class="n">pixel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">pinMode</span><span class="p">(</span><span class="n">PIN_SCL</span><span class="p">,</span><span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">pinMode</span><span class="p">(</span><span class="n">PIN_SDA</span><span class="p">,</span><span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">pinMode</span><span class="p">(</span><span class="n">PIN_RESET</span><span class="p">,</span><span class="n">OUTPUT</span><span class="p">);</span>
+  <span class="n">pinMode</span><span class="p">(</span><span class="n">PIN_DATA_COMMAND</span><span class="p">,</span><span class="n">OUTPUT</span><span class="p">);</span>
+
+  <span class="n">led_init</span><span class="p">();</span>
+  <span class="n">led_fill</span><span class="p">(</span><span class="n">display_map</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">pixel</span> <span class="o">^=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">64</span><span class="p">;</span> <span class="o">++</span><span class="n">y</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">;</span> <span class="o">++</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0xb0</span> <span class="o">+</span> <span class="n">y</span> <span class="o">/</span> <span class="mi">8</span><span class="p">);</span>
+      <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x00</span> <span class="o">+</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">16</span><span class="p">);</span>
+      <span class="n">led_send_command</span><span class="p">(</span><span class="mh">0x10</span> <span class="o">+</span> <span class="n">x</span> <span class="o">/</span> <span class="mi">16</span><span class="p">);</span>
+
+      <span class="n">led_send_data</span><span class="p">(</span><span class="n">led_set_pixel</span><span class="p">(</span><span class="n">display_map</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pixel</span><span class="p">));</span>
+
+      <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">iRonhead</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>iRonhead</li>
+          <li><a href="mailto:ironhead.chuang at gmail.com">ironhead.chuang at gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/imironhead"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">imironhead</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>I love programming.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
