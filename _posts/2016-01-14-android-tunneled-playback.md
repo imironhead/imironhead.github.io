@@ -12,7 +12,7 @@ I found nothing about this term on internet. I can guess there is a tunnel betwe
 
 # Check Codec Capabilities
 
-[Ganesh had a good answer about how Android know codes' capabilities.](http://stackoverflow.com/questions/22857059/how-mediacodec-finds-the-codec-inside-the-framework-in-android) In brief, there is a file in **/etc/media_codecs.xml** which include more detailed codes information in the other xmls.
+[Ganesh had a good answer about how Android know codecs' capabilities.](http://stackoverflow.com/questions/22857059/how-mediacodec-finds-the-codec-inside-the-framework-in-android) In brief, there is a file in **/etc/media_codecs.xml** which include more detailed codes information in the other xmls.
 
 {% highlight java %}
 MediaCodecInfo codecInfo =
@@ -106,7 +106,7 @@ try {
 
 Wait seconds, we tell the video codec when to render a frame by call [MediaCodec.queueInputBuffer](http://developer.android.com/reference/android/media/MediaCodec.html#queueInputBuffer(int, int, int, long, int)) with presentation time microseconds, not system time, so when will the frames be rendered exactly? It is a black box prior API 23. There is a new [**write**](http://developer.android.com/reference/android/media/AudioTrack.html#write(java.nio.ByteBuffer, int, int, long)) method for AudioTrack in API 23. API 23 was released and we can read what it does to guess how to achieve av sync before API 23 (if it's available).
 
-Before writing audio samples into AudioTrack, we have to prepare an av sync header with presentation time in nanoseconds. And we need any other new API for this. You can find the Android AudioTrack's source code [here](https://android.googlesource.com/platform/frameworks/base/+/master/media/java/android/media/AudioTrack.java).
+Before writing audio samples into AudioTrack, we have to prepare an av sync header with presentation time in nanoseconds. And we need a new API for this. You can find the Android AudioTrack's source code [here](https://android.googlesource.com/platform/frameworks/base/+/master/media/java/android/media/AudioTrack.java).
 
 {% highlight java %}
 int outputBufferIndex = this.decoder.dequeueOutputBuffer(audioBufferInfo, 1000);
