@@ -4,4 +4,8 @@ title: Sketches
 permalink: /sketches/
 ---
 
-* [Rachel McAdams, About Time, Mary](/sketches/pencil-sketch-0089.html)
+# Female Faces
+* [Rachel McAdams, About Time, Mary](/sketches/pencil-sketch-0089)
+
+# Male Faces
+* [Ken Watanabe, The Last Samurai, Lord Moritsugu Katsumoto](/sketches/pencil-sketch-0085)
