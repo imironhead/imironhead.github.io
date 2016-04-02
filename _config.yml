@@ -19,4 +19,6 @@ github_username:  imironhead
 markdown: kramdown
 
 collections:
-  sketches
+  sketches:
+    output: true
+    permalink: /sketches/:path/
