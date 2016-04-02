@@ -17,3 +17,6 @@ github_username:  imironhead
 
 # Build settings
 markdown: kramdown
+
+collections:
+  sketches
