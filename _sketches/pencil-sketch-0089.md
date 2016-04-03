@@ -6,4 +6,4 @@ category:
 tags: ["sketch"]
 ---
 
-![Artemisia](/assets/images/pencil-sketch-0089.jpg)
+![Rachel McAdams](/assets/images/pencil-sketch-0089.jpg)

@@ -6,4 +6,4 @@ category:
 tags: ["sketch"]
 ---
 
-![Artemisia](/assets/images/pencil-sketch-0076.jpg)
+![Anne Hathaway](/assets/images/pencil-sketch-0076.jpg)

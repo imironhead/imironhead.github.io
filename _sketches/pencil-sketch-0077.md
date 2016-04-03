@@ -6,4 +6,4 @@ category:
 tags: ["sketch"]
 ---
 
-![Artemisia](/assets/images/pencil-sketch-0077.jpg)
+![Stallone](/assets/images/pencil-sketch-0077.jpg)

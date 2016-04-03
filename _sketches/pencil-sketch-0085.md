@@ -6,4 +6,4 @@ category:
 tags: ["sketch"]
 ---
 
-![Artemisia](/assets/images/pencil-sketch-0085.jpg)
+![Ken Watanabe](/assets/images/pencil-sketch-0085.jpg)

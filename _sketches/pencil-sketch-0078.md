@@ -6,4 +6,4 @@ category:
 tags: ["sketch"]
 ---
 
-![Artemisia](/assets/images/pencil-sketch-0078.jpg)
+![Emma Watson](/assets/images/pencil-sketch-0078.jpg)
