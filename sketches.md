@@ -6,6 +6,7 @@ permalink: /sketches/
 
 # Female Faces
 * [Sarah, Colleague](/sketches/pencil-sketch-0090/)
+* [Peggy, Friend](/sketches/pencil-sketch-0088/)
 * [Rachel McAdams, About Time, Mary](/sketches/pencil-sketch-0089/)
 * [Emma Charlotte Duerre Watson](/sketches/pencil-sketch-0078/)
 * [Anne Hathaway](/sketches/pencil-sketch-0076/)
