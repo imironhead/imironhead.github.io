@@ -5,6 +5,7 @@ permalink: /sketches/
 ---
 
 # Female Faces
+* [Maisie Williams, Arya Stark](/sketches/pencil-sketch-0091/)
 * [Sarah, Colleague](/sketches/pencil-sketch-0090/)
 * [Peggy, Friend](/sketches/pencil-sketch-0088/)
 * [Rachel McAdams, About Time, Mary](/sketches/pencil-sketch-0089/)
