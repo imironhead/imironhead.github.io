@@ -5,6 +5,7 @@ permalink: /sketches/
 ---
 
 # Female Faces
+* [Chloë Grace Moretz](/sketches/pencil-sketch-0092/)
 * [Maisie Williams, Arya Stark](/sketches/pencil-sketch-0091/)
 * [Sarah, Colleague](/sketches/pencil-sketch-0090/)
 * [Peggy, Friend](/sketches/pencil-sketch-0088/)
