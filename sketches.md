@@ -14,6 +14,7 @@ permalink: /sketches/
 * [Emma Charlotte Duerre Watson](/sketches/pencil-sketch-0078/)
 * [Anne Hathaway](/sketches/pencil-sketch-0076/)
 
+
 # Male Faces
 * [Me](/sketches/pencil-sketch-0093/)
 * [Ken Watanabe, The Last Samurai, Lord Moritsugu Katsumoto](/sketches/pencil-sketch-0085/)
