@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: "Sketch: Maisie Williams, Arya Stark"
 description: ""
 category:

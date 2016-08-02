@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: "Sketch: Peggy, Friend"
 description: ""
 category:

@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: "Sketch: Emma Charlotte Duerre Watson"
 description: ""
 category:

@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: "Sketch: Rachel McAdams, About Time, Mary"
 description: ""
 category:

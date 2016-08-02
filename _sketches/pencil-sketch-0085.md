@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: "Sketch: Ken Watanabe, The Last Samurai, Lord Moritsugu Katsumoto"
 description: ""
 category:

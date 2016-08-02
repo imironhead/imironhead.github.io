@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: "Sketch: Sarah, Colleague"
 description: ""
 category:

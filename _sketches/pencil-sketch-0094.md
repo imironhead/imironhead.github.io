@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: "Sketch: Gal Gadot, Wonder Woman"
 description: ""
 category:
