@@ -5,6 +5,7 @@ permalink: /sketches/
 ---
 
 # Female Faces
+* [Christina Grimmie](/sketches/pencil-sketch-0095/)
 * [Gal Gadot, Wonder Woman](/sketches/pencil-sketch-0094/)
 * [Chloë Grace Moretz](/sketches/pencil-sketch-0092/)
 * [Maisie Williams, Arya Stark](/sketches/pencil-sketch-0091/)
