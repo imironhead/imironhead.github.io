@@ -5,6 +5,7 @@ permalink: /sketches/
 ---
 
 # Female Faces
+* [Kate Mara](/sketches/pencil-sketch-0096/)
 * [Christina Grimmie](/sketches/pencil-sketch-0095/)
 * [Gal Gadot, Wonder Woman](/sketches/pencil-sketch-0094/)
 * [Chloë Grace Moretz](/sketches/pencil-sketch-0092/)
