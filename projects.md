@@ -29,10 +29,7 @@ c/c++, objective-c, python, ruby, graphics, wxwidgets, mfc
 [![image_viewer_0](/assets/images/misc-010-urds-image-viewer-0-small.jpg)](/assets/images/misc-008-urds-image-viewer-0.jpg)
 [![image_viewer_1](/assets/images/misc-011-urds-image-viewer-1-small.jpg)](/assets/images/misc-009-urds-image-viewer-1.jpg)
 
-* 2010
-* Tested on Windows and Mac OSX.
-* Image processing (gradient, power, matrix, etc).
-* c/c++, wxwidgets, libpng, libjpeg.
+In 2010, I was interested in images. So I implemented an image viewer in “mathematical way”. It focused on processing image with simple math operators like pixel-wise scaling, images sum, etc. One of my goals was to make it available on both Windows and OSX so it’s implemented with wxWidgets.
 
 ---
 
