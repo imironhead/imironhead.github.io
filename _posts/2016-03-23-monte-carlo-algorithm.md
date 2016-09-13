@@ -10,9 +10,9 @@ tags: ["programming", "machine_learning", "reinforcement_learning"]
 
 # Why I want to share Monte Carlo algorithm in KKStream
 
-Alpha Go has won 4 games against Lee Sedol who is a world class Go master. I knew this would happen someday but did not expect it so soon! Now almost all software guys know names of the 2 algorithms: neural networks and Monte Carlo. For programmers, it's not difficult to get a rough idea of how hard it is to play Go with brute force methods. And I always think it's a good idea to help others explore different world of algorithms. So I decided to give a talk about MCTS in KKStream.
+Alpha Go has won 4 games against Lee Sedol who is a world class Go master. I knew this would happen someday but did not expect it so soon! Now almost all software guys know names of the 2 algorithms: neural networks and Monte Carlo. For programmers, it's not difficult to get a rough idea of how hard it is to play Go with brute force methods. And I always think it's a good idea to help others explore different algorithms. So I decided to give a talk about MCTS in KKStream.
 
-# What happened in computer Go
+# What happened to computer Go
 
 I was a ~1d Go player in 2000. There was a very good computer Go A.I. "Hand Talk" during that years. But even I could beat it easily. But things started to change. This chart presents the rating of Go program on KGS server. Now the program can beat me easily :).
 
@@ -20,18 +20,18 @@ I was a ~1d Go player in 2000. There was a very good computer Go A.I. "Hand Talk
 
 In my opinion, there are 2 major problems in computer Go:
 
-**There are too much branches to build a game tree.** Considering there are 3 states in each position (black, white and empty), there are $3^{361}$ possible games! And the size of board is not considered yet! Professional players compete each other on a 19 x 19 board. But the general rule is able to work on different size of boards, e.g. a 38 x 38 boards. The strategy would be changed to play on larger board. But world class players will still be world class while the larger game tree need Moore's Law.
+**There are too many branches to build a game tree.** Considering there are 3 states in each position (black, white and empty), there are $3^{361}$ possible games! And the size of the board is not considered yet! Professional players play games on a 19 x 19 board. But the general rule is able to work on boards with different size, e.g. a 38 x 38 boards. The strategy would be changed to play on the larger board. But world class players will still be world class while the larger game tree needs Moore's Law.
 
 **Go players play game with some kind of sense.** Go players usually play games with their sense. Even professional players would state: "I chose the move because I thought it would be interesting". Besides, good players can guess the potential of stone groups, but it's difficult to express it in algorithms (I don't even know how).
 
-Monte Carlo is a **heuristic** algorithm which was developed to solve the first problem: since I am not sure which one is the best, I wager on the most promising one! (Monte Carlo methods are alose developed in many other areas, e.g. photon map of computer graphics)
+Monte Carlo is a **heuristic** algorithm which was developed to solve the first problem: since I am not sure which one is the best, I wager on the most promising one! (Monte Carlo methods are also developed in many other areas, e.g. photon map of computer graphics)
 
 # Why reversi
 
-I use a board game 'reversi' to demo the algorithm because of many advantanges:
+I use a board game 'reversi' to demo the algorithm because of many advantages:
 
 - The rule is simple ([wiki](https://en.wikipedia.org/wiki/Reversi)).
-- The size of game tree is reasonable.
+- The size of the game tree is reasonable.
 - It's famous on an old dictionary device in Taiwan.
 - There are simple strategies to follow.
 
@@ -45,10 +45,10 @@ I use a board game 'reversi' to demo the algorithm because of many advantanges:
 
 The algorithm is about how to search in a game states tree. In every state (tree node), a player can have several different moves (branches). There are 4 steps in each episode of Monte Carlo algorithm:
 
-- **Selection.** An episode always begins at current state (root of the tree). We want to select a child state with good quality (we call the quality "**value**"). Take the image for example, the 3 children states of root node have values **7/10**, **5/8** and **0/3**. The highest value is 7/10 so we select it. Keep doing this until we reach a state which has no child states (3/3). Now take a look at the second layer of the tree which is oppnent's turn, why we select the highest value for the oppnents? Because we think they are smart and alway make good decisions :).
+- **Selection.** An episode always begins at current state (the root of the tree). We want to select a child state with good quality (we call the quality "**value**"). For example, the 3 children states of root node have values **7/10**, **5/8** and **0/3**. The highest value is 7/10 so we select it. Keep doing this until we reach a state which has no child states (3/3). Now take a look at the second layer of the tree which is opponent's turn, why we select the highest value for the opponents? Because we think they are smart and alway make good decisions :).
 - **Expansion.** From the selected state, we enumerate possible states and choose a **random** one as selected state (if the state is not an ending, **leaf**).
-- **Simulation.** Play a game from the selected state base on some policy (random game is ok) and take the result.
-- **Backpropagation.** Travel from selected state to root state. Update values of states on the path base on the simulated result. Intuitively, all states on the path are good if we win the silulated game.
+- **Simulation.** Play a game from the selected state base on some policy (a random game is ok) and take the result.
+- **Backpropagation.** Travel from selected state to root state. Update values of states on the path base on the simulated result. Intuitively, all states on the path are good if we win the simulated game.
 
 The structure of a state in reversi looks like:
 - **Positions of black stones.** (The states can be less due to symmetry. But I'm lazy :))
@@ -61,7 +61,7 @@ $$
 \frac{w_i}{n_i} + c\sqrt{\frac{\ln t}{n_i}}
 $$
 
-During back propagation, we can update values base on different formula. The formula I use to demo is "Upper Confidence Tree". The variables are:
+During back propagation, we can update values base on any different formula. The formula I use to demo is "Upper Confidence Tree". The variables are:
 
 - $n_i$ : how many times we have visited this state (selection path).
 - $w_i$ : how many times we have won through this state (simulation).
@@ -71,7 +71,7 @@ During back propagation, we can update values base on different formula. The for
 There are 2 features for this formula:
 
 - **Exploitation.** We want to make sure a good decision is really good. So we invest computing power on promising decisions. $\frac{w_i}{n_i}$ is made for this. It contributes large value if we win many games through this state.
-- **Exploration.** We want to make sure a bad decision is really bad. So we invest computing power on lass visted states. $\sqrt{\frac{\ln t}{n_i}}$ is made for this. If the stats were visited less and lost most of the simulated game, give it a chance.
+- **Exploration.** We want to make sure a bad decision is really bad. So we invest computing power on less visited states. $\sqrt{\frac{\ln t}{n_i}}$ is made for this. If the stats were visited less and lost most of the simulated game, give it a chance.
 
 Combining the 2 features and tuning the constant factor give us better balance on Monte Carlo algorithm. Keep optimizing the game tree till we are satisfied. **Then choose the child state which has been visited most**! It's good enough cause we invested most computing powers to make sure it's good. It's also stable enough cause we invested computing powers on the other states and they are no better.
 
@@ -101,7 +101,7 @@ State* UpperConfidenceTree::Search(State* root) const {
 }
 {% endhighlight %}
 
-Traverse the game state tree from current state till we reach a leaf state. In each depth, select the state with highest value.
+Traverse the game state tree from current state till we reach a leaf state. In each depth, select the state with the highest value.
 
 {% highlight cpp %}
 State* State::Select() {
@@ -120,7 +120,7 @@ State* State::Select() {
 }
 {% endhighlight %}
 
-If the game is not ended on the selected state, enumerate its' child states and pick one. Let a new state has maximum value to make sure all states are visited at least once.
+If the game is not ended in the selected state, enumerate its' child states and pick one. Let a new state has maximum value to make sure all states are visited at least once.
 
 {% highlight cpp %}
 State* ReversiState::Expand() {
@@ -207,7 +207,7 @@ I also implemented a program to demo the value function (UCT). Keep evaluating t
 
 # Conclusion
 
-One of the reason I chose reversi is "**there are simple strategies to follow**". But why? I have a simple strategy for this game: try to occupy the side/corner positions before opponent. Because they are hard to be attacked, especially the corner. Now I have introduced the algorithm without any strategy (domain knowledge) and that is why I am excited: it's for **general purpose**!
+One of the reasons I chose reversi is "**there are simple strategies to follow**". But why? I have a simple strategy for this game: try to occupy the side/corner positions before the opponent. Because they are hard to be attacked, especially the corner. Now I have introduced the algorithm without any strategy (domain knowledge) and that is why I am excited: it's for **general purpose**!
 
 # Reference
 - [My implementation on GitHub](https://github.com/imironhead/reversi).
