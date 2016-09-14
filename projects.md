@@ -4,7 +4,15 @@ title: Projects
 permalink: /projects/
 ---
 
-c/c++, objective-c, python, ruby, graphics, wxwidgets, mfc
+---
+
+# [OpenAI Gym](https://gym.openai.com)
+
+![OpenAI Gym CartPole v0](/assets/images/post-20160908-dqn-0.png)
+Solved [OpenAI Gym CartPole v0](https://gym.openai.com/evaluations/eval_mDyTiiJcQImzfeay8d2f8w) in 2016/09/07. I had read Andrej Karpathy's implementation (nearest neighbor) and decided that I wanted to solve it in a different way. Then I started to study reinforcement learning and implemented deep Q-network.
+
+![OpenAI Gym CartPole v1](/assets/images/projects-openai-00.png)
+Solved [OpenAI Gym CartPole v1](https://gym.openai.com/evaluations/eval_YFdpvBktR2j8vrbSuCYXA) in 2016/09/14. Used the solver of v0 (DQN) with tweaked parameters.
 
 ---
 
