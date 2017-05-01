@@ -5,6 +5,8 @@ permalink: /sketches/
 ---
 
 # Female Faces
+* [Tamako, Colleague](/sketches/pencil-sketch-0105/)
+* [Ivana Baquero](/sketches/pencil-sketch-0099/)
 * [Kate Mara](/sketches/pencil-sketch-0096/)
 * [Christina Grimmie](/sketches/pencil-sketch-0095/)
 * [Gal Gadot, Wonder Woman](/sketches/pencil-sketch-0094/)
@@ -24,3 +26,8 @@ permalink: /sketches/
 * [Me](/sketches/pencil-sketch-0093/)
 * [Ken Watanabe, The Last Samurai, Lord Moritsugu Katsumoto](/sketches/pencil-sketch-0085/)
 * [Sylvester Gardenzio Stallone](/sketches/pencil-sketch-0077/)
+
+# Animal
+* [Elephant](/sketches/pencil-sketch-0100/)
+* [Elephant](/sketches/pencil-sketch-0101/)
+* [Horse](/sketches/pencil-sketch-0102/)
