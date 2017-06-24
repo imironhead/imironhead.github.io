@@ -7,6 +7,7 @@ tags: ["programming", "machine_learning", "neural_networks", "gan"]
 ---
 
 ![PyCon TW 2017](/assets/images/post-20170620-pycon.jpg)
+
 [PyCon Taiwan](https://www.flickr.com/photos/pycon_tw/35387344366/)
 
 ---
