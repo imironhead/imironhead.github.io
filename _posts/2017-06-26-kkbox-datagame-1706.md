@@ -5,7 +5,7 @@ description: ""
 category:
 ---
 
-KKStream had an internal data game in May 2017. The purpose of this game was to build a data-driven culture inside the company. My colleagues supported it and had some fun in the game. Before PyCon TW 2017, Drake suggested that we should host a game in public. So I had the honor of co-hosting another game with Drake and Kae again. Here are some interesting stories about the game.
+KKStream had an internal data game in May 2017. The purpose of this game was to build a data-driven culture inside the company. My colleagues supported it and had some fun in the game. Before PyCon TW 2017, Drake suggested that we should host a game in public. So we had the honor of co-hosting this game, and we'll be honored again to host another 3. Here are some interesting stories about the game.
 
 ![](/assets/images/post-20170626-benchmark.png)
 The code name of the first data game is 17.05. We had had the game before 17.06, so we knew roughly the scores we could achieve. The champion of 17.05 is an intern in KKStream, so we used his score as the best benchmark **SWEEPER** (and public participants really surprised us!).
