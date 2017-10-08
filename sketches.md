@@ -5,6 +5,7 @@ permalink: /sketches/
 ---
 
 # Female Faces
+* [Julia Roberts](/sketches/pencil-sketch-0106/)
 * [Tamako, Colleague](/sketches/pencil-sketch-0105/)
 * [Ivana Baquero](/sketches/pencil-sketch-0099/)
 * [Kate Mara](/sketches/pencil-sketch-0096/)
@@ -26,6 +27,9 @@ permalink: /sketches/
 * [Me](/sketches/pencil-sketch-0093/)
 * [Ken Watanabe, The Last Samurai, Lord Moritsugu Katsumoto](/sketches/pencil-sketch-0085/)
 * [Sylvester Gardenzio Stallone](/sketches/pencil-sketch-0077/)
+
+# Buildings
+* [Chillon Castle](/sketches/pencil-sketch-0108/)
 
 # Animal
 * [Elephant](/sketches/pencil-sketch-0100/)
