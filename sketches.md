@@ -5,6 +5,7 @@ permalink: /sketches/
 ---
 
 # Female Faces
+* [Cate Blanchett, Lady Galadriel](/sketches/pencil-sketch-0109/)
 * [Julia Roberts](/sketches/pencil-sketch-0106/)
 * [Tamako, Colleague](/sketches/pencil-sketch-0105/)
 * [Ivana Baquero](/sketches/pencil-sketch-0099/)
