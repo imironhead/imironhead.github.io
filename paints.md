@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Sketches
-permalink: /sketches/
+title: Drawings & Paintings
+permalink: /paints/
 ---
 
 # Female Faces

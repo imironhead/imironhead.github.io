@@ -19,9 +19,9 @@ github_username:  imironhead
 markdown: kramdown
 
 collections:
-  notes:
+  paints:
     output: true
-    permalink: /notes/:path/
-  sketches:
-    output: true
-    permalink: /sketches/:path/
+    permalink: /paints/:path/
+  # notes:
+  #   output: true
+  #   permalink: /notes/:path/
