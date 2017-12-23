@@ -10,7 +10,7 @@ I started to share A.I. and machine learning news regularly in April 2017. Each 
 
 ---
 
-* [Gossip of A.I. - #020](/aigossips/020-gossip-of-ai.md)
-* [Gossip of A.I. - #021](/aigossips/021-gossip-of-ai.md)
-* [Gossip of A.I. - #022](/aigossips/022-gossip-of-ai.md)
-* [Gossip of A.I. - #023](/aigossips/023-gossip-of-ai.md)
+* [Gossip of A.I. - #020](/aigossips/020-gossip-of-ai/)
+* [Gossip of A.I. - #021](/aigossips/021-gossip-of-ai/)
+* [Gossip of A.I. - #022](/aigossips/022-gossip-of-ai/)
+* [Gossip of A.I. - #023](/aigossips/023-gossip-of-ai/)
