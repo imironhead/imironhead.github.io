@@ -11,7 +11,7 @@ tags: ["puzzle", "programming"]
 The first challenge is super easy since the characters are mapped one-to-one.
 
 The second one is interesting. Looks like base64 encoding but it's not. It's still
-easy it you know how to conquer it with brute force. Here is the hint:
+easy if you know how to conquer it with brute force. Here is the hint:
 
 {% highlight python %}
 # A => jw==
