@@ -7,6 +7,8 @@ permalink: /paints/
 # Drawings
 
 ## Female Faces
+* [Enya Chuang, My Niece](/paints/pencil-sketch-0111/)
+* [Emilia Clarke, Daenerys Targaryen](/paints/pencil-sketch-0110/)
 * [Cate Blanchett, Lady Galadriel](/paints/pencil-sketch-0109/)
 * [Julia Roberts](/paints/pencil-sketch-0106/)
 * [Tamako, Colleague](/paints/pencil-sketch-0105/)
