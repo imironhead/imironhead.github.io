@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Sketch: Enya Chuang, My Niece"
+title: "Sketch: Enya Chuang - 0, My Niece"
 description: ""
 category:
 tags: ["sketch"]
