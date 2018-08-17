@@ -42,6 +42,9 @@ permalink: /paints/
 * [Elephant](/paints/pencil-sketch-0101/)
 * [Horse](/paints/pencil-sketch-0102/)
 
+## Misc
+* [Maitreya](/paints/pencil-sketch-0113/)
+
 ---
 
 # Paintings
@@ -62,3 +65,4 @@ permalink: /paints/
 * [Lighthouse](/paints/watercolor-0017/)
 * [Collapsed House](/paints/watercolor-0018/)
 * [Mountain Yangmingshan](/paints/watercolor-0019/)
+* [Islands](/paints/watercolor-0020/)
