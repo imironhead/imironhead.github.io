@@ -66,3 +66,7 @@ permalink: /paints/
 * [Collapsed House](/paints/watercolor-0018/)
 * [Mountain Yangmingshan](/paints/watercolor-0019/)
 * [Islands](/paints/watercolor-0020/)
+
+## Dessert
+
+* [Sherry's Workshop - Strawberry Chocolate Tart](/paints/watercolor-0021/)
