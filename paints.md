@@ -69,4 +69,5 @@ permalink: /paints/
 
 ## Dessert
 
+* [Strawberry Ice Cream](/paints/watercolor-0022/)
 * [Sherry's Workshop - Strawberry Chocolate Tart](/paints/watercolor-0021/)
