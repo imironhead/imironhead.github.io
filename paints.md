@@ -69,6 +69,7 @@ permalink: /paints/
 
 ## Dessert
 
+* [Hamburger](/paints/watercolor-0025/)
 * [Blueberry Mousse](/paints/watercolor-0024/)
 * [Cupcake](/paints/watercolor-0023/)
 * [Strawberry Ice Cream](/paints/watercolor-0022/)
