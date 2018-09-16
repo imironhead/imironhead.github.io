@@ -69,6 +69,7 @@ permalink: /paints/
 
 ## Dessert
 
+* [Chelsea's Matcha Swiss Roll Cake"](/paints/watercolor-0026/)
 * [Hamburger](/paints/watercolor-0025/)
 * [Blueberry Mousse](/paints/watercolor-0024/)
 * [Cupcake](/paints/watercolor-0023/)
